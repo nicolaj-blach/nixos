@@ -1,6 +1,6 @@
 {
-  program.zsh = {
-    eneble = true;
+  programs.zsh = {
+    enable = true;
     shellAliases = {
       # nix
       nixr = "nixos-rebuild switch --flake ~/nixos#personal-laptop";
