@@ -3,7 +3,7 @@
     enable = true;
     shellAliases = {
       # nix
-      nixr = "nixos-rebuild switch --flake ~/nixos#personal-laptop";
+      nixr = "sudo nixos-rebuild switch --flake ~/nixos#personal-laptop";
 
       # file system
       lsa = "ls -a";
