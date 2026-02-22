@@ -16,12 +16,18 @@
 
   time.timeZone = "Europe/Copenhagen";
 
-  services.getty.autologinUser = "nicolaj-blach";
-
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
+  programs.hyprlock.enable = true;
+
+  services.getty.autologinUser = "nicolaj-blach";
+  programs.zsh.loginShellInit = ''
+    if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
+      exec hyprland
+    fi
+  '';
 
   services.printing.enable = true;
 
