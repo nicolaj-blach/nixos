@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
+  nixpkgs.config.allowUnfree = true;
+
   imports =
     [ 
       ./hardware-configuration.nix
       ./aliases.nix
+
+      inputs.walker.nixosModules.default
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -29,6 +33,8 @@
     fi
   '';
 
+  programs.walker.enable = true;
+
   services.printing.enable = true;
 
   services.pipewire = {
@@ -51,16 +57,23 @@
   programs.firefox.enable = true;
 
   environment.systemPackages = with pkgs; [
+    wget
+    gcc
     vim
     neovim
-    wget
     git
     gh
     ghostty
     zsh
     swww
+    discord-ptb
   ];
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    neovim
+  ];
+  
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
