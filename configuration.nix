@@ -31,6 +31,7 @@
     if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
       exec hyprland
     fi
+    eval "$(zoxide init zsh)"
   '';
 
   programs.walker.enable = true;
@@ -57,15 +58,34 @@
   programs.firefox.enable = true;
 
   environment.systemPackages = with pkgs; [
+    # dependencies
     wget
     gcc
+
+    # cli tools
+    eza
+    fzf
+    zoxide
+    bat
+    tldr
+    cowsay
+    fastfetch
+    
+    # editors
     vim
     neovim
+
+    # git
     git
     gh
+    lazygit
+
+    # terminal
     ghostty
     zsh
     swww
+
+    # apps
     discord-ptb
   ];
 
