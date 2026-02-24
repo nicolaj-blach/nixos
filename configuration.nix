@@ -4,7 +4,7 @@
   nixpkgs.config.allowUnfree = true;
 
   imports =
-    [ 
+    [
       ./hardware-configuration.nix
       ./aliases.nix
 
@@ -70,7 +70,10 @@
     tldr
     cowsay
     fastfetch
-    
+    terminaltexteffects
+    fd
+    ripgrep
+
     # editors
     vim
     neovim
@@ -85,8 +88,23 @@
     zsh
     swww
 
+    # tui
+    yazi
+    btop
+    bluez
+    bluetui
+    wiremix
+    lazydocker
+    ticker
+    opencode
+
+    # dev tools
+    bun
+    dotnetCorePackages.runtime_10_0-bin
+    uv
+
     # apps
-    discord-ptb
+    discord
   ];
 
   programs.nix-ld.enable = true;
