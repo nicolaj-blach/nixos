@@ -42,6 +42,7 @@
       gco = "git checkout";
       gb = "git branch";
       gss = "git status -s";
+      lg = "lazygit";
 
       # System
       htop = "btop";
@@ -58,6 +59,9 @@
       cat = "bat";
       clear = "clear && fastfetch";
       please = "sudo";
+
+      # AI
+      oc = "opencode";
     };
   };
 }
