@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -49,6 +49,7 @@
 
     # Apps
     discord
+    inputs.zen-browser.packages.${pkgs.system}.beta
   ];
 
   programs.nix-ld.enable = true;
