@@ -7,6 +7,7 @@
     gcc
 
     # CLI tools
+    stow
     eza
     fzf
     zoxide
@@ -56,6 +57,8 @@
   programs.nix-ld.libraries = with pkgs; [
     neovim
   ];
+
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   programs.firefox.enable = true;
 }
