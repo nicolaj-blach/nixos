@@ -18,7 +18,7 @@
       specialArgs = { inherit inputs; };
 
 			modules = [
-				./configuration.nix
+				./hosts/personal-laptop
 			];
 		};
 	};
