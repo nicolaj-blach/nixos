@@ -9,7 +9,7 @@
     ../../modules/shell.nix
     ../../modules/services.nix
     ../../modules/hyprland.nix
-    ../../modules/theme.nix
+    ../../modules/desktop.nix
     inputs.walker.nixosModules.default
   ];
 }
