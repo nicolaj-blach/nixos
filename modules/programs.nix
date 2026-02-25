@@ -39,10 +39,13 @@ in
     terminaltexteffects
     fd
     ripgrep
+    unzip
+    tree
 
     # Editors
     vim
     neovim
+    vscode
 
     # Git
     git
@@ -66,11 +69,15 @@ in
 
     # Dev tools
     bun
+    nodejs_24
     dotnetCorePackages.runtime_10_0-bin
     uv
+    python315
+    python313Packages.pip
+    python313Packages.venvShellHook
 
     # Apps
-    discord
+    vesktop
     zen-browser
   ];
 
