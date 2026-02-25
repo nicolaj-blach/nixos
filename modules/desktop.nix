@@ -34,6 +34,10 @@
     enable = true;
     defaultApplications = {
       "inode/directory" = "yazi.desktop";
+      "text/html" = "zen.desktop";
+      "x-scheme-handler/http" = "zen.desktop";
+      "x-scheme-handler/https" = "zen.desktop";
+      "text/plain" = "nvim.desktop";
     };
   };
 
@@ -47,6 +51,18 @@
     Terminal=false
     Categories=System;FileManager;
     MimeType=inode/directory;
+  '';
+
+  environment.etc."xdg/applications/nvim.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Neovim
+    Comment=Terminal text editor
+    Exec=ghostty -e nvim %F
+    Icon=nvim
+    Terminal=false
+    Categories=Utility;TextEditor;
+    MimeType=text/plain;
   '';
 
   # Yazi as the file picker portal (used by browsers, etc.)
