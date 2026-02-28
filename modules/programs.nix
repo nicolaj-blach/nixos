@@ -2,7 +2,7 @@
 
 let
   zen-browser = let
-    zenBeta = inputs.zen-browser.packages.${pkgs.system}.beta;
+    zenBeta = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
   in pkgs.symlinkJoin {
     name = "zen";
     paths = [ zenBeta ];
@@ -95,4 +95,11 @@ in
   environment.sessionVariables.VISUAL = "nvim";
 
   programs.firefox.enable = true;
+
+  programs.nh = {
+    enable = true;
+    clean.enable = true;
+    clean.extraArgs = "--keep-since 7d --keep 5";
+    flake = "/home/nicolaj-blach/nixos";
+  };
 }
