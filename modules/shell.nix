@@ -52,6 +52,8 @@
       # Nix
       nixu = "sudo nix flake update /home/${username}/nixos";
       nixl = "nixos-rebuild list-generations";
+      nhs = "nh search";
+      stowd = "stow -t ~ ~/nixos/dotfiles";
 
       # Navigation
       cd = "z";
