@@ -86,8 +86,9 @@ in
     wl-clipboard
 
     # Screenshot
-    flameshot
     grim
+    slurp
+    satty
 
     # Image viewer
     imv

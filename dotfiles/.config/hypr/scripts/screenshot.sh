@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-# Screenshot with flameshot: region select + annotate, save to ~/pictures/screenshots/{year}/{month}, copy to clipboard
-# QT_SCREEN_SCALE_FACTORS fixes the zoomed-in issue with fractional Wayland scaling
+# Screenshot: grim (capture) + slurp (region select) + satty (annotate)
+# Saves to ~/pictures/screenshots/{year}/{month}, copies to clipboard
+
 dir="$HOME/pictures/screenshots/$(date +%Y)/$(date +%m)"
 mkdir -p "$dir"
-QT_SCREEN_SCALE_FACTORS="1" flameshot gui --path "$dir" --clipboard
+filepath="$dir/$(date +%Y%m%d-%H%M%S).png"
+
+# Select region, capture, then open annotation editor
+grim -g "$(slurp)" - | satty --filename - --output-filename "$filepath" --copy-command "wl-copy"
