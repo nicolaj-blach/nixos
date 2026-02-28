@@ -69,8 +69,10 @@ in
     opencode
 
     # Dev tools
+    cargo
     bun
     nodejs_24
+    statix
     dotnetCorePackages.runtime_10_0-bin
     uv
     python315
