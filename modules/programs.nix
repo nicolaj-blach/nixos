@@ -43,6 +43,7 @@ in
     ripgrep
     unzip
     tree
+    tinty
 
     # Editors
     vim

@@ -1,0 +1,34 @@
+shell = "zsh -c '{}'"
+default-scheme = "base16-onedark"
+
+# Shell ANSI colors
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-shell"
+themes-dir = "scripts"
+hook = "source \"$TINTY_THEME_FILE_PATH\""
+supported-systems = ["base16", "base24"]
+
+# Ghostty
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-ghostty"
+themes-dir = "ghostty"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/ghostty/colors"
+supported-systems = ["base16", "base24"]
+
+# fzf
+[[items]]
+path = "https://github.com/tinted-theming/tinted-fzf"
+name = "tinted-fzf"
+themes-dir = "sh"
+hook = "source \"$TINTY_THEME_FILE_PATH\""
+supported-systems = ["base16", "base24"]
+
+# Hyprland (custom hook)
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-hyprland"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-hyprland-hook"
+supported-systems = ["base16"]

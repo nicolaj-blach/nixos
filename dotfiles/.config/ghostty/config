@@ -50,3 +50,6 @@
 
 confirm-close-surface = false
 resize-overlay = never
+
+# Tinty-managed color scheme (generated file, not in git)
+config-file = colors
