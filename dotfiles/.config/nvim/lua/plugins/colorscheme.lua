@@ -1,14 +1,17 @@
 return {
-  -- Base16 colorscheme managed by tinty
   {
-    "tinted-theming/tinted-vim",
+    "navarasu/onedark.nvim",
     lazy = false,
     priority = 1000,
+    opts = {
+      style = "dark",
+      transparent = true,
+    },
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "base16-onedark",
+      colorscheme = "onedark",
     },
   },
 }
