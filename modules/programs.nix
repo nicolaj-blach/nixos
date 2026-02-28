@@ -80,9 +80,15 @@ in
     python313Packages.pip
     python313Packages.venvShellHook
 
+    # Clipboard
+    wl-clipboard
+
     # Screenshot
     flameshot
     grim
+
+    # Image viewer
+    imv
 
     # Apps
     vesktop
