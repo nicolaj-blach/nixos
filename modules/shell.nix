@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
   programs.zsh = {
@@ -50,7 +50,7 @@
     '';
     shellAliases = {
       # Nix
-      nixu = "sudo nix flake update";
+      nixu = "sudo nix flake update /home/${username}/nixos";
       nixl = "nixos-rebuild list-generations";
 
       # Navigation
@@ -62,7 +62,6 @@
       # List
       ls = "eza -lh --group-directories-first --icons=auto";
       lsa = "ls -a";
-      ll = "ls -lh";
       la = "ls -lah";
       lt = "eza --tree --level=2 --long --icons --git";
       lta = "lt -a";

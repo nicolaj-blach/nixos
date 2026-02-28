@@ -1,6 +1,8 @@
 { inputs, ... }:
 
 {
+  networking.hostName = "personal-laptop";
+
   imports = [
     ./hardware-configuration.nix
     ../../modules/base.nix

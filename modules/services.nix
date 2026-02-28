@@ -1,7 +1,7 @@
-{ ... }:
+{ username, ... }:
 
 {
-  services.getty.autologinUser = "nicolaj-blach";
+  services.getty.autologinUser = username;
 
   services.printing.enable = true;
 

@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, username, ... }:
 
 let
   zen-browser = let
@@ -57,9 +57,13 @@ in
     # Terminal
     ghostty
     zsh
+
+    # Desktop
     swww
     imagemagick
     chafa
+    brightnessctl
+    playerctl
 
     # TUI
     yazi
@@ -78,7 +82,7 @@ in
     statix
     dotnetCorePackages.runtime_10_0-bin
     uv
-    python315
+    python313
     python313Packages.pip
     python313Packages.venvShellHook
 
@@ -102,9 +106,6 @@ in
   ];
 
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    neovim
-  ];
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.sessionVariables.GTK_USE_PORTAL = "1";
@@ -117,6 +118,6 @@ in
     enable = true;
     clean.enable = true;
     clean.extraArgs = "--keep-since 7d --keep 5";
-    flake = "/home/nicolaj-blach/nixos";
+    flake = "/home/${username}/nixos";
   };
 }
