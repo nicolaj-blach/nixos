@@ -79,6 +79,9 @@ in
     python313Packages.pip
     python313Packages.venvShellHook
 
+    # Screenshot
+    flameshot
+
     # Apps
     vesktop
     zen-browser
