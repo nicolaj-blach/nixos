@@ -90,6 +90,9 @@ in
     slurp
     satty
 
+    # Color picker
+    hyprpicker
+
     # Image viewer
     imv
 
