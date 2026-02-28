@@ -56,6 +56,7 @@ in
     ghostty
     zsh
     swww
+    imagemagick
 
     # TUI
     yazi
