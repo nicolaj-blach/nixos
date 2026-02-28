@@ -102,6 +102,7 @@
 
       # AI
       oc = "opencode";
+      occ = "opencode -c";
     };
   };
 }
