@@ -57,6 +57,7 @@ in
     zsh
     swww
     imagemagick
+    chafa
 
     # TUI
     yazi
