@@ -19,8 +19,11 @@ printf "%s  %-4s  %-20s  %s%s\n" \
 printf "%s%s%s\n" \
   "${comment}" "$(printf '%.0s─' {1..60})" "${reset}"
 
-# Parse generations (skip header line)
-nixos-rebuild list-generations 2>/dev/null | tail -n +2 | while read -r line; do
+# Collect all output, then print at once
+raw=$(nixos-rebuild list-generations 2>/dev/null | tail -n +2)
+
+output=""
+while read -r line; do
   [[ -z "$line" ]] && continue
 
   gen=$(echo "$line" | awk '{print $1}')
@@ -41,8 +44,10 @@ nixos-rebuild list-generations 2>/dev/null | tail -n +2 | while read -r line; do
     gen_color="${fg}"
   fi
 
-  printf "%s %s%-4s${reset}  %s%s %s${reset}  %s%s${reset}\n" \
+  output+="$(printf "%s %s%-4s${reset}  %s%s %s${reset}  %s%s${reset}" \
     "$marker" "$gen_color" "$gen" \
     "${cyan}" "$date" "$time" \
-    "${green}" "$version"
-done
+    "${green}" "$version")"$'\n'
+done <<< "$raw"
+
+printf "%s" "$output"
