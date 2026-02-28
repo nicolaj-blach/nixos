@@ -13,8 +13,10 @@
     '';
     shellAliases = {
       # Nix
-      nixr = "sudo nixos-rebuild switch --flake ~/nixos#personal-laptop";
-      nixl = "nix flake list-inputs";
+      nixr = "sudo nixos-rebuild switch --flake ~/nixos#$(hostname)";
+      nixu = "sudo nix flake update";
+      nixl = "nixos-rebuild list-generations";
+      nixd = "sudo nix-collect-garbage --delete-older-than 30d";
 
       # Navigation
       cd = "z";
