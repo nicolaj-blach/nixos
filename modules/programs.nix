@@ -81,6 +81,7 @@ in
 
     # Screenshot
     flameshot
+    grim
 
     # Apps
     vesktop
