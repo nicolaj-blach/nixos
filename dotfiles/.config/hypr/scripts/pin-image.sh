@@ -19,10 +19,20 @@ if [ ! -s "$TMPFILE" ]; then
     exit 1
 fi
 
-# Launch imv - window rules in windowrules.conf handle floating/pinning
-# imv sets the title to the filename, which contains "pinned-image"
+# Launch imv in the background
 imv "$TMPFILE" &
-
-# Clean up temp file after imv exits
 IMV_PID=$!
-(wait "$IMV_PID" 2>/dev/null; rm -f "$TMPFILE") &
+
+# Wait for the imv window to appear, then float and pin it
+for _ in $(seq 1 20); do
+    sleep 0.1
+    ADDR=$(hyprctl clients -j | jq -r ".[] | select(.pid == $IMV_PID) | .address")
+    if [ -n "$ADDR" ]; then
+        hyprctl --batch "dispatch togglefloating address:$ADDR; dispatch pin address:$ADDR; dispatch resizewindowpixel exact 30% 30%,address:$ADDR; dispatch movewindowpixel exact 68% 2%,address:$ADDR"
+        break
+    fi
+done
+
+# Wait for imv to close, then clean up
+wait "$IMV_PID" 2>/dev/null
+rm -f "$TMPFILE"

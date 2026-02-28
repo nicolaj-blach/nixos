@@ -26,6 +26,8 @@ in
     # Dependencies
     wget
     gcc
+    jq
+    libnotify
 
     # CLI tools
     stow
