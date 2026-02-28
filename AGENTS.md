@@ -10,17 +10,19 @@ Single-user, multi-host NixOS flake. Wayland desktop (Hyprland) on x86_64-linux.
 ```bash
 nixr "feat: description"        # commit -> nh os switch -> push (rollback on failure)
 nh os switch ~/nixos -- --impure # rebuild without committing
-nh os build ~/nixos -- --impure  # dry-run build (check for errors)
+nixb                             # dry-run build (check for errors)
 statix check .                   # nix linter
 ```
 
 There is no test suite. A successful `nh os switch` is the test.
+**Use `nixb` to verify the configuration builds before committing.**
 
-## Aliases (defined in modules/shell.nix)
+## Aliases (defined in modules/aliases.nix)
 
 | Alias   | Expands to                                            |
 |---------|-------------------------------------------------------|
 | `nixr`  | function: commit + `nh os switch` + push              |
+| `nixb`  | `nh os build ~/nixos -- --impure`                     |
 | `nixu`  | `sudo nix flake update ~/nixos`                       |
 | `nixl`  | `nixos-rebuild list-generations`                      |
 | `nhs`   | `nh search`                                           |
