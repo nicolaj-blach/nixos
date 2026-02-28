@@ -10,10 +10,46 @@
     '';
     interactiveShellInit = ''
       eval "$(zoxide init zsh)"
+
+      nixr() {
+        if [[ -z "$1" ]]; then
+          echo "Usage: nixr <message>"
+          return 1
+        fi
+
+        local msg="$*"
+        local nixdir=~/nixos
+        local committed=0
+
+        # Step 1: Commit current changes if any
+        if git -C "$nixdir" status --porcelain | grep -q .; then
+          git -C "$nixdir" add -A && git -C "$nixdir" commit -m "$msg" || { echo "Commit failed"; return 1; }
+          committed=1
+        else
+          echo "No changes to commit, switching with existing HEAD"
+        fi
+
+        # Sanitize message for NixOS label (only [a-zA-Z0-9:_.-] allowed)
+        local label
+        label=$(echo "$msg" | tr ' ' '_' | tr -cd 'a-zA-Z0-9:_.-')
+
+        # Step 2: Try nh os switch
+        if NIXOS_LABEL="$label" nh os switch "$nixdir" -- --impure; then
+          # Step 3: Push on success
+          echo "Build successful, pushing..."
+          git -C "$nixdir" push
+        else
+          echo "Build failed!"
+          if [[ "$committed" -eq 1 ]]; then
+            echo "Reverting commit (keeping files)..."
+            git -C "$nixdir" reset --soft HEAD~1
+          fi
+          return 1
+        fi
+      }
     '';
     shellAliases = {
       # Nix
-      nixr = "sudo nixos-rebuild switch --flake ~/nixos#$(hostname)";
       nixu = "sudo nix flake update";
       nixl = "nixos-rebuild list-generations";
 

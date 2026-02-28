@@ -24,6 +24,9 @@
 
 			modules = [
 				./hosts/personal-laptop
+				{
+					system.configurationRevision = self.rev or self.dirtyRev or "unknown";
+				}
 			];
 		};
 	};
