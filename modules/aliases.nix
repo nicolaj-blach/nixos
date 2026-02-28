@@ -4,7 +4,7 @@
   programs.zsh.shellAliases = {
     # Nix
     nixu = "sudo nix flake update /home/${username}/nixos";
-    nixl = "nixos-rebuild list-generations";
+    nixl = "~/.local/bin/nixl";
     nhs = "nh search";
     nixb = "nh os build ~/nixos -- --impure";
     stowd = "stow -d ~/nixos -t ~ dotfiles";
