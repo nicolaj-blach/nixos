@@ -3,7 +3,8 @@
 {
   programs.zsh.interactiveShellInit = ''
     nixr() {
-      local red=$'\e[31m' green=$'\e[32m' yellow=$'\e[33m' cyan=$'\e[36m' reset=$'\e[0m'
+      local red=$'\e[31m' green=$'\e[32m' yellow=$'\e[33m' cyan=$'\e[36m'
+      local bold=$'\e[1m' dim=$'\e[2m' reset=$'\e[0m'
 
       if [[ -z "$1" ]]; then
         echo "''${red}Usage: nixr <message>''${reset}"
@@ -13,6 +14,9 @@
       local msg="$*"
       local nixdir=~/nixos
       local committed=0
+      local stowed=0
+      local built=0
+      local pushed=0
 
       # Step 1: Commit current changes if any
       if git -C "$nixdir" status --porcelain | grep -q .; then
@@ -33,9 +37,21 @@
       # Step 2: Try nh os switch
       echo "''${cyan}Building and switching...''${reset}"
       if NIXOS_LABEL="$label" nh os switch "$nixdir" -- --impure; then
+        built=1
         # Step 3: Push on success
-        echo "''${green}Build successful, pushing...''${reset}"
-        git -C "$nixdir" push
+        echo "''${cyan}Pushing...''${reset}"
+        if git -C "$nixdir" push; then
+          pushed=1
+        fi
+
+        # Step 4: Stow dotfiles
+        echo "''${cyan}Stowing dotfiles...''${reset}"
+        if stow -d "$nixdir" -t ~ --adopt dotfiles 2>/dev/null; then
+          git -C "$nixdir" restore dotfiles/
+          stowed=1
+        else
+          echo "''${yellow}Stow failed''${reset}"
+        fi
       else
         echo "''${red}Build failed!''${reset}"
         if [[ "$committed" -eq 1 ]]; then
@@ -44,6 +60,15 @@
         fi
         return 1
       fi
+
+      # Report
+      echo ""
+      echo "''${bold}''${cyan}Report''${reset}"
+      [[ "$committed" -eq 1 ]] && echo "  ''${green}✓''${reset} Commit"   || echo "  ''${yellow}−''${reset} Commit ''${dim}(nothing to commit)''${reset}"
+      [[ "$built"     -eq 1 ]] && echo "  ''${green}✓''${reset} Build"    || echo "  ''${red}✗''${reset} Build"
+      [[ "$pushed"    -eq 1 ]] && echo "  ''${green}✓''${reset} Push"     || echo "  ''${red}✗''${reset} Push"
+      [[ "$stowed"    -eq 1 ]] && echo "  ''${green}✓''${reset} Stow"     || echo "  ''${red}✗''${reset} Stow"
+      echo ""
     }
   '';
 }
