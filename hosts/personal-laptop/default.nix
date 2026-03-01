@@ -11,6 +11,7 @@
     ../../modules/shell.nix
     ../../modules/aliases.nix
     ../../modules/scripts/nixr.nix
+    ../../modules/scripts/nixl.nix
     ../../modules/services.nix
     ../../modules/hyprland.nix
     ../../modules/desktop.nix
