@@ -7,17 +7,12 @@
         BEGIN {
           reset = "\033[0m"
           bold  = "\033[1m"
-          dim   = "\033[2m"
           blue  = "\033[34m"
           green = "\033[32m"
           yellow= "\033[33m"
           cyan  = "\033[36m"
 
-          sep = ""
-          for (i = 1; i <= 60; i++) sep = sep "─"
-
           printf "%s  %-4s  %-20s  %s\n", blue bold, "Gen", "Date", "Description" reset
-          printf "%s%s\n", dim sep, reset
         }
         NR > 1 && NF > 0 {
           gen     = $1
