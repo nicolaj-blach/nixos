@@ -29,7 +29,7 @@ let
 
     installPhase = ''
       mkdir -p $out/bin
-      ags bundle app.tsx $out/bin/my-bar
+      ags bundle app.tsx $out/bin/my-bar --gtk 4
     '';
 
     preFixup = ''

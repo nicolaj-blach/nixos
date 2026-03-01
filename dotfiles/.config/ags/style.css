@@ -17,7 +17,6 @@ window.Bar > box {
 
 /* Workspaces */
 .workspaces {
-  spacing: 0;
 }
 
 .workspace {
@@ -61,7 +60,6 @@ window.Bar > box {
 
 /* Right-side modules */
 .bar-end {
-  spacing: 16px;
   padding-right: 4px;
 }
 
