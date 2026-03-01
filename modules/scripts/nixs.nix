@@ -25,7 +25,7 @@
           printf "%-6s\t%s%s %s%s\t%s%s%s\n", \
             $1, cyan, $2, $3, reset, green, version, reset
         }
-      ' | fzf --ansi --header-lines=1 --tac --no-sort --delimiter=$'\t' --nth=1 --tiebreak=begin)
+      ' | fzf --ansi --header-lines=1 --tac --no-sort --exact --delimiter=$'\t' --nth=1,3 --tiebreak=begin)
       [[ -z "$selection" ]] && return 0
 
       local gen
