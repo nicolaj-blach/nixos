@@ -53,6 +53,9 @@
     clear = "clear && fastfetch";
     please = "sudo";
 
+    # Bar
+    bar = "pkill -9 gjs; sleep 2; top-bar & disown";
+
     # AI
     oc = "opencode";
     occ = "opencode -c";

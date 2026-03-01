@@ -41,17 +41,22 @@ export default function Battery() {
     return batteryIcon(percentage, charging)
   })
 
-  const text = createPoll(
-    init.charging ? `${init.percentage}%` : `${init.percentage}%`,
+  const text = createPoll(`${init.percentage}%`, 5000, () => {
+    const { percentage } = readBattery()
+    return `${percentage}%`
+  })
+
+  const chargingClass = createPoll(
+    init.charging ? "battery charging" : "battery",
     5000,
     () => {
-      const { percentage, charging } = readBattery()
-      return charging ? `${percentage}%` : `${percentage}%`
+      const { charging } = readBattery()
+      return charging ? "battery charging" : "battery"
     },
   )
 
   return (
-    <box class="battery" spacing={4}>
+    <box class={chargingClass} spacing={4}>
       <label class="battery-icon" label={icon} />
       <label class="battery-text" label={text} />
     </box>

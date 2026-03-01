@@ -4,8 +4,8 @@ let
   astal = inputs.astal;
   agsPackage = inputs.ags.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
-  myBar = pkgs.stdenv.mkDerivation {
-    pname = "my-bar";
+  topBar = pkgs.stdenv.mkDerivation {
+    pname = "top-bar";
     version = "0.1.0";
 
     src = ../dotfiles/.config/ags;
@@ -29,7 +29,7 @@ let
 
     installPhase = ''
       mkdir -p $out/bin
-      ags bundle app.tsx $out/bin/my-bar --gtk 4
+      ags bundle app.tsx $out/bin/top-bar --gtk 4
     '';
 
     preFixup = ''
@@ -43,5 +43,5 @@ let
 in
 {
   services.upower.enable = true;
-  environment.systemPackages = [ myBar ];
+  environment.systemPackages = [ topBar ];
 }

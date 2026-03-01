@@ -19,7 +19,7 @@ function loadColors() {
 }
 
 app.start({
-  instanceName: "my-bar",
+  instanceName: "top-bar",
   css: style,
   main() {
     const monitors = createBinding(app, "monitors")

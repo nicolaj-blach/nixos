@@ -79,6 +79,11 @@ window.Bar > box {
   padding: 0 4px;
 }
 
+.battery.charging {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
 .battery-icon {
   color: @bar_accent;
   font-size: 15px;
