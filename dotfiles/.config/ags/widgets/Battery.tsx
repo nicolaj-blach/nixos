@@ -1,9 +1,17 @@
 import AstalBattery from "gi://AstalBattery"
-import { createBinding } from "ags"
+import { createPoll } from "ags/time"
 
 // Nerd Font battery icons mapped to charge level
 function batteryIcon(percentage: number, charging: boolean): string {
-  if (charging) return "\u{f0084}" // nf-md-battery_charging
+  if (charging) {
+    if (percentage >= 90) return "\u{f0085}" // nf-md-battery_charging_100
+    if (percentage >= 80) return "\u{f008b}" // nf-md-battery_charging_90
+    if (percentage >= 60) return "\u{f008a}" // nf-md-battery_charging_70
+    if (percentage >= 40) return "\u{f0088}" // nf-md-battery_charging_50
+    if (percentage >= 20) return "\u{f0087}" // nf-md-battery_charging_30
+    if (percentage >= 10) return "\u{f0086}" // nf-md-battery_charging_20
+    return "\u{f0084}" // nf-md-battery_charging
+  }
   if (percentage >= 90) return "\u{f0079}" // nf-md-battery
   if (percentage >= 80) return "\u{f0082}" // nf-md-battery_90
   if (percentage >= 60) return "\u{f0081}" // nf-md-battery_70
@@ -13,22 +21,37 @@ function batteryIcon(percentage: number, charging: boolean): string {
   return "\u{f008e}" // nf-md-battery_alert
 }
 
+function readBattery(): { percentage: number; charging: boolean } {
+  try {
+    const battery = AstalBattery.get_default()
+    const p = Math.round((battery.percentage ?? 0) * 100)
+    const c = battery.charging ?? false
+    return { percentage: p, charging: c }
+  } catch (e) {
+    console.error("battery read error:", e)
+    return { percentage: -1, charging: false }
+  }
+}
+
 export default function Battery() {
-  const battery = AstalBattery.get_default()
+  const init = readBattery()
 
-  const percent = createBinding(battery, "percentage")
-  const charging = createBinding(battery, "charging")
-  const isPresent = createBinding(battery, "isPresent")
-
-  const icon = percent((p) => {
-    const c = battery.charging
-    return batteryIcon(Math.floor(p * 100), c)
+  const icon = createPoll(batteryIcon(init.percentage, init.charging), 5000, () => {
+    const { percentage, charging } = readBattery()
+    return batteryIcon(percentage, charging)
   })
 
-  const text = percent((p) => `${Math.floor(p * 100)}%`)
+  const text = createPoll(
+    init.charging ? `${init.percentage}%` : `${init.percentage}%`,
+    5000,
+    () => {
+      const { percentage, charging } = readBattery()
+      return charging ? `${percentage}%` : `${percentage}%`
+    },
+  )
 
   return (
-    <box class="battery" visible={isPresent} spacing={4}>
+    <box class="battery" spacing={4}>
       <label class="battery-icon" label={icon} />
       <label class="battery-text" label={text} />
     </box>

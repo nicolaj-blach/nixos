@@ -42,5 +42,6 @@ let
   };
 in
 {
+  services.upower.enable = true;
   environment.systemPackages = [ myBar ];
 }

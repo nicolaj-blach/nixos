@@ -114,4 +114,5 @@ window.Bar > box {
 
 .wifi-ssid {
   color: @bar_muted;
+  margin-left: 6px;
 }
