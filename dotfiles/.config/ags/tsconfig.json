@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "gnim/gtk4",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "ags": ["./types/ags"],
+      "ags/*": ["./types/ags/*"]
+    }
+  },
+  "include": ["./**/*.tsx", "./**/*.ts", "./env.d.ts"]
+}

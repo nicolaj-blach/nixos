@@ -1,0 +1,108 @@
+/* TUI-style top bar — colors come from @define-color in colors.css */
+
+window.Bar {
+  background-color: transparent;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 13px;
+  font-weight: bold;
+}
+
+window.Bar > box {
+  background-color: alpha(@bar_bg, 0.93);
+  color: @bar_fg;
+  border-bottom: 1px solid @bar_border;
+  padding: 0 12px;
+  min-height: 28px;
+}
+
+/* Workspaces */
+.workspaces {
+  spacing: 0;
+}
+
+.workspace {
+  padding: 0 6px;
+  margin: 0;
+  border-radius: 0;
+  min-width: 0;
+  min-height: 0;
+  color: @bar_muted;
+  background-color: transparent;
+  border: none;
+}
+
+.workspace:hover {
+  color: @bar_fg;
+  background-color: alpha(@bar_border, 0.5);
+}
+
+.workspace.active {
+  color: @bar_accent;
+  border-bottom: 2px solid @bar_accent;
+}
+
+/* Clock center group */
+.clock {
+  padding: 0 8px;
+}
+
+.clock-time {
+  color: @bar_fg;
+}
+
+.clock-day,
+.clock-week {
+  color: @bar_muted;
+}
+
+.clock-separator {
+  color: @bar_border;
+}
+
+/* Right-side modules */
+.bar-end {
+  spacing: 16px;
+  padding-right: 4px;
+}
+
+/* Battery */
+.battery {
+  padding: 0 4px;
+}
+
+.battery-icon {
+  color: @bar_accent;
+  font-size: 15px;
+}
+
+.battery-text {
+  color: @bar_fg;
+}
+
+/* Volume */
+.volume {
+  padding: 0 4px;
+}
+
+.volume-icon {
+  color: @bar_accent2;
+  font-size: 15px;
+}
+
+.volume-text {
+  color: @bar_fg;
+}
+
+/* Wifi */
+.wifi {
+  padding: 0 4px;
+}
+
+.wifi-icon {
+  color: @bar_accent;
+  font-size: 15px;
+}
+
+.wifi-ssid {
+  color: @bar_muted;
+}

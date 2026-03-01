@@ -94,11 +94,31 @@ System-wide colors are managed by **Tinty** (tinted-theming). The active scheme 
 | **Ghostty** | `tinted-terminal` | Hook copies to `~/.config/ghostty/colors` |
 | **fzf** | `tinted-fzf` | Sourced via tinty shell wrapper |
 | **Hyprland** | Custom hook script | `~/.local/bin/tinty-hyprland-hook` generates `~/.config/hypr/colors.conf` |
+| **hyprlock** | Custom hook script | Same hook generates `~/.config/hypr/hyprlock.conf` |
 | **bat** | Alias | `bat --theme=base16-256` in shell aliases |
 | **Neovim** | `navarasu/onedark.nvim` | Dedicated plugin, `transparent = true` (uses terminal bg) |
 
+### Base16 color mapping
+
+All UI components must use base16 palette slots, never hardcoded hex values.
+The `tinty-hyprland-hook` script maps base16 slots to Hyprland and hyprlock colors.
+
+| Base16 slot | Role | Usage |
+|-------------|------|-------|
+| `base00` | Background | Panel backgrounds, shadow |
+| `base01` | Lighter background | Inactive borders |
+| `base02` | Selection | Borders, separators, muted UI elements |
+| `base03` | Comments | Secondary text (dates, prompts, status lines) |
+| `base05` | Foreground | Primary text (time, headings) |
+| `base08` | Red | Errors, destructive actions, password input dots |
+| `base0D` | Blue | Primary accent (active borders) |
+| `base0E` | Purple | Secondary accent (titles, highlights) |
+
 ### Guidelines
 
+- **Always use system colors.** Never hardcode hex color values in UI configs. All
+  colors must come from the base16 palette via tinty hooks. This ensures every
+  component stays consistent when switching themes with `tinty apply`.
 - **Prefer themed options.** When adding CLI tools or aliases, use base16-aware themes
   when available (e.g. `bat --theme=base16-256`, fzf inherits from `tinted-fzf`).
 - **New apps:** If a tinted-theming template exists, add an `[[items]]` entry to
@@ -110,9 +130,25 @@ System-wide colors are managed by **Tinty** (tinted-theming). The active scheme 
 - **Hyprland colors** are defined as variables (`$active_border_1`, `$active_border_2`,
   `$inactive_border`, `$shadow_color`) in the generated `colors.conf`. Use these
   variables in Hyprland configs instead of hardcoding rgba values.
-- **Generated files stay out of git.** Tinty hooks write to `~/.config/ghostty/colors`
-  and `~/.config/hypr/colors.conf` (replaces Stow symlink at runtime). The dotfiles repo
-  ships seed defaults for first-boot only.
+- **Generated files stay out of git.** Tinty hooks write to `~/.config/ghostty/colors`,
+  `~/.config/hypr/colors.conf`, and `~/.config/hypr/hyprlock.conf` (replaces Stow
+  symlinks at runtime). The dotfiles repo ships seed defaults for first-boot only.
+
+### UI design principles
+
+The system uses a modern TUI aesthetic across lock screen and desktop components:
+
+- **Sharp corners.** No rounded corners (`rounding = 0`). All panels, input fields,
+  and borders use square edges.
+- **Monospace font.** JetBrainsMono Nerd Font for all UI text.
+- **Minimal chrome.** Single-pixel borders, no gradients, no shadows on widgets.
+  Semi-transparent backgrounds (`rgba(...ee)`) over blurred desktop screenshots.
+- **Terminal conventions.** Use familiar TUI patterns: `[ title ]` for window titles,
+  `label >` for input prompts, `user@host` for status lines, `error:` prefix for
+  failure messages.
+- **No animations.** Fade-in/fade-out disabled for instant transitions.
+- **Pango markup in hyprlock.** Use `##` to escape `#` in hex colors (hyprlock treats
+  `#` as a comment character). Example: `foreground="##e06c75"`.
 
 ### Switching themes
 

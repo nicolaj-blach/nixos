@@ -1,0 +1,31 @@
+import AstalWp from "gi://AstalWp"
+import { createBinding } from "ags"
+
+// Nerd Font volume icons
+function volumeIcon(volume: number, muted: boolean): string {
+  if (muted) return "\u{f0581}" // nf-md-volume_off
+  if (volume >= 0.66) return "\u{f057e}" // nf-md-volume_high
+  if (volume >= 0.33) return "\u{f0580}" // nf-md-volume_medium
+  if (volume > 0) return "\u{f057f}" // nf-md-volume_low
+  return "\u{f0581}" // nf-md-volume_off
+}
+
+export default function Volume() {
+  const speaker = AstalWp.get_default()!.defaultSpeaker!
+
+  const vol = createBinding(speaker, "volume")
+  const muted = createBinding(speaker, "mute")
+
+  const icon = vol((v) => {
+    return volumeIcon(v, speaker.mute)
+  })
+
+  const text = vol((v) => `${Math.round(v * 100)}%`)
+
+  return (
+    <box class="volume" spacing={4}>
+      <label class="volume-icon" label={icon} />
+      <label class="volume-text" label={text} />
+    </box>
+  )
+}

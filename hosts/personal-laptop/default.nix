@@ -16,6 +16,7 @@
     ../../modules/services.nix
     ../../modules/hyprland.nix
     ../../modules/desktop.nix
+    ../../modules/ags.nix
     inputs.walker.nixosModules.default
   ];
 }
