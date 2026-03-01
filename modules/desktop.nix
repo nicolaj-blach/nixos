@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # Dark theme for GTK apps (Adwaita-dark)
@@ -16,6 +16,8 @@
           "org/gnome/desktop/interface" = {
             color-scheme = "prefer-dark";
             gtk-theme = "Adwaita-dark";
+            cursor-theme = "Adwaita";
+            cursor-size = lib.gvariant.mkInt32 24;
           };
         };
       }
