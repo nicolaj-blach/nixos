@@ -54,7 +54,7 @@
     please = "sudo";
 
     # Bar
-    bar = "pkill -9 gjs 2>/dev/null; sleep 0.5; my-bar &; disown";
+    bar = "pkill -9 gjs 2>/dev/null; sleep 2; my-bar &; disown";
 
     # AI
     oc = "opencode";
