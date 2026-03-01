@@ -12,7 +12,7 @@ window.Bar > box {
   color: @bar_fg;
   border-bottom: 1px solid @bar_border;
   padding: 0 12px;
-  min-height: 28px;
+  min-height: 30px;
 }
 
 /* Workspaces */
@@ -46,6 +46,10 @@ window.Bar > box {
 }
 
 .clock-time {
+  color: @bar_fg;
+}
+
+.clock-date {
   color: @bar_fg;
 }
 
