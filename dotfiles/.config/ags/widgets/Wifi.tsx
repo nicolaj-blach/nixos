@@ -30,7 +30,7 @@ export default function Wifi() {
           const icon = strength((s) => wifiIcon(s))
 
           return (
-            <box spacing={4}>
+            <box spacing={8}>
               <label class="wifi-icon" label={icon} />
               <label class="wifi-ssid" label={ssid((s) => s ?? "")} />
             </box>

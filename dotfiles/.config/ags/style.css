@@ -1,4 +1,11 @@
-/* TUI-style top bar — colors come from @define-color in colors.css */
+/* TUI-style top bar — fallback colors (base16-onedark) overridden by colors.css */
+@define-color bar_bg #282c34;
+@define-color bar_fg #abb2bf;
+@define-color bar_border #3e4451;
+@define-color bar_accent #61afef;
+@define-color bar_accent2 #c678dd;
+@define-color bar_muted #565c64;
+@define-color bar_red #e06c75;
 
 window.Bar {
   background-color: transparent;
