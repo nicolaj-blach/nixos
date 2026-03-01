@@ -102,6 +102,7 @@ in
     imv
 
     # Apps
+    inkscape
     vesktop
     zen-browser
   ];
