@@ -18,7 +18,7 @@
           for (i = 1; i <= 60; i++) sep = sep "─"
         }
         NR == 1 {
-          printf "%s%s  %-4s  %-20s  %s%s\n", blue bold, "Gen", "Date", "Description", reset
+          printf "%s  %-4s  %-20s  %s%s\n", blue bold, "Gen", "Date", "Description" reset
           printf "%s%s%s\n", comment, sep, reset
           next
         }
