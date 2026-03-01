@@ -15,17 +15,17 @@
           cyan   = "\033[36m"
         }
         NR == 1 {
-          printf "%s%-6s  %-20s  %s%s\n", blue bold, "Gen", "Date", "Description", reset
+          printf "%s%-6s\t%-20s\t%s%s\n", blue bold, "Gen", "Date", "Description", reset
           next
         }
         $NF == "True" { next }
         {
           version = $4
           gsub(/_/, " ", version)
-          printf "%-6s  %s%s %s%s  %s%s%s\n", \
+          printf "%-6s\t%s%s %s%s\t%s%s%s\n", \
             $1, cyan, $2, $3, reset, green, version, reset
         }
-      ' | fzf --ansi --header-lines=1 --tac --no-sort --tiebreak=begin)
+      ' | fzf --ansi --header-lines=1 --tac --no-sort --delimiter='\t' --nth=1,3 --tiebreak=begin)
       [[ -z "$selection" ]] && return 0
 
       local gen
