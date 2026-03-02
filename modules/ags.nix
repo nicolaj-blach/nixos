@@ -2,7 +2,17 @@
 
 let
   astal = inputs.astal;
-  agsPackage = inputs.ags.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  system = pkgs.stdenv.hostPlatform.system;
+  agsPackage = inputs.ags.packages.${system}.default;
+
+  astalLibs = with astal.packages.${system}; [
+    io
+    astal4
+    battery
+    wireplumber
+    network
+    hyprland
+  ];
 
   topBar = pkgs.stdenv.mkDerivation {
     pname = "top-bar";
@@ -16,16 +26,7 @@ let
       agsPackage
     ];
 
-    buildInputs = with pkgs; [
-      glib
-      gjs
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.io
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.astal4
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.battery
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.wireplumber
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.network
-      astal.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
-    ];
+    buildInputs = [ pkgs.glib pkgs.gjs ] ++ astalLibs;
 
     installPhase = ''
       mkdir -p $out/bin
@@ -43,5 +44,8 @@ let
 in
 {
   services.upower.enable = true;
-  environment.systemPackages = [ topBar ];
+  environment.systemPackages = [
+    topBar
+    agsPackage
+  ] ++ astalLibs;
 }

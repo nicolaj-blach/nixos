@@ -54,7 +54,7 @@
     please = "sudo";
 
     # Bar
-    bar = "pkill -9 gjs; sleep 2; top-bar & disown";
+    bar = "pkill -9 gjs; sleep 0.5; ags run --gtk 4 ~/.config/ags/app.tsx & disown";
 
     # AI
     oc = "opencode";
