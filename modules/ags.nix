@@ -9,6 +9,7 @@ let
     io
     astal4
     battery
+    bluetooth
     wireplumber
     network
     hyprland
@@ -37,6 +38,7 @@ let
       gappsWrapperArgs+=(
         --prefix PATH : ${pkgs.lib.makeBinPath [
           pkgs.hyprland
+          pkgs.ghostty
         ]}
       )
     '';

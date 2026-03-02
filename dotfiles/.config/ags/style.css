@@ -99,11 +99,28 @@ window.Bar > box {
   color: @bar_fg;
 }
 
-/* Volume */
-.volume {
+/* Clickable bar buttons (volume, bluetooth, wifi) */
+.volume,
+.bluetooth,
+.wifi {
   padding: 0 4px;
+  margin: 0;
+  border-radius: 0;
+  min-width: 0;
+  min-height: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  border: none;
 }
 
+.volume:hover,
+.bluetooth:hover,
+.wifi:hover {
+  background-color: alpha(@bar_border, 0.5);
+}
+
+/* Volume */
 .volume-icon {
   color: @bar_accent2;
   font-size: 15px;
@@ -113,11 +130,17 @@ window.Bar > box {
   color: @bar_fg;
 }
 
-/* Wifi */
-.wifi {
-  padding: 0 4px;
+/* Bluetooth */
+.bluetooth-icon {
+  color: @bar_accent;
+  font-size: 15px;
 }
 
+.bluetooth.off .bluetooth-icon {
+  color: @bar_muted;
+}
+
+/* Wifi */
 .wifi-icon {
   color: @bar_accent;
   font-size: 15px;

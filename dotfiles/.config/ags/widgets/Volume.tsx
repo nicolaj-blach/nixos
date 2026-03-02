@@ -1,5 +1,6 @@
 import AstalWp from "gi://AstalWp"
 import { createBinding } from "ags"
+import { execAsync } from "ags/process"
 
 // Nerd Font volume icons
 function volumeIcon(volume: number, muted: boolean): string {
@@ -23,9 +24,11 @@ export default function Volume() {
   const text = vol((v) => `${Math.round(v * 100)}%`)
 
   return (
-    <box class="volume" spacing={4}>
-      <label class="volume-icon" label={icon} />
-      <label class="volume-text" label={text} />
-    </box>
+    <button class="volume" onClicked={() => execAsync("tui-audio")}>
+      <box spacing={4}>
+        <label class="volume-icon" label={icon} />
+        <label class="volume-text" label={text} />
+      </box>
+    </button>
   )
 }

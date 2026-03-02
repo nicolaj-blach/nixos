@@ -1,5 +1,6 @@
 import AstalNetwork from "gi://AstalNetwork"
 import { createBinding, With } from "ags"
+import { execAsync } from "ags/process"
 
 // Nerd Font wifi icons mapped to signal strength
 function wifiIcon(strength: number): string {
@@ -19,7 +20,7 @@ export default function Wifi() {
   const wifi = createBinding(network, "wifi")
 
   return (
-    <box class="wifi">
+    <button class="wifi" onClicked={() => execAsync("tui-wifi")}>
       <With value={wifi}>
         {(w) => {
           if (!w) return <label class="wifi-icon" label={disconnectedIcon()} />
@@ -37,6 +38,6 @@ export default function Wifi() {
           )
         }}
       </With>
-    </box>
+    </button>
   )
 }

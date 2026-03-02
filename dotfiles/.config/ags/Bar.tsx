@@ -6,6 +6,7 @@ import Workspaces from "./widgets/Workspaces"
 import Clock from "./widgets/Clock"
 import Battery from "./widgets/Battery"
 import Volume from "./widgets/Volume"
+import Bluetooth from "./widgets/Bluetooth"
 import Wifi from "./widgets/Wifi"
 
 export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
@@ -38,6 +39,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         <box $type="end" class="bar-end">
           <Battery />
           <Volume />
+          <Bluetooth />
           <Wifi />
         </box>
       </centerbox>
