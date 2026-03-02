@@ -6,7 +6,7 @@
 
     ohMyZsh = {
       enable = true;
-      theme = "fino";
+      theme = "";
       plugins = [
         "git"
         "sudo"
@@ -28,6 +28,7 @@
     '';
 
     interactiveShellInit = ''
+      eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
 
       # Tinty: source shell theme on init and wrap apply/cycle to re-source

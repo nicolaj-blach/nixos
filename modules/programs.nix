@@ -54,6 +54,7 @@ in
     tree
     tinty
     speedtest-cli
+    starship
 
     # Editors
     vim

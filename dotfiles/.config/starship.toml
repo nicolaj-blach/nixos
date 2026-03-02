@@ -1,0 +1,71 @@
+# Starship prompt - uses ANSI colors to follow base16/tinty system theme
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nix_shell\
+$python\
+$nodejs\
+$rust\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
+
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+read_only = " ro"
+read_only_style = "red"
+
+[git_branch]
+style = "purple"
+format = "[$symbol$branch(:$remote_branch)]($style) "
+symbol = ""
+
+[git_status]
+style = "red"
+format = '([$all_status$ahead_behind]($style) )'
+modified = "!"
+untracked = "?"
+staged = "+"
+deleted = "x"
+renamed = "r"
+conflicted = "c"
+ahead = "^${count}"
+behind = "v${count}"
+diverged = "^${ahead_count}v${behind_count}"
+
+[nix_shell]
+style = "cyan"
+format = "[$symbol$state( \($name\))]($style) "
+symbol = "nix "
+
+[python]
+style = "yellow"
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = "py "
+
+[nodejs]
+style = "green"
+format = "[$symbol($version )]($style)"
+symbol = "node "
+
+[rust]
+style = "red"
+format = "[$symbol($version )]($style)"
+symbol = "rs "
+
+[cmd_duration]
+style = "yellow"
+format = "[$duration]($style) "
+min_time = 2_000
+
+[line_break]
+disabled = false
