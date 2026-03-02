@@ -20,6 +20,15 @@ let
         --replace-fail "StartupWMClass=zen-beta" "StartupWMClass=zen-beta"
     '';
   };
+
+  # Remove the PEP 668 marker so pip install works outside of venvs
+  mutablePython = pkgs.symlinkJoin {
+    name = "python3-mutable";
+    paths = [ pkgs.python313 ];
+    postBuild = ''
+      rm -f $out/lib/python3.13/EXTERNALLY-MANAGED
+    '';
+  };
 in
 {
   environment.systemPackages = with pkgs; [
@@ -86,7 +95,7 @@ in
     statix
     dotnetCorePackages.runtime_10_0-bin
     uv
-    python313
+    mutablePython
     python313Packages.pip
     python313Packages.venvShellHook
     python313Packages.dbus-python
@@ -118,9 +127,6 @@ in
   environment.sessionVariables.GTK_USE_PORTAL = "1";
   environment.sessionVariables.EDITOR = "nvim";
   environment.sessionVariables.VISUAL = "nvim";
-  environment.sessionVariables.PIP_TARGET = "$HOME/.local/lib/python";
-  environment.sessionVariables.PYTHONPATH = "$HOME/.local/lib/python:$PYTHONPATH";
-
   programs.firefox.enable = true;
 
   programs.nh = {
