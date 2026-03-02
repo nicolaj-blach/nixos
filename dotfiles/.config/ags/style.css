@@ -127,7 +127,7 @@ window.Bar > box {
 
 /* Volume */
 .volume-icon {
-  color: @bar_accent2;
+  color: @bar_cyan;
   font-size: 15px;
 }
 
@@ -147,7 +147,7 @@ window.Bar > box {
 
 /* Wifi */
 .wifi-icon {
-  color: @bar_cyan;
+  color: @bar_accent2;
   font-size: 15px;
 }
 
