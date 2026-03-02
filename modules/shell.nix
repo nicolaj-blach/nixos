@@ -22,6 +22,10 @@
       ];
     };
 
+    promptInit = ''
+      eval "$(starship init zsh)"
+    '';
+
     loginShellInit = ''
       if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
         exec hyprland
@@ -33,7 +37,6 @@
       VI_MODE_SET_CURSOR=true
       KEYTIMEOUT=1
 
-      eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
 
       # Tinty: source shell theme on init and wrap apply/cycle to re-source
