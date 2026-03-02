@@ -1,13 +1,32 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   programs.zsh = {
     enable = true;
+
+    ohMyZsh = {
+      enable = true;
+      theme = "agnoster";
+      plugins = [
+        "git"
+        "sudo"
+        "history-substring-search"
+        "colored-man-pages"
+        "extract"
+        "command-not-found"
+      ];
+      customPkgs = with pkgs; [
+        zsh-autosuggestions
+        zsh-syntax-highlighting
+      ];
+    };
+
     loginShellInit = ''
       if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
         exec hyprland
       fi
     '';
+
     interactiveShellInit = ''
       eval "$(zoxide init zsh)"
 

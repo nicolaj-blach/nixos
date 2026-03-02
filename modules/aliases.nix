@@ -25,16 +25,7 @@
     ff = "fzf --preview 'bat --style=numbers --color=always {}'";
     ffind = "fd --type f | fzf";
 
-    # Git
-    gs = "git status";
-    ga = "git add";
-    gc = "git commit";
-    gp = "git push";
-    gl = "git pull";
-    gd = "git diff";
-    gco = "git checkout";
-    gb = "git branch";
-    gss = "git status -s";
+    # Git (most aliases provided by oh-my-zsh git plugin)
     lg = "lazygit";
 
     # System
