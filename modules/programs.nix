@@ -118,6 +118,8 @@ in
   environment.sessionVariables.GTK_USE_PORTAL = "1";
   environment.sessionVariables.EDITOR = "nvim";
   environment.sessionVariables.VISUAL = "nvim";
+  environment.sessionVariables.PIP_TARGET = "$HOME/.local/lib/python";
+  environment.sessionVariables.PYTHONPATH = "$HOME/.local/lib/python:$PYTHONPATH";
 
   programs.firefox.enable = true;
 
