@@ -137,6 +137,7 @@
         "elephant": "elephant",
         "nixpkgs": "nixpkgs_2",
         "walker": "walker",
+        "wlctl": "wlctl",
         "zen-browser": "zen-browser"
       }
     },
@@ -189,6 +190,26 @@
       "original": {
         "owner": "abenz1267",
         "repo": "walker",
+        "type": "github"
+      }
+    },
+    "wlctl": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771198963,
+        "narHash": "sha256-omeRIERhax7lmBYcjKm2Vp32yTKvnkOEAgMhRL4/uUY=",
+        "owner": "aashish-thapa",
+        "repo": "wlctl",
+        "rev": "29ce9d077c7df5e239230dc6f8da18c88590d364",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aashish-thapa",
+        "repo": "wlctl",
         "type": "github"
       }
     },

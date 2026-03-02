@@ -76,6 +76,7 @@ in
     ticker
     opencode
     jiratui
+    inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Dev tools
     cargo
