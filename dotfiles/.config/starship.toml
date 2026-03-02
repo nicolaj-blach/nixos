@@ -18,8 +18,6 @@ $character"""
 success_symbol = "[ >](bold green)"
 error_symbol = "[ >](bold red)"
 vimcmd_symbol = ' [\[N\] >](bold purple)'
-vimcmd_replace_one_symbol = ' [\[R\] >](bold red)'
-vimcmd_replace_symbol = ' [\[R\] >](bold red)'
 
 [directory]
 style = "bold blue"

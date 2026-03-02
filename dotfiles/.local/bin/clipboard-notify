@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Watch clipboard for changes and send a brief mako notification
+
+exec wl-paste --watch notify-send \
+  --urgency=low \
+  --expire-time=750 \
+  --app-name=clipboard \
+  "Copied to clipboard"

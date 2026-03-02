@@ -50,6 +50,7 @@
 
 confirm-close-surface = false
 resize-overlay = never
+app-notifications = false
 
 # Tinty-managed color scheme (generated file, not in git)
 keybind = ctrl+enter=unbind
