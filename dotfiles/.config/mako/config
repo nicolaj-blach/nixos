@@ -21,7 +21,7 @@ border-color=#3e4452
 progress-color=over #61afef
 
 # Format
-format=<b>%s</b>\n<span size="1pt"> </span>\n%b
+format=<b>%s</b>\n<span size="small" color="#3e4452">────────────────────────────────</span>\n%b
 
 # Behavior
 default-timeout=5000
