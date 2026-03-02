@@ -101,6 +101,8 @@ in
     python313Packages.dbus-python
     python313Packages.into-dbus-python
     python313Packages.dbus-python-client-gen
+    ags
+
     # Clipboard
     wl-clipboard
 
