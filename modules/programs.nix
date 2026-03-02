@@ -75,6 +75,7 @@ in
     lazydocker
     ticker
     opencode
+    jiratui
 
     # Dev tools
     cargo
