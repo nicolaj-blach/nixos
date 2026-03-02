@@ -55,10 +55,15 @@ export default function Battery() {
     },
   )
 
+  const chargingMargin = createPoll(init.charging ? 6 : 0, 5000, () => {
+    const { charging } = readBattery()
+    return charging ? 6 : 0
+  })
+
   return (
     <box class={chargingClass} spacing={4}>
       <label class="battery-icon" label={icon} />
-      <label class="battery-text" label={text} />
+      <label class="battery-text" label={text} marginStart={chargingMargin} />
     </box>
   )
 }
