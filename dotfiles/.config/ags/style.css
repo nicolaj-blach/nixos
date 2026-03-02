@@ -6,6 +6,8 @@
 @define-color bar_accent2 #c678dd;
 @define-color bar_muted #565c64;
 @define-color bar_red #e06c75;
+@define-color bar_green #98c379;
+@define-color bar_cyan #56b6c2;
 
 window.Bar {
   background-color: transparent;
@@ -86,8 +88,16 @@ window.Bar > box {
 }
 
 .battery-icon {
-  color: @bar_accent;
+  color: @bar_green;
   font-size: 15px;
+}
+
+.battery.low .battery-icon {
+  color: @bar_red;
+}
+
+.battery.low .battery-text {
+  color: @bar_red;
 }
 
 .battery-text {
@@ -137,7 +147,7 @@ window.Bar > box {
 
 /* Wifi */
 .wifi-icon {
-  color: @bar_accent;
+  color: @bar_cyan;
   font-size: 15px;
 }
 

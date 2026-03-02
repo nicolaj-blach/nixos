@@ -8,9 +8,11 @@
 #   base02 = selection         -> borders, separator, muted elements
 #   base03 = comments          -> date, prompt label, status line
 #   base05 = foreground        -> time, main text
-#   base08 = red               -> error text, password dots
-#   base0D = blue/accent       -> active border primary
-#   base0E = purple/accent     -> active border secondary, title
+#   base08 = red               -> error text, password dots, low battery
+#   base0B = green             -> battery icon
+#   base0C = cyan              -> wifi icon
+#   base0D = blue/accent       -> active border primary, bluetooth icon
+#   base0E = purple/accent     -> active border secondary, title, volume icon
 
 B00="${TINTY_SCHEME_PALETTE_BASE00_HEX_R}${TINTY_SCHEME_PALETTE_BASE00_HEX_G}${TINTY_SCHEME_PALETTE_BASE00_HEX_B}"
 B01="${TINTY_SCHEME_PALETTE_BASE01_HEX_R}${TINTY_SCHEME_PALETTE_BASE01_HEX_G}${TINTY_SCHEME_PALETTE_BASE01_HEX_B}"
@@ -18,6 +20,8 @@ B02="${TINTY_SCHEME_PALETTE_BASE02_HEX_R}${TINTY_SCHEME_PALETTE_BASE02_HEX_G}${T
 B03="${TINTY_SCHEME_PALETTE_BASE03_HEX_R}${TINTY_SCHEME_PALETTE_BASE03_HEX_G}${TINTY_SCHEME_PALETTE_BASE03_HEX_B}"
 B05="${TINTY_SCHEME_PALETTE_BASE05_HEX_R}${TINTY_SCHEME_PALETTE_BASE05_HEX_G}${TINTY_SCHEME_PALETTE_BASE05_HEX_B}"
 B08="${TINTY_SCHEME_PALETTE_BASE08_HEX_R}${TINTY_SCHEME_PALETTE_BASE08_HEX_G}${TINTY_SCHEME_PALETTE_BASE08_HEX_B}"
+B0B="${TINTY_SCHEME_PALETTE_BASE0B_HEX_R}${TINTY_SCHEME_PALETTE_BASE0B_HEX_G}${TINTY_SCHEME_PALETTE_BASE0B_HEX_B}"
+B0C="${TINTY_SCHEME_PALETTE_BASE0C_HEX_R}${TINTY_SCHEME_PALETTE_BASE0C_HEX_G}${TINTY_SCHEME_PALETTE_BASE0C_HEX_B}"
 B0D="${TINTY_SCHEME_PALETTE_BASE0D_HEX_R}${TINTY_SCHEME_PALETTE_BASE0D_HEX_G}${TINTY_SCHEME_PALETTE_BASE0D_HEX_B}"
 B0E="${TINTY_SCHEME_PALETTE_BASE0E_HEX_R}${TINTY_SCHEME_PALETTE_BASE0E_HEX_G}${TINTY_SCHEME_PALETTE_BASE0E_HEX_B}"
 
@@ -203,6 +207,8 @@ cat > "$AGS_COLORS" << EOF
 @define-color bar_accent2 #${B0E};
 @define-color bar_muted #${B03};
 @define-color bar_red #${B08};
+@define-color bar_green #${B0B};
+@define-color bar_cyan #${B0C};
 EOF
 
 # --- Mako config ---

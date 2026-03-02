@@ -47,11 +47,13 @@ export default function Battery() {
   })
 
   const chargingClass = createPoll(
-    init.charging ? "battery charging" : "battery",
+    init.charging ? "battery charging" : init.percentage <= 20 ? "battery low" : "battery",
     5000,
     () => {
-      const { charging } = readBattery()
-      return charging ? "battery charging" : "battery"
+      const { percentage, charging } = readBattery()
+      if (charging) return "battery charging"
+      if (percentage <= 20) return "battery low"
+      return "battery"
     },
   )
 
