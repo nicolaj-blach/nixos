@@ -95,7 +95,7 @@ in
     statix
     dotnetCorePackages.runtime_10_0-bin
     uv
-    mutablePython
+    python313
     python313Packages.pip
     python313Packages.venvShellHook
     python313Packages.dbus-python
