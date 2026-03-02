@@ -44,6 +44,7 @@ in
     unzip
     tree
     tinty
+    speedtest-cli
 
     # Editors
     vim
