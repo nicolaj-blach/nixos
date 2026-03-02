@@ -71,6 +71,7 @@ in
 
     # Desktop
     swww
+    mako
     imagemagick
     chafa
     brightnessctl

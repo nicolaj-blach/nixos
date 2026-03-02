@@ -1,22 +1,32 @@
 import AstalHyprland from "gi://AstalHyprland"
-import { createBinding, createComputed } from "ags"
+import { createBinding, createState, createComputed } from "ags"
+
+function getOccupiedIds(hyprland: AstalHyprland.Hyprland): Set<number> {
+  const ids = new Set<number>()
+  for (const c of hyprland.get_clients()) {
+    const wsId = c.get_workspace()?.id
+    if (wsId != null) ids.add(wsId)
+  }
+  return ids
+}
 
 export default function Workspaces() {
   const hyprland = AstalHyprland.get_default()
   const focused = createBinding(hyprland, "focusedWorkspace")
-  const clients = createBinding(hyprland, "clients")
+  const [occupied, setOccupied] = createState(getOccupiedIds(hyprland))
+
+  const refresh = () => setOccupied(getOccupiedIds(hyprland))
+  hyprland.connect("client-added", refresh)
+  hyprland.connect("client-removed", refresh)
+  hyprland.connect("client-moved", refresh)
 
   return (
     <box class="workspaces">
       {Array.from({ length: 10 }, (_, i) => i + 1).map((id) => {
         const cls = createComputed(() => {
           const fw = focused()
-          const cl = clients()
           if (fw?.id === id) return "workspace active"
-          const occupied = cl.some(
-            (c: AstalHyprland.Client) => c.get_workspace()?.id === id,
-          )
-          if (occupied) return "workspace occupied"
+          if (occupied().has(id)) return "workspace occupied"
           return "workspace"
         })
 
