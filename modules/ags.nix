@@ -41,9 +41,13 @@ let
       )
     '';
   };
+  typelibPath = pkgs.lib.concatMapStringsSep ":" (lib: "${lib}/lib/girepository-1.0") astalLibs;
 in
 {
   services.upower.enable = true;
+
+  environment.sessionVariables.GI_TYPELIB_PATH = typelibPath;
+
   environment.systemPackages = [
     topBar
     agsPackage
