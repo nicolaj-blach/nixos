@@ -1,7 +1,7 @@
 # Starship prompt - uses ANSI colors to follow base16/tinty system theme
 
 format = """
-$directory\
+ $directory\
 $git_branch\
 $git_status\
 $nix_shell\
@@ -9,12 +9,18 @@ $python\
 $nodejs\
 $rust\
 $cmd_duration\
+$fill\
+$time\
 $line_break\
 $character"""
 
 [character]
-success_symbol = "[>](bold green)"
-error_symbol = "[>](bold red)"
+success_symbol = ' [\[I\] >](bold green)'
+error_symbol = ' [\[I\] >](bold red)'
+vimcmd_symbol = ' [\[N\] >](bold purple)'
+vimcmd_replace_one_symbol = ' [\[R\] >](bold red)'
+vimcmd_replace_symbol = ' [\[R\] >](bold red)'
+vimcmd_visual_symbol = ' [\[V\] >](bold yellow)'
 
 [directory]
 style = "bold blue"
@@ -44,12 +50,12 @@ diverged = "^${ahead_count}v${behind_count}"
 
 [nix_shell]
 style = "cyan"
-format = "[$symbol$state( \($name\))]($style) "
+format = '[$symbol$state( ($name))]($style) '
 symbol = "nix "
 
 [python]
 style = "yellow"
-format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+format = '[${symbol}${pyenv_prefix}(${version} )(($virtualenv) )]($style)'
 symbol = "py "
 
 [nodejs]
@@ -66,6 +72,15 @@ symbol = "rs "
 style = "yellow"
 format = "[$duration]($style) "
 min_time = 2_000
+
+[fill]
+symbol = " "
+
+[time]
+disabled = false
+style = "white"
+format = '[\[$time\]]($style)'
+time_format = "%H:%M"
 
 [line_break]
 disabled = false

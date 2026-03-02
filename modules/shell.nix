@@ -10,6 +10,7 @@
       plugins = [
         "git"
         "sudo"
+        "vi-mode"
         "history-substring-search"
         "colored-man-pages"
         "extract"
@@ -28,6 +29,10 @@
     '';
 
     interactiveShellInit = ''
+      # Vi mode config (set before oh-my-zsh loads vi-mode plugin)
+      VI_MODE_SET_CURSOR=true
+      KEYTIMEOUT=1
+
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
 
