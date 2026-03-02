@@ -34,6 +34,8 @@ window.Bar > box {
   min-height: 0;
   color: @bar_muted;
   background-color: transparent;
+  background-image: none;
+  box-shadow: none;
   border: none;
 }
 
