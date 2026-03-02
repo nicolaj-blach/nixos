@@ -89,6 +89,7 @@ in
     python313
     python313Packages.pip
     python313Packages.venvShellHook
+    python313Packages.dbus-python
 
     # Clipboard
     wl-clipboard
