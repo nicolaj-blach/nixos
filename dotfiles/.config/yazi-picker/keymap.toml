@@ -1,0 +1,13 @@
+# Picker-mode keymap for yazi-picker script.
+#
+# With --chooser-file, yazi's 'open' action writes the hovered/selected path
+# to the chooser file and immediately exits. This happens for both files AND
+# directories — so Enter always "picks" whatever is hovered.
+#
+# Navigation:
+#   l / Right  → enter directory (default yazi behavior, unchanged)
+#   h / Left   → go to parent directory (default yazi behavior, unchanged)
+#
+# Picking:
+#   Enter      → pick hovered item (open writes to chooser-file + exits)
+#   q          → quit without picking (cwd-file written, script opens terminal)
