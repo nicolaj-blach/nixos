@@ -44,6 +44,10 @@ window.Bar > box {
   background-color: alpha(@bar_border, 0.5);
 }
 
+.workspace.occupied {
+  color: @bar_accent2;
+}
+
 .workspace.active {
   color: @bar_accent;
   border-bottom: 2px solid @bar_accent;
