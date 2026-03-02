@@ -1,6 +1,6 @@
 import AstalWp from "gi://AstalWp"
+import GLib from "gi://GLib"
 import { createBinding } from "ags"
-import { execAsync } from "ags/process"
 
 // Nerd Font volume icons
 function volumeIcon(volume: number, muted: boolean): string {
@@ -24,7 +24,7 @@ export default function Volume() {
   const text = vol((v) => `${Math.round(v * 100)}%`)
 
   return (
-    <button class="volume" onClicked={() => execAsync("tui-audio")}>
+    <button class="volume" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-audio`)}>
       <box spacing={4}>
         <label class="volume-icon" label={icon} />
         <label class="volume-text" label={text} />

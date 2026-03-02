@@ -1,6 +1,6 @@
 import AstalBluetooth from "gi://AstalBluetooth"
+import GLib from "gi://GLib"
 import { createBinding } from "ags"
-import { execAsync } from "ags/process"
 
 // Nerd Font bluetooth icons
 function bluetoothIcon(powered: boolean, connected: boolean): string {
@@ -19,7 +19,7 @@ export default function Bluetooth() {
   const cls = powered((p) => (p ? "bluetooth" : "bluetooth off"))
 
   return (
-    <button class={cls} onClicked={() => execAsync("tui-bluetooth")}>
+    <button class={cls} onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-bluetooth`)}>
       <label class="bluetooth-icon" label={icon} />
     </button>
   )

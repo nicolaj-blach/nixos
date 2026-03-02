@@ -1,6 +1,6 @@
 import AstalNetwork from "gi://AstalNetwork"
+import GLib from "gi://GLib"
 import { createBinding, With } from "ags"
-import { execAsync } from "ags/process"
 
 // Nerd Font wifi icons mapped to signal strength
 function wifiIcon(strength: number): string {
@@ -20,7 +20,7 @@ export default function Wifi() {
   const wifi = createBinding(network, "wifi")
 
   return (
-    <button class="wifi" onClicked={() => execAsync("tui-wifi")}>
+    <button class="wifi" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
       <With value={wifi}>
         {(w) => {
           if (!w) return <label class="wifi-icon" label={disconnectedIcon()} />
