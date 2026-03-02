@@ -90,7 +90,8 @@ in
     python313Packages.pip
     python313Packages.venvShellHook
     python313Packages.dbus-python
-
+    python313Packages.into-dbus-python
+    python313Packages.dbus-python-client-gen
     # Clipboard
     wl-clipboard
 
