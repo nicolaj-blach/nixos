@@ -3,7 +3,7 @@
 {
   programs.zsh.shellAliases = {
     # Nix
-    nixu = "sudo nix flake update /home/${username}/nixos";
+    nixu = "sudo nix flake update --flake path:/home/${username}/nixos";
     nhs = "nh search";
     nixb = "nh os build ~/nixos -- --impure";
     stowd = "stow -d ~/nixos -t ~ dotfiles";
