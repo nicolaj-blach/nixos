@@ -119,6 +119,11 @@ in
     # Image viewer
     imv
 
+    # Email
+    protonmail-bridge
+    protonmail-desktop
+    aerc
+
     # Apps
     inkscape
     vesktop
