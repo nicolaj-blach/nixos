@@ -123,8 +123,12 @@ in
     protonmail-bridge
     (protonmail-desktop.overrideAttrs (old: {
       postInstall = (old.postInstall or "") + ''
-        substituteInPlace $out/share/applications/proton-mail.desktop \
-          --replace "Exec=proton-mail" "Exec=$out/bin/proton-mail"
+        rm $out/share/proton-mail/proton-mail.desktop || true
+        cp $out/share/applications/proton-mail.desktop $out/share/proton-mail/proton-mail.desktop
+      '';
+      postFixup = (old.postFixup or "") + ''
+        wrapProgram $out/bin/proton-mail \
+          --add-flags "--ozone-platform=x11"
       '';
     }))
     aerc
