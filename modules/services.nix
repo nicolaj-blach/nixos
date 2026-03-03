@@ -1,7 +1,12 @@
-{ username, ... }:
+{ pkgs, username, ... }:
 
 {
-  services.getty.autologinUser = username;
+  # Autologin only on tty1; other TTYs require a password login.
+  systemd.services."getty@tty1".overrideStrategy = "asDropin";
+  systemd.services."getty@tty1".serviceConfig.ExecStart = [
+    ""
+    "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${pkgs.shadow}/bin/login --autologin ${username} --noclear %I $TERM"
+  ];
 
   services.printing.enable = true;
 
