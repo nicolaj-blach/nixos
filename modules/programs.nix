@@ -122,14 +122,17 @@ in
     # Email
     protonmail-bridge
     (protonmail-desktop.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.asar ];
       postInstall = (old.postInstall or "") + ''
-        rm $out/share/proton-mail/proton-mail.desktop || true
-        cp $out/share/applications/proton-mail.desktop $out/share/proton-mail/proton-mail.desktop
+        substituteInPlace $out/share/applications/proton-mail.desktop \
+          --replace "Exec=proton-mail" "Exec=$out/bin/proton-mail"
+
+        asar extract $out/share/proton-mail/app.asar app-unpacked
+        find app-unpacked -type f -exec sed -i "s|/usr/share/applications|$out/share/applications|g" {} +
+        asar pack app-unpacked $out/share/proton-mail/app.asar
+        rm -rf app-unpacked
       '';
-      postFixup = (old.postFixup or "") + ''
-        wrapProgram $out/bin/proton-mail \
-          --add-flags "--ozone-platform=x11"
-      '';
+      postFixup = "";
     }))
     aerc
 
