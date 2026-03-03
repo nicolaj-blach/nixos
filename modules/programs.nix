@@ -121,7 +121,11 @@ in
 
     # Email
     protonmail-bridge
-    protonmail-desktop
+    (protonmail-desktop.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        ln -s $out/share/applications/proton-mail.desktop $out/share/proton-mail/proton-mail.desktop
+      '';
+    }))
     aerc
 
     # Apps
