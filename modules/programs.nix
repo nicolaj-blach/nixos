@@ -122,6 +122,11 @@ in
     # Email
     protonmail-bridge
     (protonmail-desktop.overrideAttrs (old: {
+      version = "1.10.0";
+      src = pkgs.fetchurl {
+        url = "https://proton.me/download/mail/linux/1.10.0/ProtonMail-desktop-beta.deb";
+        hash = "sha256-rujXz2OvvV61UcGHn/ZWXQK8Y27W2A9z2/nOtuTJ96s=";
+      };
       nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.asar ];
       postInstall = (old.postInstall or "") + ''
         substituteInPlace $out/share/applications/proton-mail.desktop \
