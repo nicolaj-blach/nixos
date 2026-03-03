@@ -14,6 +14,7 @@
     ../../modules/scripts/nixl.nix
     ../../modules/scripts/nixs.nix
     ../../modules/services.nix
+    ../../modules/protonmail-bridge.nix
     ../../modules/hyprland.nix
     ../../modules/desktop.nix
     ../../modules/ags.nix
