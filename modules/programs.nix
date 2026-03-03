@@ -123,7 +123,8 @@ in
     protonmail-bridge
     (protonmail-desktop.overrideAttrs (old: {
       postInstall = (old.postInstall or "") + ''
-        ln -s $out/share/applications/proton-mail.desktop $out/share/proton-mail/proton-mail.desktop
+        rm $out/share/proton-mail/proton-mail.desktop || true
+        cp $out/share/applications/proton-mail.desktop $out/share/proton-mail/proton-mail.desktop
       '';
     }))
     aerc
