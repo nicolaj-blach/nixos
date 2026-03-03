@@ -8,6 +8,7 @@
 @define-color bar_red #e06c75;
 @define-color bar_green #98c379;
 @define-color bar_cyan #56b6c2;
+@define-color bar_orange #d19a66;
 
 window.Bar {
   background-color: transparent;
@@ -127,7 +128,7 @@ window.Bar > box {
 
 /* Volume */
 .volume-icon {
-  color: @bar_accent2;
+  color: @bar_orange;
   font-size: 15px;
 }
 

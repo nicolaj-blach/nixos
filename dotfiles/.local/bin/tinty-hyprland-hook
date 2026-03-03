@@ -209,6 +209,7 @@ cat > "$AGS_COLORS" << EOF
 @define-color bar_red #${B08};
 @define-color bar_green #${B0B};
 @define-color bar_cyan #${B0C};
+@define-color bar_orange #${B09};
 EOF
 
 # --- Mako config ---
