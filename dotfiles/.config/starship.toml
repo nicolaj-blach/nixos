@@ -75,7 +75,7 @@ symbol = " "
 
 [time]
 disabled = false
-style = "white"
+style = "dimmed white"
 format = '[\[$time\]]($style)'
 time_format = "%H:%M"
 

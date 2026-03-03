@@ -239,8 +239,6 @@ text-color=#${B05}
 border-color=#${B02}
 progress-color=over #${B0D}
 
-# Format
-format=<b>%s</b>\n<span size="small" color="#${B02}">────────────────────────────────</span>\n%b
 
 # Behavior
 default-timeout=5000
