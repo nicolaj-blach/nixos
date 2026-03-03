@@ -24,6 +24,28 @@
 
     promptInit = ''
       eval "$(starship init zsh)"
+
+      # Reset to insert mode on every new prompt
+      __reset_vi_mode() { zle vi-insert 2>/dev/null; }
+      if [[ -z "''${widgets[zle-line-init]+x}" ]]; then
+        zle -N zle-line-init __reset_vi_mode
+      else
+        __orig_line_init="''${widgets[zle-line-init]#user:}"
+        function zle-line-init() {
+          "''${__orig_line_init}" 2>/dev/null
+          zle vi-insert 2>/dev/null
+        }
+        zle -N zle-line-init
+      fi
+
+      # Transient prompt: redraw current prompt without vi indicator on Enter
+      function zle-line-finish() {
+        __saved_prompt="$PROMPT"
+        PROMPT=$' \e[1;32m>\e[0m '
+        zle reset-prompt
+        PROMPT="$__saved_prompt"
+      }
+      zle -N zle-line-finish
     '';
 
     loginShellInit = ''
