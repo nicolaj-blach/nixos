@@ -127,7 +127,7 @@ window.Bar > box {
 
 /* Volume */
 .volume-icon {
-  color: @bar_cyan;
+  color: @bar_accent2;
   font-size: 15px;
 }
 
