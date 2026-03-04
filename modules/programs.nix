@@ -121,25 +121,8 @@ in
 
     # Email
     protonmail-bridge
-    (protonmail-desktop.overrideAttrs (old: {
-      version = "1.10.0";
-      src = pkgs.fetchurl {
-        url = "https://proton.me/download/mail/linux/1.10.0/ProtonMail-desktop-beta.deb";
-        hash = "sha256-rujXz2OvvV61UcGHn/ZWXQK8Y27W2A9z2/nOtuTJ96s=";
-      };
-      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.asar ];
-      postInstall = (old.postInstall or "") + ''
-        substituteInPlace $out/share/applications/proton-mail.desktop \
-          --replace "Exec=proton-mail" "Exec=$out/bin/proton-mail"
-
-        asar extract $out/share/proton-mail/app.asar app-unpacked
-        find app-unpacked -type f -exec sed -i "s|/usr/share/applications|$out/share/applications|g" {} +
-        asar pack app-unpacked $out/share/proton-mail/app.asar
-        rm -rf app-unpacked
-      '';
-      postFixup = "";
-    }))
     aerc
+    chromium
 
     # Apps
     inkscape
