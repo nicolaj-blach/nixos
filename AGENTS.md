@@ -17,16 +17,17 @@ statix check .                   # nix linter
 There is no test suite. A successful `nh os switch` is the test.
 **Use `nixb` to verify the configuration builds before committing.**
 
-## Aliases (defined in modules/aliases.nix)
+## Aliases (defined in dotfiles/.config/zsh/aliases.zsh)
 
 | Alias   | Expands to                                            |
 |---------|-------------------------------------------------------|
-| `nixr`  | function: commit + `nh os switch` + push              |
+| `nixr`  | script: commit + `nh os switch` + push                |
 | `nixb`  | `nh os build ~/nixos -- --impure`                     |
 | `nixu`  | `sudo nix flake update ~/nixos`                       |
-| `nixl`  | `nixos-rebuild list-generations`                      |
+| `nixl`  | script: pretty-print NixOS generations                |
+| `nixs`  | script: fzf-based generation switcher                 |
 | `nhs`   | `nh search`                                           |
-| `stowd` | `stow -t ~ ~/nixos/dotfiles`                          |
+| `stowd` | `stow -d ~/nixos -t ~ dotfiles`                       |
 | `ls`    | `eza -lh --group-directories-first --icons=auto`      |
 | `lsa`   | `ls -a`                                               |
 | `la`    | `ls -lah`                                             |
@@ -45,6 +46,9 @@ There is no test suite. A successful `nh os switch` is the test.
 ## Architecture
 
 - **No home-manager.** Dotfiles live in `dotfiles/` and are symlinked via `stow`.
+- **Golden rule:** NixOS modules provision the machine (hardware, services, installing
+  binaries). Dotfiles personalize the software (preferences, themes, app behavior).
+  Shell config (`~/.zshrc`, aliases, scripts) lives in dotfiles, not in Nix modules.
 - **Username** is centralized in `flake.nix` via `specialArgs`. Never hardcode it.
 - **Hostname** is set per-host in `hosts/<name>/default.nix`, not in shared modules.
 - **External flake modules** are imported at the host level, not inside shared modules.
@@ -83,7 +87,7 @@ System-wide colors are managed by **Tinty** (tinted-theming). The active scheme 
 - Config: `dotfiles/.config/tinted-theming/tinty/config.toml`
 - `tinty apply <scheme>` applies a base16 scheme to all configured apps at once.
 - `tinty init` reapplies the last-used scheme (runs on shell init and Hyprland autostart).
-- Shell integration in `modules/shell.nix` wraps `tinty` so that `apply`/`init`/`cycle`
+- Shell integration in `dotfiles/.zshrc` wraps `tinty` so that `apply`/`init`/`cycle`
   automatically re-source shell-based themes (ANSI colors, fzf).
 
 ### Themed apps

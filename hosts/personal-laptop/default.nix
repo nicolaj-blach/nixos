@@ -9,10 +9,6 @@
     ../../modules/user.nix
     ../../modules/programs.nix
     ../../modules/shell.nix
-    ../../modules/aliases.nix
-    ../../modules/scripts/nixr.nix
-    ../../modules/scripts/nixl.nix
-    ../../modules/scripts/nixs.nix
     ../../modules/services.nix
     ../../modules/protonmail-bridge.nix
     ../../modules/hyprland.nix

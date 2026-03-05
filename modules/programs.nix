@@ -80,6 +80,9 @@ in
       # Terminal
       ghostty
       zsh
+      oh-my-zsh
+      zsh-autosuggestions
+      zsh-syntax-highlighting
 
       # Desktop
       swww
@@ -143,11 +146,8 @@ in
       zen-browser
     ];
     sessionVariables = {
-
       NIXOS_OZONE_WL = "1";
       GTK_USE_PORTAL = "1";
-      EDITOR = "nvim";
-      VISUAL = "nvim";
     };
   };
 }

@@ -52,7 +52,7 @@ if [ -n "$chosen" ]; then
     else
       hyprctl dispatch exec "[silent] xdg-open '$selected'"
     fi
-  done <<< "$chosen"
+  done <<<"$chosen"
 elif [ -d "$cwd" ]; then
   hyprctl dispatch exec "[silent] ghostty --working-directory='$cwd'"
 fi
