@@ -4,3 +4,4 @@ text/html=zen.desktop
 x-scheme-handler/http=zen.desktop
 x-scheme-handler/https=zen.desktop
 text/plain=nvim.desktop
+x-scheme-handler/discord=vesktop.desktop

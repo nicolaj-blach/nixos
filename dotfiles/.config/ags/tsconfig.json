@@ -1,16 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ES2023",
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "ags/gtk4",
-    "strict": true,
-    "skipLibCheck": true,
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "paths": {
-      "ags": ["./types/ags"],
-      "ags/*": ["./types/ags/*"]
-    }
+      "ags": [
+        "./types/ags"
+      ],
+      "ags/*": [
+        "./types/ags/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020"
   },
-  "include": ["./**/*.tsx", "./**/*.ts", "./env.d.ts"]
+  "include": [
+    "./**/*.tsx",
+    "./**/*.ts",
+    "./env.d.ts"
+  ]
 }

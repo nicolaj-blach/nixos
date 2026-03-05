@@ -25,10 +25,42 @@ themes-dir = "sh"
 hook = "source \"$TINTY_THEME_FILE_PATH\""
 supported-systems = ["base16", "base24"]
 
-# Hyprland (custom hook)
+# Hyprland colors.conf
 [[items]]
 path = "https://github.com/tinted-theming/tinted-shell"
 name = "tinted-hyprland"
 themes-dir = "scripts"
 hook = "~/.local/bin/tinty-hyprland-hook"
+supported-systems = ["base16"]
+
+# hyprlock colors
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-hyprlock"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-hyprlock-hook"
+supported-systems = ["base16"]
+
+# AGS bar colors
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-ags"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-ags-hook"
+supported-systems = ["base16"]
+
+# Mako notification colors
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-mako"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-mako-hook"
+supported-systems = ["base16"]
+
+# Walker launcher theme
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-walker"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-walker-hook"
 supported-systems = ["base16"]

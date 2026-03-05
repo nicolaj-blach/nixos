@@ -81,3 +81,6 @@ export VISUAL="nvim"
 
 # Aliases
 source "$HOME/.config/zsh/aliases.zsh"
+
+# Local overrides (API keys, secrets -- not tracked in git)
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
