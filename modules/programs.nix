@@ -1,146 +1,153 @@
-{ pkgs, inputs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 
 let
-  zen-browser = let
-    zenBeta = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
-  in pkgs.symlinkJoin {
-    name = "zen";
-    paths = [ zenBeta ];
-    postBuild = ''
-      # Replace the zen-beta binary symlink with a renamed wrapper
-      rm $out/bin/zen-beta
-      cp ${zenBeta}/bin/zen-beta $out/bin/zen
-      chmod +x $out/bin/zen
+  zen-browser =
+    let
+      zenBeta = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
+    in
+    pkgs.symlinkJoin {
+      name = "zen";
+      paths = [ zenBeta ];
+      postBuild = ''
+        # Replace the zen-beta binary symlink with a renamed wrapper
+        rm $out/bin/zen-beta
+        cp ${zenBeta}/bin/zen-beta $out/bin/zen
+        chmod +x $out/bin/zen
 
-      # Replace the desktop file with corrected names
-      rm $out/share/applications/zen-beta.desktop
-      substitute ${zenBeta}/share/applications/zen-beta.desktop $out/share/applications/zen.desktop \
-        --replace-fail "Name=Zen Browser (Beta)" "Name=Zen Browser" \
-        --replace-fail "Exec=zen-beta" "Exec=zen" \
-        --replace-fail "StartupWMClass=zen-beta" "StartupWMClass=zen-beta"
-    '';
-  };
+        # Replace the desktop file with corrected names
+        rm $out/share/applications/zen-beta.desktop
+        substitute ${zenBeta}/share/applications/zen-beta.desktop $out/share/applications/zen.desktop \
+          --replace-fail "Name=Zen Browser (Beta)" "Name=Zen Browser" \
+          --replace-fail "Exec=zen-beta" "Exec=zen" \
+          --replace-fail "StartupWMClass=zen-beta" "StartupWMClass=zen-beta"
+      '';
+    };
 in
 {
-programs = {
+  programs = {
 
-  nix-ld.enable = true;
-  firefox.enable = true;
+    nix-ld.enable = true;
+    firefox.enable = true;
 
-  nh = {
-    enable = true;
-    clean.enable = true;
-    clean.extraArgs = "--keep-since 7d --keep 5";
-    flake = "/home/${username}/nixos";
+    nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--keep-since 7d --keep 5";
+      flake = "/home/${username}/nixos";
+    };
   };
-};
-environment = {
-  systemPackages = with pkgs; [
-    # Dependencies
-    wget
-    gcc
-    jq
-    libnotify
+  environment = {
+    systemPackages = with pkgs; [
+      # Dependencies
+      wget
+      gcc
+      jq
+      libnotify
 
-    # CLI tools
-    stow
-    eza
-    fzf
-    zoxide
-    bat
-    tldr
-    cowsay
-    fastfetch
-    terminaltexteffects
-    fd
-    ripgrep
-    unzip
-    tree
-    tinty
-    speedtest-cli
-    starship
+      # CLI tools
+      stow
+      eza
+      fzf
+      zoxide
+      bat
+      tldr
+      cowsay
+      fastfetch
+      terminaltexteffects
+      fd
+      ripgrep
+      unzip
+      tree
+      tinty
+      speedtest-cli
+      starship
 
-    # Editors
-    vim
-    neovim
-    vscode
+      # Editors
+      vim
+      neovim
+      vscode
 
-    # Git
-    git
-    gh
-    lazygit
+      # Git
+      git
+      gh
+      lazygit
 
-    # Terminal
-    ghostty
-    zsh
+      # Terminal
+      ghostty
+      zsh
 
-    # Desktop
-    swww
-    mako
-    imagemagick
-    chafa
-    brightnessctl
-    playerctl
+      # Desktop
+      swww
+      mako
+      imagemagick
+      chafa
+      brightnessctl
+      playerctl
 
-    # TUI
-    yazi
-    btop
-    bluez
-    bluetui
-    wiremix
-    lazydocker
-    ticker
-    opencode
-    jiratui
-    inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # TUI
+      yazi
+      btop
+      bluez
+      bluetui
+      wiremix
+      lazydocker
+      ticker
+      opencode
+      jiratui
+      inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-    # Dev tools
-    cargo
-    bun
-    nodejs_24
-    statix
-    dotnetCorePackages.sdk_10_0-bin
-    uv
-    python313
-    python313Packages.pip
-    python313Packages.venvShellHook
-    python313Packages.dbus-python
-    python313Packages.into-dbus-python
-    python313Packages.dbus-python-client-gen
-    ags
-    gnumake
-    nixfmt
+      # Dev tools
+      cargo
+      bun
+      nodejs_24
+      statix
+      dotnetCorePackages.sdk_10_0-bin
+      uv
+      python313
+      python313Packages.pip
+      python313Packages.venvShellHook
+      python313Packages.dbus-python
+      python313Packages.into-dbus-python
+      python313Packages.dbus-python-client-gen
+      ags
+      gnumake
+      nixfmt
 
-    # Clipboard
-    wl-clipboard
+      # Clipboard
+      wl-clipboard
 
-    # Screenshot
-    grim
-    slurp
-    satty
+      # Screenshot
+      grim
+      slurp
+      satty
 
-    # Color picker
-    hyprpicker
+      # Color picker
+      hyprpicker
 
-    # Image viewer
-    imv
+      # Image viewer
+      imv
 
-    # Email
-    protonmail-bridge
-    aerc
-    chromium
+      # Email
+      protonmail-bridge
+      aerc
+      chromium
 
-    # Apps
-    inkscape
-    vesktop
-    zen-browser
-  ];
-  sessionVariables = {
+      # Apps
+      inkscape
+      vesktop
+      zen-browser
+    ];
+    sessionVariables = {
 
-    NIXOS_OZONE_WL = "1";
-    GTK_USE_PORTAL = "1";
-    EDITOR = "nvim";
-    VISUAL = "nvim";
+      NIXOS_OZONE_WL = "1";
+      GTK_USE_PORTAL = "1";
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+    };
   };
-};
 }

@@ -37,37 +37,37 @@
       "text/plain" = "nvim.desktop";
     };
   };
-environment = {
-  # Dark theme for GTK apps (Adwaita-dark)
-  systemPackages = with pkgs; [
-    adwaita-icon-theme
-    gnome-themes-extra
-  ];
+  environment = {
+    # Dark theme for GTK apps (Adwaita-dark)
+    systemPackages = with pkgs; [
+      adwaita-icon-theme
+      gnome-themes-extra
+    ];
 
-  etc."xdg/applications/yazi.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Yazi
-    Comment=Terminal file manager
-    Exec=ghostty -e yazi %u
-    Icon=utilities-file-manager
-    Terminal=false
-    Categories=System;FileManager;
-    MimeType=inode/directory;
-  '';
+    etc."xdg/applications/yazi.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Yazi
+      Comment=Terminal file manager
+      Exec=ghostty -e yazi %u
+      Icon=utilities-file-manager
+      Terminal=false
+      Categories=System;FileManager;
+      MimeType=inode/directory;
+    '';
 
-  etc."xdg/applications/nvim.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Neovim
-    Comment=Terminal text editor
-    Exec=ghostty -e nvim %F
-    Icon=nvim
-    Terminal=false
-    Categories=Utility;TextEditor;
-    MimeType=text/plain;
-  '';
-};
+    etc."xdg/applications/nvim.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Neovim
+      Comment=Terminal text editor
+      Exec=ghostty -e nvim %F
+      Icon=nvim
+      Terminal=false
+      Categories=Utility;TextEditor;
+      MimeType=text/plain;
+    '';
+  };
 
   # Yazi as the file picker portal (used by browsers, etc.)
   xdg.portal = {

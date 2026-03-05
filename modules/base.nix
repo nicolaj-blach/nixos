@@ -10,11 +10,17 @@
 
   time.timeZone = "Europe/Copenhagen";
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  fonts.packages = with lib; with pkgs; [
-    nerd-fonts.jetbrains-mono
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
   ];
+
+  fonts.packages =
+    with lib;
+    with pkgs;
+    [
+      nerd-fonts.jetbrains-mono
+    ];
 
   system.stateVersion = "25.11";
 }

@@ -27,7 +27,11 @@ let
       agsPackage
     ];
 
-    buildInputs = [ pkgs.glib pkgs.gjs ] ++ astalLibs;
+    buildInputs = [
+      pkgs.glib
+      pkgs.gjs
+    ]
+    ++ astalLibs;
 
     installPhase = ''
       mkdir -p $out/bin
@@ -36,10 +40,12 @@ let
 
     preFixup = ''
       gappsWrapperArgs+=(
-        --prefix PATH : ${pkgs.lib.makeBinPath [
-          pkgs.hyprland
-          pkgs.ghostty
-        ]}
+        --prefix PATH : ${
+          pkgs.lib.makeBinPath [
+            pkgs.hyprland
+            pkgs.ghostty
+          ]
+        }
       )
     '';
   };
@@ -53,5 +59,6 @@ in
   environment.systemPackages = [
     topBar
     agsPackage
-  ] ++ astalLibs;
+  ]
+  ++ astalLibs;
 }
