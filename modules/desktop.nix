@@ -1,11 +1,6 @@
 { pkgs, lib, ... }:
 
 {
-  # Dark theme for GTK apps (Adwaita-dark)
-  environment.systemPackages = with pkgs; [
-    adwaita-icon-theme
-    gnome-themes-extra
-  ];
 
   # Tell GTK apps to use dark mode via dconf
   programs.dconf = {
@@ -42,8 +37,14 @@
       "text/plain" = "nvim.desktop";
     };
   };
+environment = {
+  # Dark theme for GTK apps (Adwaita-dark)
+  systemPackages = with pkgs; [
+    adwaita-icon-theme
+    gnome-themes-extra
+  ];
 
-  environment.etc."xdg/applications/yazi.desktop".text = ''
+  etc."xdg/applications/yazi.desktop".text = ''
     [Desktop Entry]
     Type=Application
     Name=Yazi
@@ -55,7 +56,7 @@
     MimeType=inode/directory;
   '';
 
-  environment.etc."xdg/applications/nvim.desktop".text = ''
+  etc."xdg/applications/nvim.desktop".text = ''
     [Desktop Entry]
     Type=Application
     Name=Neovim
@@ -66,6 +67,7 @@
     Categories=Utility;TextEditor;
     MimeType=text/plain;
   '';
+};
 
   # Yazi as the file picker portal (used by browsers, etc.)
   xdg.portal = {

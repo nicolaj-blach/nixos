@@ -7,15 +7,17 @@
     ""
     "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${pkgs.shadow}/bin/login --autologin ${username} --noclear %I $TERM"
   ];
+  services = {
 
-  services.printing.enable = true;
+    printing.enable = true;
 
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
+    pipewire = {
+      enable = true;
+      pulse.enable = true;
+    };
+
+    libinput.enable = true;
   };
-
-  services.libinput.enable = true;
 
   hardware.bluetooth = {
     enable = true;

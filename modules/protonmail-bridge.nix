@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, ... }:
 
 {
   # Run protonmail-bridge as a headless systemd service for the user.

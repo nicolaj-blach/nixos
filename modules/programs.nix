@@ -109,6 +109,7 @@ environment = {
     python313Packages.dbus-python-client-gen
     ags
     gnumake
+    nixfmt
 
     # Clipboard
     wl-clipboard
