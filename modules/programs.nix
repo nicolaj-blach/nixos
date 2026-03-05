@@ -20,18 +20,22 @@ let
         --replace-fail "StartupWMClass=zen-beta" "StartupWMClass=zen-beta"
     '';
   };
-
-  # Remove the PEP 668 marker so pip install works outside of venvs
-  mutablePython = pkgs.symlinkJoin {
-    name = "python3-mutable";
-    paths = [ pkgs.python313 ];
-    postBuild = ''
-      rm -f $out/lib/python3.13/EXTERNALLY-MANAGED
-    '';
-  };
 in
 {
-  environment.systemPackages = with pkgs; [
+programs = {
+
+  nix-ld.enable = true;
+  firefox.enable = true;
+
+  nh = {
+    enable = true;
+    clean.enable = true;
+    clean.extraArgs = "--keep-since 7d --keep 5";
+    flake = "/home/${username}/nixos";
+  };
+};
+environment = {
+  systemPackages = with pkgs; [
     # Dependencies
     wget
     gcc
@@ -95,7 +99,7 @@ in
     bun
     nodejs_24
     statix
-    dotnetCorePackages.runtime_10_0-bin
+    dotnetCorePackages.sdk_10_0-bin
     uv
     python313
     python313Packages.pip
@@ -104,6 +108,7 @@ in
     python313Packages.into-dbus-python
     python313Packages.dbus-python-client-gen
     ags
+    gnumake
 
     # Clipboard
     wl-clipboard
@@ -129,19 +134,12 @@ in
     vesktop
     zen-browser
   ];
+  sessionVariables = {
 
-  programs.nix-ld.enable = true;
-
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-  environment.sessionVariables.GTK_USE_PORTAL = "1";
-  environment.sessionVariables.EDITOR = "nvim";
-  environment.sessionVariables.VISUAL = "nvim";
-  programs.firefox.enable = true;
-
-  programs.nh = {
-    enable = true;
-    clean.enable = true;
-    clean.extraArgs = "--keep-since 7d --keep 5";
-    flake = "/home/${username}/nixos";
+    NIXOS_OZONE_WL = "1";
+    GTK_USE_PORTAL = "1";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
   };
+};
 }

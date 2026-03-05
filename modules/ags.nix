@@ -1,8 +1,8 @@
 { pkgs, inputs, ... }:
 
 let
-  astal = inputs.astal;
-  system = pkgs.stdenv.hostPlatform.system;
+  inherit (inputs) astal;
+  inherit (pkgs.stdenv.hostPlatform) system;
   agsPackage = inputs.ags.packages.${system}.default;
 
   astalLibs = with astal.packages.${system}; [
