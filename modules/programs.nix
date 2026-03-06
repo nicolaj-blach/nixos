@@ -48,6 +48,7 @@ in
       gcc
       jq
       libnotify
+      glib
 
       # CLI tools
       stow
