@@ -139,6 +139,8 @@ in
       # Email
       protonmail-bridge
       aerc
+      neomutt
+      gnupg
       chromium
 
       # Apps
