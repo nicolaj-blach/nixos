@@ -2,3 +2,4 @@ result
 .direnv/
 src/ags/@girs/
 src/scripts/node_modules/
+nixos-label.nix

@@ -18,6 +18,10 @@ import { join } from "path";
 const home = Bun.env.HOME!;
 const editor = Bun.env.EDITOR ?? "nvim";
 
+function shellEscape(s: string): string {
+  return "'" + s.replace(/'/g, "'\\''") + "'";
+}
+
 function tempFile(): string {
   const name = `yazi-picker-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   return join(tmpdir(), name);
@@ -104,12 +108,13 @@ async function main() {
   for (const selected of chosen.split("\n")) {
     if (!selected.trim()) continue;
 
+    const escaped = shellEscape(selected);
     if (existsSync(selected) && statSync(selected).isDirectory()) {
-      await hyprExec(`[silent] ghostty --working-directory='${selected}'`);
+      await hyprExec(`[silent] ghostty --working-directory=${escaped}`);
     } else if (await needsTerminal(selected)) {
-      await hyprExec(`[silent] ghostty -e ${editor} '${selected}'`);
+      await hyprExec(`[silent] ghostty -e ${editor} ${escaped}`);
     } else {
-      await hyprExec(`[silent] xdg-open '${selected}'`);
+      await hyprExec(`[silent] xdg-open ${escaped}`);
     }
   }
 }

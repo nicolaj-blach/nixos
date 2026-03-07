@@ -52,11 +52,13 @@ async function main() {
   // Sanitize message for NixOS label (only [a-zA-Z0-9:_.-] allowed)
   const label = msg.replace(/ /g, "_").replace(/[^a-zA-Z0-9:_.-]/g, "");
 
+  // Write label to a gitignored .nix file so flake.nix can read it without --impure
+  const labelFile = `${nixdir}/nixos-label.nix`;
+  await Bun.write(labelFile, `"${label}"\n`);
+
   // Step 2: try nh os switch
   console.log(`${c.cyan}Building and switching...${c.reset}`);
-  built = await run(["nh", "os", "switch", nixdir, "--", "--impure"], {
-    env: { NIXOS_LABEL: label },
-  });
+  built = await run(["nh", "os", "switch", nixdir]);
 
   if (built) {
     // Step 3: push on success

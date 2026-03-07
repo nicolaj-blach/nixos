@@ -122,6 +122,11 @@ in
       gnumake
       nixfmt
 
+      # Security
+      sbctl
+      tpm2-tss
+      tpm2-tools
+
       # Clipboard
       wl-clipboard
 

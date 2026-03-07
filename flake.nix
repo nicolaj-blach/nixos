@@ -34,6 +34,10 @@
 
   outputs =
     { self, nixpkgs, ... }@inputs:
+    let
+      labelFile = ./nixos-label.nix;
+      label = if builtins.pathExists labelFile then import labelFile else "no_message";
+    in
     {
       nixosConfigurations.personal-laptop = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -52,6 +56,7 @@
           ./hosts/personal-laptop
           {
             system.configurationRevision = self.rev or self.dirtyRev or "unknown";
+            system.nixos.label = label;
           }
         ];
       };

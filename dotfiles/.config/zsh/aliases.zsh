@@ -3,7 +3,7 @@
 # Nix
 alias nixu="sudo nix flake update --flake path:$HOME/nixos"
 alias nhs="nh search"
-alias nixb="nh os build ~/nixos -- --impure"
+alias nixb="nh os build ~/nixos"
 alias stowd="stow -d ~/nixos -t ~ dotfiles"
 
 # Navigation

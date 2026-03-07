@@ -9,8 +9,6 @@
   ];
   services = {
 
-    printing.enable = true;
-
     pipewire = {
       enable = true;
       pulse.enable = true;
