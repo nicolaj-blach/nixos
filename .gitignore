@@ -1,3 +1,4 @@
 result
 .direnv/
-scripts/node_modules/
+src/ags/@girs/
+src/scripts/node_modules/

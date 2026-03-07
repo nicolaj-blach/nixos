@@ -32,18 +32,28 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
-    nixosConfigurations.personal-laptop = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+  outputs =
+    { self, nixpkgs, ... }@inputs:
+    {
+      nixosConfigurations.personal-laptop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-      specialArgs = { inherit inputs; username = "nicolaj-blach"; };
+        specialArgs = {
+          inherit inputs;
+          username = "nicolaj-blach";
+          configModules = {
+            base = ./modules/base;
+            desktop = ./modules/desktop;
+            programs = ./modules/programs;
+          };
+        };
 
-      modules = [
-        ./hosts/personal-laptop
-        {
-          system.configurationRevision = self.rev or self.dirtyRev or "unknown";
-        }
-      ];
+        modules = [
+          ./hosts/personal-laptop
+          {
+            system.configurationRevision = self.rev or self.dirtyRev or "unknown";
+          }
+        ];
+      };
     };
-  };
 }

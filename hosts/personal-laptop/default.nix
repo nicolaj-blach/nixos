@@ -1,19 +1,13 @@
-{ inputs, ... }:
+{ inputs, configModules, ... }:
 
 {
   networking.hostName = "personal-laptop";
 
   imports = [
     ./hardware-configuration.nix
-    ../../modules/base.nix
-    ../../modules/user.nix
-    ../../modules/programs.nix
-    ../../modules/shell.nix
-    ../../modules/services.nix
-    ../../modules/protonmail-bridge.nix
-    ../../modules/hyprland.nix
-    ../../modules/desktop.nix
-    ../../modules/ags.nix
+    configModules.base
+    configModules.desktop
+    configModules.programs
     inputs.walker.nixosModules.default
   ];
 }

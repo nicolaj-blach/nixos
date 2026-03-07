@@ -19,7 +19,7 @@ let
     pname = "top-bar";
     version = "0.1.0";
 
-    src = ../dotfiles/.config/ags;
+    src = ../../src/ags;
 
     nativeBuildInputs = with pkgs; [
       wrapGAppsHook3
