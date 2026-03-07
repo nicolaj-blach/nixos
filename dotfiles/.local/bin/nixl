@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec bun run ~/nixos/scripts/nixl.ts "$@"
+exec bun run ~/nixos/src/scripts/nixl.ts "$@"

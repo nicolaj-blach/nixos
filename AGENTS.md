@@ -53,6 +53,64 @@ There is no test suite. A successful `nh os switch` is the test.
 - **Hostname** is set per-host in `hosts/<name>/default.nix`, not in shared modules.
 - **External flake modules** are imported at the host level, not inside shared modules.
 
+### Repository layout
+
+```
+nixos/
+├── flake.nix
+├── hosts/
+│   └── <hostname>/
+│       ├── default.nix                 # host-specific config + imports
+│       └── hardware-configuration.nix  # auto-generated hardware config
+├── modules/
+│   ├── base/       # system fundamentals (boot, networking, user, shell, services)
+│   ├── desktop/    # Wayland compositor, theming, portals, AGS status bar
+│   └── programs/   # packages, app-specific services (protonmail-bridge)
+├── src/
+│   ├── ags/        # AGS bar source (TypeScript/TSX, built into a Nix derivation)
+│   └── scripts/    # Bun TypeScript scripts (nixr, nixl, nixs, yazi-picker)
+└── dotfiles/       # GNU Stow tree (mirrors $HOME)
+```
+
+### Module organization
+
+Shared NixOS modules live under `modules/` in three categories. Each category has a
+`default.nix` that re-exports all modules in that folder, so hosts only import the
+folder:
+
+| Folder | Purpose | Modules |
+|--------|---------|---------|
+| `modules/base/` | System fundamentals | `base.nix`, `user.nix`, `shell.nix`, `services.nix` |
+| `modules/desktop/` | Wayland desktop | `hyprland.nix`, `desktop.nix`, `ags.nix` |
+| `modules/programs/` | User-facing apps | `programs.nix`, `protonmail-bridge.nix` |
+
+When adding a new module, place the `.nix` file in the appropriate folder and add it
+to that folder's `default.nix`. Host configs do not need to change.
+
+### configModules (specialArgs)
+
+Module paths are passed to hosts via `configModules` in `flake.nix` `specialArgs`.
+Hosts import modules by name instead of relative path:
+
+```nix
+# In hosts/<name>/default.nix
+{ inputs, configModules, ... }:
+{
+  imports = [
+    ./hardware-configuration.nix
+    configModules.base
+    configModules.desktop
+    configModules.programs
+  ];
+}
+```
+
+### src/ directory
+
+`src/` contains source code that gets built into Nix derivations. It is not part of
+the Stow-managed dotfiles tree. Generated/vendored files (`src/ags/@girs/`,
+`src/scripts/node_modules/`) are gitignored.
+
 ## Nix Code Style
 
 - **2 spaces**, no tabs. No trailing whitespace. LF line endings.
