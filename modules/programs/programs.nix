@@ -67,6 +67,7 @@ in
       tinty
       speedtest-cli
       starship
+      ansilove
 
       # Editors
       vim
