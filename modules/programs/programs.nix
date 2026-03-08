@@ -109,6 +109,7 @@ in
       cargo
       bun
       nodejs_24
+      go
       statix
       dotnetCorePackages.sdk_10_0-bin
       uv
