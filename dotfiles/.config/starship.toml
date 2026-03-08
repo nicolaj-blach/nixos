@@ -21,7 +21,7 @@ vimcmd_symbol = ' [\[N\] >](bold purple)'
 
 [directory]
 style = "bold blue"
-truncation_length = 3
+truncation_length = 4
 truncate_to_repo = true
 format = "[$path]($style)[$read_only]($read_only_style) "
 read_only = " ro"
@@ -47,8 +47,11 @@ diverged = "^${ahead_count}v${behind_count}"
 
 [nix_shell]
 style = "cyan"
-format = '[$symbol$state( ($name))]($style) '
-symbol = "nix "
+format = '[\[$name\]]($style) '
+symbol = ""
+impure_msg = ""
+pure_msg = ""
+unknown_msg = ""
 
 [python]
 style = "yellow"

@@ -6,6 +6,14 @@ alias nhs="nh search"
 alias nixb="nh os build ~/nixos"
 alias stowd="stow -d ~/nixos -t ~ dotfiles"
 
+# nix shell with auto-prefixing (usage: ns cowsay figlet lolcat)
+# Sets IN_NIX_SHELL so starship detects the environment
+ns() {
+  local flake="${NIX_SHELL_FLAKE:-nixpkgs}"
+  local pkgs=$(IFS=', '; echo "$*")
+  IN_NIX_SHELL=impure name="$pkgs" nix shell "${@/#/$flake#}"
+}
+
 # Navigation
 alias cd="z"
 alias ..="cd .."
