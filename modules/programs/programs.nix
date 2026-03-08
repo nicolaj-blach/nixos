@@ -147,6 +147,7 @@ in
       protonmail-bridge
       aerc
       neomutt
+      urlscan
       gnupg
       pinentry-curses
       pinentry-gnome3
