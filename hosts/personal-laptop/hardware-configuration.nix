@@ -33,7 +33,7 @@
   # After reinstall, replace UUID with the raw LUKS partition UUID (nvme0n1p2).
   # To find it: blkid /dev/nvme0n1p2
   boot.initrd.luks.devices."cryptroot" = {
-    device = "/dev/disk/by-uuid/37959883-e386-4d43-b882-e025c3a4b366";
+    device = "/dev/disk/by-uuid/68e5ed33-af5f-4b25-8e69-e37e9ecfbcd5";
     allowDiscards = true;
     bypassWorkqueues = true;
     crypttabExtraOpts = [
@@ -48,7 +48,7 @@
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/5039-6126";
+    device = "/dev/disk/by-uuid/FC87-B6C6";
     fsType = "vfat";
     options = [
       "fmask=0022"
