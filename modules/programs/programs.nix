@@ -104,6 +104,7 @@ in
       ticker
       opencode
       jiratui
+      basalt
       inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # Dev tools
@@ -157,6 +158,7 @@ in
       inkscape
       vesktop
       zen-browser
+      obsidian
     ];
     sessionVariables = {
       NIXOS_OZONE_WL = "1";

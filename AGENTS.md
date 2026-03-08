@@ -26,7 +26,7 @@ There is no test suite. A successful `nh os switch` is the test.
 | `nixu`  | `sudo nix flake update ~/nixos`                       |
 | `nixl`  | script: pretty-print NixOS generations                |
 | `nixs`  | script: fzf-based generation switcher                 |
-| `nhs`   | `nh search`                                           |
+| `nhs`   | `nh search` (search for Nix packages)                 |
 | `stowd` | `stow -d ~/nixos -t ~ dotfiles`                       |
 | `ls`    | `eza -lh --group-directories-first --icons=auto`      |
 | `lsa`   | `ls -a`                                               |
