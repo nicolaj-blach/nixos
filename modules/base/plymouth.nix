@@ -118,12 +118,12 @@ let
 
       # Copy images
       mkdir -p images
-      cp ${logoImage} images/logo.png
+      cp ${logoImage} images/watermark.png
       cp ${entryImage} images/entry.png
       cp ${bulletImage} images/bullet.png
       cp ${lockImage} images/lock.png
 
-      # Copy spinner frames
+      # Copy spinner frames (two-step uses throbber-XXXX.png naming)
       for frame in ${spinnerFrames}/throbber-*.png; do
         cp $frame images/
       done
@@ -142,11 +142,11 @@ let
       DialogHorizontalAlignment=.5
       DialogVerticalAlignment=.85
       TitleHorizontalAlignment=.5
-      TitleVerticalAlignment=.75
+      TitleVerticalAlignment=.382
       HorizontalAlignment=.5
-      VerticalAlignment=.5
+      VerticalAlignment=.7
       WatermarkHorizontalAlignment=.5
-      WatermarkVerticalAlignment=.5
+      WatermarkVerticalAlignment=.38
       Transition=none
       TransitionDuration=0.0
       BackgroundStartColor=0x${base00}
