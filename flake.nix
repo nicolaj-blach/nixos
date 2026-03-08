@@ -35,7 +35,9 @@
   outputs =
     { self, nixpkgs, ... }@inputs:
     let
-      labelFile = ./nixos-label.nix;
+      # Must use absolute path since file is gitignored (not part of flake)
+      # Requires --impure flag when building
+      labelFile = /. + builtins.getEnv "HOME" + "/nixos/nixos-label.nix";
       label = if builtins.pathExists labelFile then import labelFile else "no_message";
     in
     {

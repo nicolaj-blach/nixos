@@ -56,9 +56,9 @@ async function main() {
   const labelFile = `${nixdir}/nixos-label.nix`;
   await Bun.write(labelFile, `"${label}"\n`);
 
-  // Step 2: try nh os switch
+  // Step 2: try nh os switch (--impure needed to read gitignored nixos-label.nix)
   console.log(`${c.cyan}Building and switching...${c.reset}`);
-  built = await run(["nh", "os", "switch", nixdir]);
+  built = await run(["nh", "os", "switch", nixdir, "--", "--impure"]);
 
   if (built) {
     // Step 3: push on success
