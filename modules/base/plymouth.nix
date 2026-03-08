@@ -36,8 +36,7 @@ let
       # Copy scaled logo
       cp ${scaledLogo} images/watermark.png
 
-      # Copy spinner and UI assets from nixos-bgrt
-      cp $bgrtTheme/share/plymouth/themes/nixos-bgrt/images/throbber-*.png images/
+      # Copy UI assets from nixos-bgrt (no spinner)
       cp $bgrtTheme/share/plymouth/themes/nixos-bgrt/images/bullet.png images/
       cp $bgrtTheme/share/plymouth/themes/nixos-bgrt/images/entry.png images/
       cp $bgrtTheme/share/plymouth/themes/nixos-bgrt/images/lock.png images/
