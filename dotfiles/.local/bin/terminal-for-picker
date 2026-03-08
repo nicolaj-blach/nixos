@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ghostty --title="File Picker" -e "$@"
+exec ghostty --title=tui-float -e "$@"
