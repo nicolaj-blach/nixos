@@ -1,10 +1,62 @@
 {
+  config,
   lib,
   pkgs,
   username,
   ...
 }:
 
+let
+  cfg = config.boot.loader.limine;
+
+  # Patched Limine install script with custom entry naming: "{gen} - {label}"
+  patchedLimineInstall = pkgs.runCommand "limine-install-patched" { } ''
+    cp ${pkgs.path}/nixos/modules/system/boot/loader/limine/limine-install.py $out
+    chmod +w $out
+
+    # Change submenu "Generation {gen}" to "{gen} - {label}" format
+    substituteInPlace $out \
+      --replace-fail \
+        "entry += f'Generation {gen}' + '\\n'" \
+        "entry += f'{gen} - {boot_spec.label.replace(\"_\", \" \")}' + '\\n'"
+
+    # Change non-specialisation entry to same format
+    substituteInPlace $out \
+      --replace-fail \
+        "entry += config_entry(depth, boot_spec, f'Generation {gen}', str(time))" \
+        "entry += config_entry(depth, boot_spec, f'{gen} - {boot_spec.label.replace(\"_\", \" \")}', str(time))"
+  '';
+
+  limineInstallConfig = pkgs.writeText "limine-install.json" (
+    builtins.toJSON {
+      nixPath = config.nix.package;
+      efiBootMgrPath = pkgs.efibootmgr;
+      liminePath = cfg.package;
+      efiMountPoint = config.boot.loader.efi.efiSysMountPoint;
+      inherit (config) fileSystems;
+      luksDevices = builtins.attrNames config.boot.initrd.luks.devices;
+      inherit (config.boot.loader.efi) canTouchEfiVariables;
+      inherit (cfg) efiSupport;
+      efiRemovable = cfg.efiInstallAsRemovable;
+      inherit (cfg) secureBoot;
+      inherit (cfg) biosSupport;
+      inherit (cfg) biosDevice;
+      inherit (cfg) partitionIndex;
+      inherit (cfg) force;
+      inherit (cfg) enrollConfig;
+      inherit (cfg) style;
+      maxGenerations = if cfg.maxGenerations == null then 0 else cfg.maxGenerations;
+      hostArchitecture = pkgs.stdenv.hostPlatform.parsed.cpu;
+      timeout = if config.boot.loader.timeout != null then config.boot.loader.timeout else 10;
+      inherit (cfg) enableEditor;
+      inherit (cfg) extraConfig;
+      inherit (cfg) extraEntries;
+      inherit (cfg) additionalFiles;
+      inherit (cfg) validateChecksums;
+      inherit (cfg) panicOnChecksumMismatch;
+    }
+  );
+in
 {
   nixpkgs.config.allowUnfree = true;
   boot = {
@@ -81,4 +133,16 @@
     ];
 
   system.stateVersion = "25.11";
+
+  # Override Limine install script with custom entry naming
+  system.build.installBootLoader = lib.mkForce (
+    pkgs.replaceVarsWith {
+      src = patchedLimineInstall;
+      isExecutable = true;
+      replacements = {
+        python3 = pkgs.python3.withPackages (ps: [ ps.psutil ]);
+        configPath = limineInstallConfig;
+      };
+    }
+  );
 }
