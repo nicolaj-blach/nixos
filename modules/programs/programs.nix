@@ -147,6 +147,7 @@ in
       neomutt
       gnupg
       pinentry-curses
+      pinentry-gnome3
       chromium
 
       # Apps
