@@ -5,9 +5,10 @@ import { c, listGenerations } from "./lib";
 
 async function main() {
   const gens = await listGenerations();
+  const genWidth = Math.max(3, ...gens.map((g) => g.number.length));
 
   console.log(
-    `${c.blue}${c.bold}  ${"Gen".padEnd(4)}  ${"Date".padEnd(20)}  Description${c.reset}`,
+    `${c.blue}${c.bold}  ${"Gen".padEnd(genWidth)}  ${"Date".padEnd(19)}  Description${c.reset}`,
   );
 
   for (const gen of gens.reverse()) {
@@ -16,7 +17,7 @@ async function main() {
     const dateStr = `${gen.date} ${gen.time}`;
 
     console.log(
-      `${marker} ${genColor}${gen.number.padEnd(4)}${c.reset}  ${c.cyan}${dateStr}${c.reset}  ${c.green}${gen.description}${c.reset}`,
+      `${marker} ${genColor}${gen.number.padEnd(genWidth)}${c.reset}  ${c.cyan}${dateStr}${c.reset}  ${c.green}${gen.description}${c.reset}`,
     );
   }
 }
