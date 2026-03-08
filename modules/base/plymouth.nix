@@ -9,6 +9,16 @@ let
   base05 = "abb2bf";
   base03 = "5c6370";
 
+  # Scale down logo to 25%
+  scaledLogo =
+    pkgs.runCommand "nb-logo-scaled"
+      {
+        nativeBuildInputs = [ pkgs.imagemagick ];
+      }
+      ''
+        magick ${../../assets/logo.png} -resize 25% $out
+      '';
+
   # Plymouth theme package
   plymouthTheme = pkgs.stdenvNoCC.mkDerivation {
     pname = "nb-plymouth-theme";
@@ -23,8 +33,8 @@ let
       mkdir -p $out/share/plymouth/themes/nb/images
       cd $out/share/plymouth/themes/nb
 
-      # Copy logo
-      cp ${../../assets/logo.png} images/watermark.png
+      # Copy scaled logo
+      cp ${scaledLogo} images/watermark.png
 
       # Copy spinner and UI assets from nixos-bgrt
       cp $bgrtTheme/share/plymouth/themes/nixos-bgrt/images/throbber-*.png images/
