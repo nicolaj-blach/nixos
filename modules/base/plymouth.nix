@@ -10,23 +10,23 @@ let
   base05 = "abb2bf"; # Foreground
   base03 = "5c6370"; # Comments (muted)
 
-  # Convert ANSI logo to PNG and scale 2x
+  # Render Unicode block art logo to PNG using ImageMagick
   logoImage =
     pkgs.runCommand "nb-logo-png"
       {
-        nativeBuildInputs = with pkgs; [
-          ansilove
-          imagemagick
+        nativeBuildInputs = [
+          pkgs.imagemagick
+          pkgs.dejavu_fonts
         ];
+        FONTCONFIG_FILE = pkgs.makeFontsConf { fontDirectories = [ pkgs.dejavu_fonts ]; };
       }
       ''
-        ansilove -o raw.png ${../../assets/ansiLogo.txt}
-        magick raw.png \
-          -background '#${base00}' \
-          -alpha remove \
-          -alpha off \
-          -filter point \
-          -resize 200% \
+        magick -size 1400x400 xc:'#${base00}' \
+          -font '${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSansMono.ttf' \
+          -pointsize 16 \
+          -fill '#${base05}' \
+          -gravity center \
+          -annotate 0 "$(cat ${../../assets/ansiLogo.txt})" \
           logo.png
         cp logo.png $out
       '';
