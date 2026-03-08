@@ -4,5 +4,6 @@
     ./user.nix
     ./shell.nix
     ./services.nix
+    ./plymouth.nix
   ];
 }
