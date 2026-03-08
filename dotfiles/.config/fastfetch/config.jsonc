@@ -21,7 +21,8 @@
         {
             "type": "host",
             "key": "┌ 󰌢",
-            "keyColor": "green"
+            "keyColor": "green",
+            "format": "{vendor} {name}"
         },
         {
             "type": "cpu",
@@ -51,8 +52,8 @@
             "keyColor": "green"
         },
         {
-            "type": "swap",
-            "key": "└ 󰓡",
+            "type": "battery",
+            "key": "└ 󰁹",
             "keyColor": "green"
         },
         {
