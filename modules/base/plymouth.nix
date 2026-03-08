@@ -100,13 +100,4 @@ in
   ];
 
   boot.consoleLogLevel = 0;
-
-  # Disable automatic Plymouth quit - Hyprland will deactivate it manually
-  systemd.services.plymouth-quit = {
-    wantedBy = pkgs.lib.mkForce [ ];
-    serviceConfig.ExecStart = pkgs.lib.mkForce [
-      ""
-      "-${pkgs.plymouth}/bin/plymouth deactivate"
-    ];
-  };
 }
