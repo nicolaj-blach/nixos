@@ -146,6 +146,7 @@ in
       aerc
       neomutt
       gnupg
+      pinentry-curses
       chromium
 
       # Apps

@@ -79,6 +79,9 @@ tinty_source_shell_theme
 export EDITOR="nvim"
 export VISUAL="nvim"
 
+# GPG (required for pinentry to work in terminal)
+export GPG_TTY=$(tty)
+
 # Aliases
 source "$HOME/.config/zsh/aliases.zsh"
 
