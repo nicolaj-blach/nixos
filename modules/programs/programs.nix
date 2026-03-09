@@ -68,6 +68,7 @@ in
       speedtest-cli
       starship
       ansilove
+      llm
 
       # Editors
       vim
