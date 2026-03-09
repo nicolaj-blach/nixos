@@ -30,7 +30,6 @@ let
 in
 {
   programs = {
-
     nix-ld.enable = true;
     firefox.enable = true;
 
@@ -41,6 +40,7 @@ in
       flake = "/home/${username}/nixos";
     };
   };
+
   environment = {
     systemPackages = with pkgs; [
       # Dependencies
@@ -68,8 +68,7 @@ in
       speedtest-cli
       starship
       ansilove
-      llm
-      python313Packages.llm-gemini
+      (llm.withPlugins { llm-gemini = true; })
 
       # Editors
       vim
