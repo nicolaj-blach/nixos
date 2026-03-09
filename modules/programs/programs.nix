@@ -69,6 +69,7 @@ in
       starship
       ansilove
       llm
+      python313Packages.llm-gemini
 
       # Editors
       vim
