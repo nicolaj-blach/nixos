@@ -76,6 +76,7 @@ in
       tinty
       speedtest-cli
       starship
+      glow
       ansilove
       (llm.withPlugins { llm-gemini = true; })
 

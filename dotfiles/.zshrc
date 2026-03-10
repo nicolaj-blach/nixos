@@ -112,6 +112,9 @@ tinty_source_shell_theme
 export EDITOR="nvim"
 export VISUAL="nvim"
 
+# nix-ld: make libraries available to dynamically-linked binaries (numpy, etc.)
+export LD_LIBRARY_PATH="/run/current-system/sw/share/nix-ld/lib"
+
 # GPG (required for pinentry to work in terminal)
 export GPG_TTY=$(tty)
 

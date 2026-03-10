@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Continue an llm conversation
+# Uses stored conversation from 'ac' if set, otherwise continues most recent
+
+CID_FILE="$HOME/.cache/llm-conversation-id"
+
+if [[ -f "$CID_FILE" ]]; then
+  CID=$(cat "$CID_FILE")
+  rm "$CID_FILE"
+  llm --cid "$CID" "$*" | glow
+else
+  llm -c "$*" | glow
+fi
