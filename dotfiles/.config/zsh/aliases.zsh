@@ -53,6 +53,15 @@ alias please="sudo"
 # Bar
 alias bar="pkill -9 gjs; sleep 0.5; top-bar & disown"
 
+# Editor
+v() {
+  if [[ $# -eq 0 ]]; then
+    nvim .
+  else
+    nvim "$@"
+  fi
+}
+
 # AI
 alias oc="opencode"
 alias occ="opencode -c"

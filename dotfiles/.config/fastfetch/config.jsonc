@@ -31,6 +31,11 @@
             "keyColor": "green"
         },
         {
+            "type": "cpuusage",
+            "key": "├ 󰓅 \u001b[0mCPU Usage",
+            "keyColor": "green"
+        },
+        {
             "type": "gpu",
             "key": "├ 󰢮",
             "detectionMethod": "pci",
@@ -76,8 +81,23 @@
             "keyColor": "yellow"
         },
         {
+            "type": "processes",
+            "key": "├ 󰒓",
+            "keyColor": "yellow"
+        },
+        {
             "type": "shell",
-            "key": "└ 󰆍",
+            "key": "├ 󰆍",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "editor",
+            "key": "├ 󰏫",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "bootmgr",
+            "key": "└ 󰒋",
             "keyColor": "yellow"
         },
         {
@@ -95,15 +115,17 @@
             "keyColor": "blue"
         },
         {
+            "type": "command",
+            "key": "├ 󰏘",
+            "keyColor": "blue",
+            "text": "tinty current"
+        },
+        {
             "type": "icons",
             "key": "├ 󰀻",
             "keyColor": "blue"
         },
-        {
-            "type": "cursor",
-            "key": "├ 󰇀",
-            "keyColor": "blue"
-        },
+
         {
             "type": "terminalfont",
             "key": "├ 󰛖",
@@ -116,22 +138,11 @@
         },
         {
             "type": "custom",
-            "format": "\u001b[90m├────────────────────Uptime / Age────────────────────┤"
-        },
-        {
-            "type": "command",
-            "key": "┌ 󰃭",
-            "keyColor": "magenta",
-            "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
-        },
-        {
-            "type": "uptime",
-            "key": "└ 󰅐",
-            "keyColor": "magenta"
-        },
-        {
-            "type": "custom",
             "format": "\u001b[90m└────────────────────────────────────────────────────┘"
+        },
+        {
+            "type": "colors",
+            "symbol": "block"
         }
     ]
 }
