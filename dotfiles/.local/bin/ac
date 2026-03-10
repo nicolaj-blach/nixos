@@ -5,8 +5,18 @@ mkdir -p "$HOME/.cache"
 CID_FILE="$HOME/.cache/llm-conversation-id"
 
 SELECTED=$(llm logs list -n 0 --json | \
-  jq -r '.[] | "\(.conversation_id)\t\(.conversation_name)"' | \
-  sort -u | \
+  jq -r '
+    group_by(.conversation_id) |
+    map({
+      conversation_id: .[0].conversation_id,
+      conversation_name: .[0].conversation_name,
+      last_interaction: (map(.datetime_utc) | max)
+    }) |
+    sort_by(.last_interaction) |
+    reverse |
+    .[] |
+    "\(.conversation_id)\t\(.conversation_name)"
+  ' | \
   fzf --with-nth=2 --delimiter=$'\t' \
       --preview 'llm logs list --cid {1} -t' \
       --preview-window=right:50%:wrap)
@@ -15,7 +25,7 @@ if [[ -n "$SELECTED" ]]; then
   CID=$(echo "$SELECTED" | cut -f1)
   echo "$CID" > "$CID_FILE"
   echo ""
-  llm logs list --cid "$CID"
+  llm logs list --cid "$CID" | glow
   echo ""
   echo "Next 'a' command will continue this conversation."
 fi

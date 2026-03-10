@@ -46,7 +46,7 @@ alias ping="ping -c 5"
 alias wget="wget -c"
 
 # Misc
-alias cat="bat --theme=base16-256"
+alias bat="bat --theme=base16-256"
 alias clear="clear && fastfetch"
 alias please="sudo"
 
