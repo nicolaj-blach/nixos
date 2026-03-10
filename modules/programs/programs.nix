@@ -30,7 +30,16 @@ let
 in
 {
   programs = {
-    nix-ld.enable = true;
+    nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc.lib
+        zlib
+        openssl
+        curl
+        icu
+      ];
+    };
     firefox.enable = true;
 
     nh = {

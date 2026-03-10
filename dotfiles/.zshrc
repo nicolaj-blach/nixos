@@ -57,6 +57,39 @@ zle -N zle-line-finish
 # Zoxide
 eval "$(zoxide init zsh)"
 
+# fzf shell integration (CTRL-T, CTRL-R, ALT-C keybindings + fuzzy completion)
+source <(fzf --zsh)
+
+# fzf: use fd as default source (respects .gitignore, faster than find)
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
+
+# fzf: CTRL-T (paste files/directories onto command-line)
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="
+  --walker-skip .git,node_modules,target,.direnv
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+
+# fzf: ALT-C (cd into directory)
+export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix --hidden --follow --exclude .git'
+export FZF_ALT_C_OPTS="
+  --walker-skip .git,node_modules,target,.direnv
+  --preview 'eza --tree --level=2 --icons --color=always {}'"
+
+# fzf: CTRL-R (search command history)
+export FZF_CTRL_R_OPTS="
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort'
+  --color header:italic
+  --header 'CTRL-Y to copy command to clipboard'"
+
+# fzf: completion with fd (faster than default walker)
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude .git . "$1"
+}
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude .git . "$1"
+}
+
 # Tinty: source shell theme on init and wrap apply/cycle to re-source
 tinty_source_shell_theme() {
   local tinty_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/tinted-theming/tinty"
