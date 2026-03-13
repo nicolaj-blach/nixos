@@ -104,6 +104,7 @@ in
       chafa
       brightnessctl
       playerctl
+      udiskie
 
       # TUI
       yazi
