@@ -78,6 +78,7 @@ in
       starship
       glow
       ansilove
+      parted
       (llm.withPlugins { llm-gemini = true; })
 
       # Editors
