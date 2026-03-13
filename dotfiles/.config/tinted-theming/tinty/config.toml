@@ -9,13 +9,21 @@ themes-dir = "scripts"
 hook = "source \"$TINTY_THEME_FILE_PATH\""
 supported-systems = ["base16", "base24"]
 
-# Ghostty
+# Ghostty terminal colors
 [[items]]
 path = "https://github.com/tinted-theming/tinted-terminal"
 name = "tinted-ghostty"
 themes-dir = "themes/ghostty"
 hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/ghostty/colors"
 supported-systems = ["base16", "base24"]
+
+# Ghostty tab styling
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-ghostty-tabs"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-ghostty-tabs-hook"
+supported-systems = ["base16"]
 
 # fzf
 [[items]]

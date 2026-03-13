@@ -5,6 +5,7 @@
 
   imports = [
     ./hardware-configuration.nix
+    ./luks.nix
     configModules.base
     configModules.desktop
     configModules.programs

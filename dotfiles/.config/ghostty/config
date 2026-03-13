@@ -56,3 +56,14 @@ app-notifications = false
 keybind = ctrl+enter=unbind
 
 config-file = colors
+
+# Tab styling
+window-theme = ghostty
+gtk-titlebar = true
+gtk-tabs-location = top
+gtk-toolbar-style = flat
+gtk-wide-tabs = true
+gtk-custom-css = tabs.css
+
+# Cursor shader (Neovide-like warp effect)
+custom-shader = shaders/cursor_warp.glsl
