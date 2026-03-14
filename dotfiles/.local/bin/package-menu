@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Package search using Walker for input, fzf for selection with preview
+
+query=$(echo "" | walker -d -p "search packages" --height 1 -N)
+[[ -z "$query" ]] && exit 0
+
+# Search and pipe to fzf with preview, copy selection to clipboard
+ghostty --title=tui-float -e bash -c "
+    selection=\$(nh search --json '$query' 2>/dev/null | jq -r '.results[] | .package_attr_name' | \
+    fzf --preview 'nh search --json {} 2>/dev/null | jq -r \".results[0] | \\\"Name: \\(.package_pname)\\nVersion: \\(.package_pversion)\\nDescription: \\(.package_description // \\\"N/A\\\")\\\"\"' \
+        --preview-window=right:50%:wrap)
+    if [[ -n \"\$selection\" ]]; then
+        name=\$(nh search --json \"\$selection\" 2>/dev/null | jq -r '.results[0].package_pname')
+        echo -n \"\$name\" | wl-copy
+    fi
+"

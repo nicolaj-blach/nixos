@@ -1,6 +1,6 @@
 import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
-import { createBinding } from "ags"
+import { createBinding, createComputed } from "ags"
 
 // Nerd Font volume icons
 function volumeIcon(volume: number, muted: boolean): string {
@@ -17,9 +17,7 @@ export default function Volume() {
   const vol = createBinding(speaker, "volume")
   const muted = createBinding(speaker, "mute")
 
-  const icon = vol((v) => {
-    return volumeIcon(v, speaker.mute)
-  })
+  const icon = createComputed(() => volumeIcon(vol(), muted()))
 
   const text = vol((v) => `${Math.round(v * 100)}%`)
 

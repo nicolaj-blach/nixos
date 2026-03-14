@@ -18,7 +18,7 @@ window.Bar {
 }
 
 window.Bar > box {
-  background-color: alpha(@bar_bg, 0.93);
+  background-color: alpha(@bar_bg, 0.85);
   color: @bar_fg;
   border-bottom: 1px solid @bar_border;
   padding: 0 12px;

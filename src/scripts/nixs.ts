@@ -7,7 +7,6 @@ function formatForFzf(gens: Generation[]): string {
   const header = `${c.blue}${c.bold}${"Gen".padEnd(6)}\t${"Date".padEnd(20)}\tDescription${c.reset}`;
   const lines = gens
     .filter((g) => !g.current)
-    .reverse()
     .map((g) => {
       const dateStr = `${c.cyan}${g.date} ${g.time}${c.reset}`;
       const desc = `${c.green}${g.description}${c.reset}`;

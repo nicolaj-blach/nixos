@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Power menu using Walker dmenu mode
+
+choice=$(printf "\uf011  poweroff\n\uf01e  reboot\n\uf023  lock\n\uf03e  screensaver\n\uf021  switch" | walker -d -p "power")
+
+case "$choice" in
+    *lock)
+        hyprlock
+        ;;
+    *screensaver)
+        ghostty --title=screensaver --cursor-opacity=0 -e screensaver
+        ;;
+    *switch)
+        ghostty --title=tui-float -e nixs
+        ;;
+    *reboot)
+        systemctl reboot
+        ;;
+    *poweroff)
+        systemctl poweroff
+        ;;
+esac

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Project launcher using Walker dmenu mode
+
+PROJECTS_DIR="$HOME/projects"
+
+# Find all git repos and format for display (show path relative to projects dir)
+projects=$(find "$PROJECTS_DIR" -name ".git" -type d 2>/dev/null | while read -r gitdir; do
+    dir=$(dirname "$gitdir")
+    relpath=${dir#"$PROJECTS_DIR/"}
+    echo -e "\uf07b  $relpath"
+done | sort)
+
+# Add nixos config as special entry
+projects=$(echo -e "\uf313  nixos\n$projects")
+
+[[ -z "$projects" ]] && exit 0
+
+choice=$(echo "$projects" | walker -d -p "project")
+[[ -z "$choice" ]] && exit 0
+
+# Extract project path (remove icon prefix)
+relpath=$(echo "$choice" | sed 's/^[^ ]*  //')
+
+if [[ "$relpath" == "nixos" ]]; then
+    dir="$HOME/nixos"
+else
+    dir="$PROJECTS_DIR/$relpath"
+fi
+
+[[ -d "$dir" ]] && ghostty --working-directory="$dir"
