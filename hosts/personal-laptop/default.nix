@@ -9,11 +9,7 @@
     configModules.base
     configModules.desktop
     configModules.programs
+    configModules.fingerPrint
     inputs.walker.nixosModules.default
   ];
-
-  # Fingerprint reader (Framework 16)
-  services.fprintd.enable = true;
-  security.pam.services.sudo.fprintAuth = true;
-  security.pam.services.hyprlock.fprintAuth = true;
 }

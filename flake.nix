@@ -51,6 +51,7 @@
             base = ./modules/base;
             desktop = ./modules/desktop;
             programs = ./modules/programs;
+            fingerPrint = ./modules/fingerPrint;
           };
         };
 
