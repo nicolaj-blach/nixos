@@ -101,6 +101,7 @@ in
 
       # Desktop
       swww
+      swayosd
       mako
       imagemagick
       chafa

@@ -72,3 +72,11 @@ name = "tinted-walker"
 themes-dir = "scripts"
 hook = "~/.local/bin/tinty-walker-hook"
 supported-systems = ["base16"]
+
+# SwayOSD on-screen display theme
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-swayosd"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-swayosd-hook"
+supported-systems = ["base16"]
