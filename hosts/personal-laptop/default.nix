@@ -14,6 +14,17 @@
 
   # Fingerprint reader (Framework 16)
   services.fprintd.enable = true;
-  security.pam.services.sudo.fprintAuth = true;
+
+  # Fingerprint OR password auth (fingerprint times out after 10s)
+  security.pam.services.sudo = {
+    fprintAuth = false;
+    rules.auth.fprintd = {
+      order = 11300;
+      control = "sufficient";
+      modulePath = "pam_fprintd.so";
+      args = [ "timeout=10" ];
+    };
+  };
+
   security.pam.services.hyprlock.fprintAuth = true;
 }

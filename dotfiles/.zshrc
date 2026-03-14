@@ -28,7 +28,7 @@ source "$ZSH/oh-my-zsh.sh"
 # External plugins (sourced after oh-my-zsh)
 source /run/current-system/sw/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /run/current-system/sw/share/zsh-autopair/autopair.zsh
+source /run/current-system/sw/share/zsh/zsh-autopair/autopair.zsh
 
 # Prompt
 eval "$(starship init zsh)"
