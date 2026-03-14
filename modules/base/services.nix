@@ -8,6 +8,18 @@
     "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${pkgs.shadow}/bin/login --autologin ${username} --noclear %I $TERM"
   ];
 
+  # SwayOSD libinput backend for caps/num/scroll lock detection
+  systemd.services.swayosd-libinput-backend = {
+    description = "SwayOSD libinput backend";
+    wantedBy = [ "graphical.target" ];
+    partOf = [ "graphical.target" ];
+    after = [ "graphical.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.swayosd}/bin/swayosd-libinput-backend";
+      Restart = "on-failure";
+    };
+  };
+
   services = {
     pipewire = {
       enable = true;
