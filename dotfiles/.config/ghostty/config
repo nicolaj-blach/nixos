@@ -54,6 +54,17 @@ app-notifications = false
 
 # Tinty-managed color scheme (generated file, not in git)
 keybind = ctrl+enter=unbind
+keybind = shift+enter=csi:13;2u
+
+# Split navigation (vim-style)
+keybind = ctrl+shift+alt+h=goto_split:left
+keybind = ctrl+shift+alt+j=goto_split:down
+keybind = ctrl+shift+alt+k=goto_split:up
+keybind = ctrl+shift+alt+l=goto_split:right
+
+# Tab navigation
+keybind = ctrl+shift+h=previous_tab
+keybind = ctrl+shift+l=next_tab
 
 config-file = colors
 

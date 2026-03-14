@@ -4,6 +4,7 @@ format = """
  $directory\
 $git_branch\
 $git_status\
+$git_state\
 $nix_shell\
 $python\
 $nodejs\
@@ -45,6 +46,10 @@ ahead = "^${count}"
 behind = "v${count}"
 diverged = "^${ahead_count}v${behind_count}"
 
+[git_state]
+style = "yellow"
+format = '[\($state( $progress_current/$progress_total)\)]($style)'
+
 [nix_shell]
 style = "cyan"
 format = '[\[$name\]]($style) '
@@ -84,3 +89,6 @@ time_format = "%H:%M"
 
 [line_break]
 disabled = false
+
+continuation_prompt = "     "
+

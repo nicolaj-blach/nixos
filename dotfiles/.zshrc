@@ -28,9 +28,16 @@ source "$ZSH/oh-my-zsh.sh"
 # External plugins (sourced after oh-my-zsh)
 source /run/current-system/sw/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /run/current-system/sw/share/zsh-autopair/autopair.zsh
 
 # Prompt
 eval "$(starship init zsh)"
+PROMPT2="    "
+
+# Shift+Enter inserts newline without executing
+insert-newline() { LBUFFER+=$'\n'; }
+zle -N insert-newline
+bindkey '^[[13;2u' insert-newline
 
 # Reset to insert mode on every new prompt
 __reset_vi_mode() { zle vi-insert 2>/dev/null; }

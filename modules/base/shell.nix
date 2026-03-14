@@ -8,5 +8,6 @@ _:
   environment.pathsToLink = [
     "/share/oh-my-zsh"
     "/share/zsh-syntax-highlighting"
+    "/share/zsh-autopair"
   ];
 }

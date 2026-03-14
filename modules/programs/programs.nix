@@ -97,6 +97,7 @@ in
       oh-my-zsh
       zsh-autosuggestions
       zsh-syntax-highlighting
+      zsh-autopair
 
       # Desktop
       swww
