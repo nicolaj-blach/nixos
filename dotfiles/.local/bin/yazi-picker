@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec bun run ~/nixos/src/scripts/yazi-picker.ts "$@"
+exec bun run ~/nixos/src/scripts/ui/yazi-picker.ts "$@"

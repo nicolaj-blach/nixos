@@ -3,7 +3,7 @@
 // Usage: nixr <commit message>
 
 import { $ } from "bun";
-import { c, nixdir } from "./lib";
+import { c, nixdir } from "../lib";
 
 async function run(cmd: string[], opts?: { cwd?: string; env?: Record<string, string> }): Promise<boolean> {
   const proc = Bun.spawn(cmd, {

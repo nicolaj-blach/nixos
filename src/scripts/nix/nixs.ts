@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // nixs - fzf-based NixOS generation switcher
 
-import { c, listGenerations, type Generation } from "./lib";
+import { c, listGenerations, type Generation } from "../lib";
 
 function formatForFzf(gens: Generation[]): string {
   const header = `${c.blue}${c.bold}${"Gen".padEnd(6)}\t${"Date".padEnd(20)}\tDescription${c.reset}`;

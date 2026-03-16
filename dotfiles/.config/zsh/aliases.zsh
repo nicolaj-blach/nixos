@@ -65,3 +65,7 @@ v() {
 # AI
 alias oc="opencode"
 alias occ="opencode -c"
+
+# Terminal Tricks
+alias pipes="pipes-rs -k curved --palette darker"
+alias matrix="cmatrix"

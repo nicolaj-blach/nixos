@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec bun run ~/nixos/src/scripts/screensaver.ts "$@"
+exec bun run ~/nixos/src/scripts/ui/screensaver.ts "$@"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // nixl - pretty-print NixOS generations
 
-import { c, listGenerations } from "./lib";
+import { c, listGenerations } from "../lib";
 
 async function main() {
   const gens = await listGenerations();
