@@ -67,6 +67,7 @@ in
       bat
       tldr
       cowsay
+      fortune
       fastfetch
       terminaltexteffects
       fd
