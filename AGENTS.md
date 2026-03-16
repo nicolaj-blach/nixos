@@ -8,8 +8,8 @@ Single-user, multi-host NixOS flake. Wayland desktop (Hyprland) on x86_64-linux.
 ## Key Commands
 
 | Command | Purpose |
-|---------|---------|
-| `nixr feat: desc` | Commit, rebuild (`nh os switch`), push. Rollback on failure. **No quotes needed.** |
+| - | - |
+| `nixr feat: desc` | Commit, rebuild (`nh os switch`), push. Rollback on failure. |
 | `nh os switch ~/nixos -- --impure` | Rebuild without committing |
 | `nh os build ~/nixos` | Dry-run build (check for errors) |
 | `statix check .` | Nix linter |
@@ -37,7 +37,7 @@ There is no test suite. A successful `nh os switch` is the test.
 
 ### Repository layout
 
-```
+```bash
 nixos/
 ├── flake.nix
 ├── assets/         # logo/branding files (used by fastfetch)
@@ -57,18 +57,19 @@ nixos/
 
 ### Module organization
 
-Shared NixOS modules live under `modules/` in three categories. Each category has a
-`default.nix` that re-exports all modules in that folder, so hosts only import the
-folder:
+Shared NixOS modules live under `modules/` in three categories. Each
+category has a `default.nix` that re-exports all modules in that
+folder, so hosts only import the folder:
 
 | Folder | Purpose | Modules |
-|--------|---------|---------|
-| `modules/base/` | System fundamentals | `base.nix`, `user.nix`, `shell.nix`, `services.nix`, `plymouth.nix` |
-| `modules/desktop/` | Wayland desktop | `hyprland.nix`, `desktop.nix`, `ags.nix` |
-| `modules/programs/` | User-facing apps | `programs.nix`, `protonmail-bridge.nix`, `bit.nix` |
+| - | - | - |
+| `modules/base/` | System fundamentals | `base.nix`, `user.nix`, `shell.nix`, `services.nix` |
+| `modules/desktop/` | Desktop environment | `hyprland.nix`, `desktop.nix`, `ags.nix` |
+| `modules/programs/` | User apps | `programs.nix`, `protonmail-bridge.nix`, `bit.nix` |
 
-When adding a new module, place the `.nix` file in the appropriate folder and add it
-to that folder's `default.nix`. Host configs do not need to change.
+When adding a new module, place the `.nix` file in the appropriate
+folder and add it to that folder's `default.nix`. Host configs do not
+need to change.
 
 ### configModules (specialArgs)
 
@@ -90,9 +91,9 @@ Hosts import modules by name instead of relative path:
 
 ### src/ directory
 
-`src/` contains source code that gets built into Nix derivations. It is not part of
-the Stow-managed dotfiles tree. Generated/vendored files (`src/ags/@girs/`,
-`src/scripts/node_modules/`) are gitignored.
+`src/` contains source code that gets built into Nix derivations. It
+is not part of the Stow-managed dotfiles tree. Generated/vendored
+files (`src/ags/@girs/`, `src/scripts/node_modules/`) are gitignored.
 
 ## Nix Code Style
 
@@ -103,7 +104,7 @@ the Stow-managed dotfiles tree. Generated/vendored files (`src/ags/@girs/`,
 - `with pkgs;` only scoped to list context, never at module level.
 - `let` bindings use `camelCase`. `in` goes on its own line before `{`.
 - Multi-line shell strings use `''...''`. Shell `$vars` are not escaped.
-- Comments: `# ` (hash + space). Use as section headers in package lists.
+- Comments: `#` (hash + space). Use as section headers in package lists.
 - No `/* */` block comments.
 
 ## Commit Messages
@@ -114,25 +115,28 @@ Types: `feat:`, `fix:`, `refactor:`. Lowercase, past tense, no period, single li
 
 ## Dotfiles / GNU Stow
 
-`dotfiles/` mirrors `$HOME`. Run `stow -d ~/nixos -t ~ dotfiles` to symlink into `~`.
+`dotfiles/` mirrors `$HOME`. Run `stow -d ~/nixos -t ~ dotfiles` to
+symlink into `~`.
 Place app configs at `dotfiles/.config/<app>/`.
 Shell scripts go in `dotfiles/.local/bin/` with `#!/usr/bin/env bash`.
 
 ## Theming (Tinty / Base16)
 
-System-wide colors are managed by **Tinty** (tinted-theming). The active scheme is
-`base16-onedark`. Always respect and integrate with this theme system.
+System-wide colors are managed by **Tinty** (tinted-theming). The
+active scheme is `base16-onedark`. Always respect and integrate with
+this theme system.
 
 ### How it works
 
 - Config: `dotfiles/.config/tinted-theming/tinty/config.toml`
 - `tinty apply <scheme>` applies a base16 scheme to all configured apps at once.
-- Custom hooks in `dotfiles/.local/bin/tinty-*-hook` generate app-specific color files.
+- Custom hooks in `dotfiles/.local/bin/tinty-*-hook` generate
+  app-specific color files.
 
 ### Base16 color mapping
 
 | Base16 slot | Role | Usage |
-|-------------|------|-------|
+| - | - | - |
 | `base00` | Background | Panel backgrounds, shadow |
 | `base01` | Lighter background | Inactive borders |
 | `base02` | Selection | Borders, separators, muted UI elements |

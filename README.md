@@ -1,18 +1,56 @@
 # NixOS Configuration
 
-Single-user, multi-host NixOS flake with LUKS disk encryption, TPM2 auto-unlock, and Secure Boot.
+<!--toc:start-->
+- [NixOS Configuration](#nixos-configuration)
+  - [What's Included](#whats-included)
+  - [Repository Structure](#repository-structure)
+    - [Module organization](#module-organization)
+  - [Daily Usage](#daily-usage)
+    - [Nix commands](#nix-commands)
+    - [AI commands](#ai-commands)
+    - [Keybindings (Hyprland)](#keybindings-hyprland)
+  - [Adding a New Host](#adding-a-new-host)
+  - [Theming](#theming)
+    - [Apply a theme](#apply-a-theme)
+    - [List available schemes](#list-available-schemes)
+    - [How it works](#how-it-works)
+  - [Email](#email)
+    - [GPG key (required for AAU OAuth tokens)](#gpg-key-required-for-aau-oauth-tokens)
+    - [AAU (Microsoft 365)](#aau-microsoft-365)
+    - [Protonmail](#protonmail)
+    - [Launch aerc](#launch-aerc)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [1. Boot the live USB](#1-boot-the-live-usb)
+    - [2. Connect to wifi (if needed)](#2-connect-to-wifi-if-needed)
+    - [3. Identify your disk](#3-identify-your-disk)
+    - [4. Partition the disk](#4-partition-the-disk)
+    - [5. Set up LUKS encryption](#5-set-up-luks-encryption)
+    - [6. Format filesystems](#6-format-filesystems)
+    - [7. Mount](#7-mount)
+    - [8. Generate hardware config and get UUIDs](#8-generate-hardware-config-and-get-uuids)
+    - [9. Clone the repo and create host config](#9-clone-the-repo-and-create-host-config)
+    - [10. Generate Secure Boot keys (before install)](#10-generate-secure-boot-keys-before-install)
+    - [11. Install](#11-install)
+    - [12. Create UEFI fallback path (if needed)](#12-create-uefi-fallback-path-if-needed)
+    - [13. First boot](#13-first-boot)
+    - [14. Set up Secure Boot](#14-set-up-secure-boot)
+    - [15. Enroll TPM2 for auto-unlock](#15-enroll-tpm2-for-auto-unlock)
+    - [16. Post-install setup](#16-post-install-setup)
+  - [Troubleshooting](#troubleshooting)
+    - [No boot option after install](#no-boot-option-after-install)
+    - ["No sbctl secure boot keys present" during install](#no-sbctl-secure-boot-keys-present-during-install)
+    - [Can't log in (no password set)](#cant-log-in-no-password-set)
+    - ["Your system is not in Setup Mode"](#your-system-is-not-in-setup-mode)
+  - [Recovery](#recovery)
+    - [TPM refuses to unseal (after BIOS update, Secure Boot key change, etc.)](#tpm-refuses-to-unseal-after-bios-update-secure-boot-key-change-etc)
+    - [Forgot LUKS passphrase](#forgot-luks-passphrase)
+    - [Re-installing the bootloader](#re-installing-the-bootloader)
+    - [Reset user password](#reset-user-password)
+<!--toc:end-->
 
-## Table of Contents
-
-- [What's Included](#whats-included)
-- [Repository Structure](#repository-structure)
-- [Daily Usage](#daily-usage)
-- [Adding a New Host](#adding-a-new-host)
-- [Theming](#theming)
-- [Email](#email)
-- [Installation](#installation)
-- [Troubleshooting](#troubleshooting)
-- [Recovery](#recovery)
+Single-user, multi-host NixOS flake with LUKS disk encryption, TPM2
+auto-unlock, and Secure Boot.
 
 ## What's Included
 
@@ -24,14 +62,15 @@ This flake provides a complete Wayland desktop environment:
 - **Terminal:** Ghostty
 - **Notifications:** Mako
 - **Theming:** Tinted-theming (base16) with system-wide color management
-- **Security:** LUKS encryption, TPM2 auto-unlock, Secure Boot (sbctl/Lanzaboote)
+- **Security:** LUKS encryption, TPM2 auto-unlock, Secure Boot
+  (sbctl/Lanzaboote)
 - **Boot:** Plymouth splash screen, Limine bootloader
 
 Dotfiles are managed separately via GNU Stow (no home-manager).
 
 ## Repository Structure
 
-```
+```text
 nixos/
 ├── flake.nix               # Flake definition, host declarations
 ├── hosts/
@@ -51,7 +90,7 @@ nixos/
 ### Module organization
 
 | Folder | Purpose |
-|--------|---------|
+| - | - |
 | `modules/base/` | Boot, networking, user accounts, shell, services |
 | `modules/desktop/` | Hyprland, desktop portals, AGS |
 | `modules/programs/` | User applications, protonmail-bridge |
@@ -71,7 +110,7 @@ imports = [
 ### Nix commands
 
 | Command | Purpose |
-|---------|---------|
+| - | - |
 | `nixr <msg>` | Commit, rebuild, push, stow (rollback on failure) |
 | `nixl` | List NixOS generations with descriptions |
 | `nixs` | Switch to a previous generation (fzf picker) |
@@ -84,7 +123,7 @@ imports = [
 ### AI commands
 
 | Command | Purpose |
-|---------|---------|
+| - | - |
 | `an <prompt>` | Start a new LLM conversation |
 | `a <prompt>` | Continue the current LLM conversation |
 | `ac` | Select a previous conversation to continue (fzf picker) |
@@ -97,7 +136,6 @@ See `dotfiles/.config/hypr/binds.conf` for the full list. Navigation uses vim ke
 (h/j/k/l). Common bindings:
 
 | Key | Action |
-|-----|--------|
 | `Super + Return` | Terminal |
 | `Super + Space` | Launcher (Walker) |
 | `Super + W` | Close window |
@@ -112,6 +150,7 @@ See `dotfiles/.config/hypr/binds.conf` for the full list. Navigation uses vim ke
 1. Create `hosts/HOSTNAME/` with `default.nix` and `hardware-configuration.nix`
 2. Add the host to `flake.nix` under `nixosConfigurations`
 3. Generate `hardware-configuration.nix` on the target machine:
+
    ```bash
    nixos-generate-config --show-hardware-config > hosts/HOSTNAME/hardware-configuration.nix
    ```
@@ -214,7 +253,7 @@ Fresh install for any x86_64-linux machine.
 
 ### Prerequisites
 
-- NixOS live USB (download from https://nixos.org/download)
+- NixOS live USB (download from <https://nixos.org/download>)
 - Internet connection
 
 ### 1. Boot the live USB
@@ -250,6 +289,7 @@ parted $DISK -- mkpart primary 512MiB 100%
 ```
 
 This creates:
+
 - Partition 1: 512MB EFI System Partition
 - Partition 2: Remainder for LUKS-encrypted root
 
@@ -476,7 +516,8 @@ mount /dev/mapper/cryptroot /mnt
 mount ${DISK}p1 /mnt/boot
 nixos-enter
 sbctl create-keys
-NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+NIXOS_INSTALL_BOOTLOADER=1 \
+  /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 mkdir -p /boot/EFI/BOOT
 cp /boot/EFI/limine/limine.efi /boot/EFI/BOOT/BOOTX64.EFI
 exit
@@ -559,7 +600,8 @@ cryptsetup luksOpen ${DISK}p2 cryptroot
 mount /dev/mapper/cryptroot /mnt
 mount ${DISK}p1 /mnt/boot
 nixos-enter
-NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+NIXOS_INSTALL_BOOTLOADER=1 \
+  /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 ```
 
 ### Reset user password
