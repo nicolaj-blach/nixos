@@ -52,85 +52,59 @@ in
 
   environment = {
     systemPackages = with pkgs; [
-      # Dependencies
+      # Core Dependencies
       wget
       gcc
       jq
       libnotify
       glib
 
-      # CLI tools
-      stow
-      eza
-      fzf
-      zoxide
-      bat
-      tldr
-      cowsay
-      fortune
-      fastfetch
-      terminaltexteffects
-      pipes-rs
-      cmatrix
-      fd
-      ripgrep
-      unzip
-      tree
-      tinty
-      speedtest-cli
-      starship
-      glow
-      ansilove
-      parted
-      (llm.withPlugins { llm-gemini = true; })
-
-      # Editors
-      vim
-      neovim
-      vscode
-
-      # Git
-      git
-      gh
-      lazygit
-
-      # Terminal
+      # Shell & Terminal
       ghostty
       zsh
       oh-my-zsh
       zsh-autosuggestions
       zsh-syntax-highlighting
       zsh-autopair
+      starship
 
-      # Desktop
-      swww
-      swayosd
-      mako
-      imagemagick
-      chafa
-      brightnessctl
-      playerctl
-      udiskie
-
-      # TUI
+      # File Management
       yazi
-      btop
-      bluez
-      bluetui
-      wiremix
-      lazydocker
-      ticker
-      opencode
-      jiratui
-      basalt
-      inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
+      stow
+      eza
+      fd
+      ripgrep
+      fzf
+      tree
+      unzip
+      dua
 
-      # Dev tools
+      # Text & Viewing
+      bat
+      glow
+      tldr
+      lue
+
+      # Editors
+      vim
+      neovim
+      vscode
+
+      # Git & VCS
+      git
+      gh
+      gh-dash
+      lazygit
+      onefetch
+      gitlogue
+      gitnr
+      mani
+
+      # Dev Languages
       cargo
       bun
       nodejs_24
       go
-      statix
       dotnetCorePackages.sdk_10_0-bin
       uv
       python313
@@ -139,44 +113,93 @@ in
       python313Packages.dbus-python
       python313Packages.into-dbus-python
       python313Packages.dbus-python-client-gen
-      ags
+
+      # Dev Tools
       gnumake
+      lazydocker
+      lazysql
+      posting
+
+      # Nix Tooling
+      statix
       nixfmt
+      tinty
+      ags
 
-      # Security
-      sbctl
-      tpm2-tss
-      tpm2-tools
+      # System Monitoring
+      btop
+      fastfetch
+      speedtest-cli
 
-      # Clipboard
+      # TUI Apps
+      bluetui
+      bluez
+      wiremix
+      ticker
+      opencode
+      jiratui
+      basalt
+      smassh
+      inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+      # Desktop Utilities
+      swww
+      swayosd
+      mako
+      brightnessctl
+      playerctl
+      udiskie
       wl-clipboard
+      libqalculate
 
-      # Screenshot
+      # Media & Images
+      imagemagick
+      chafa
+      imv
+      ansilove
+
+      # Screenshot & Color
       grim
       slurp
       satty
-
-      # Color picker
       hyprpicker
 
-      # Image viewer
-      imv
+      # Security & Auth
+      sbctl
+      tpm2-tss
+      tpm2-tools
+      gnupg
+      pinentry-curses
+      pinentry-gnome3
 
       # Email
       protonmail-bridge
       aerc
       neomutt
       urlscan
-      gnupg
-      pinentry-curses
-      pinentry-gnome3
+
+      # Communication
+      vesktop
+      discordo
+
+      # Browsers
+      zen-browser
       chromium
 
-      # Apps
+      # Applications
       inkscape
-      vesktop
-      zen-browser
       obsidian
+      (llm.withPlugins { llm-gemini = true; })
+
+      # Fun & Visual
+      cowsay
+      fortune
+      terminaltexteffects
+      pipes-rs
+      cmatrix
+
+      # Disk & Partition
+      parted
     ];
     sessionVariables = {
       NIXOS_OZONE_WL = "1";

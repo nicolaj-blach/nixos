@@ -6,12 +6,13 @@ alias nhs="nh search"
 alias nixb="nh os build ~/nixos"
 alias stowd="stow -d ~/nixos -t ~ dotfiles"
 
-# nix shell with auto-prefixing (usage: ns cowsay figlet lolcat)
-# Sets IN_NIX_SHELL so starship detects the environment
+# nix shell with auto-prefixing and package accumulation
 ns() {
-  local flake="${NIX_SHELL_FLAKE:-nixpkgs}"
-  local pkgs=$(IFS=', '; echo "$*")
-  IN_NIX_SHELL=impure name="$pkgs" nix shell "${@/#/$flake#}"
+  if [[ -n "$NS_PACKAGES" ]]; then
+    # Already in a nix shell, exit and relaunch with accumulated packages
+    exec bun run ~/nixos/src/scripts/nix/ns.ts "$@"
+  fi
+  command ns "$@"
 }
 
 # Navigation
