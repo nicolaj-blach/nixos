@@ -75,6 +75,7 @@ in
       fd
       ripgrep
       fzf
+      zoxide
       tree
       unzip
       dua
