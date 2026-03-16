@@ -70,6 +70,8 @@ in
       fortune
       fastfetch
       terminaltexteffects
+      pipes-rs
+      cmatrix
       fd
       ripgrep
       unzip
