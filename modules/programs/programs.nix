@@ -94,6 +94,7 @@ in
       # Git & VCS
       git
       gh
+      diffnav
       gh-dash
       lazygit
       onefetch
