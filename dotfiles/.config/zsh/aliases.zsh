@@ -34,6 +34,7 @@ alias ffind="fd --type f | fzf"
 
 # Git (most aliases provided by oh-my-zsh git plugin)
 alias lg="lazygit"
+alias ghd="gh-dash"
 
 # System
 alias htop="btop"

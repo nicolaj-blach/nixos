@@ -8,14 +8,19 @@ prSections:
 - title: Involved
   filters: is:open involves:@me -author:@me
   type: null
-issuesSections:
+- title: Open
+  filters: is:open
+  type: null
+iissuesSections:
 - title: My Issues
   filters: is:open author:@me
 - title: Assigned
   filters: is:open assignee:@me
 - title: Involved
   filters: is:open involves:@me -author:@me
-repo:
+- title: Open
+  filters: is:open
+rrepo:
   branchesRefetchIntervalSeconds: 30
   prsRefetchIntervalSeconds: 60
 defaults:
@@ -74,7 +79,7 @@ theme:
       showSeparator: true
       compact: false
 pager:
-  diff: ""
+  diff: "diffnav"
 confirmQuit: false
 showAuthorIcons: true
 smartFilteringAtLaunch: true
