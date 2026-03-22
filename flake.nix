@@ -63,5 +63,27 @@
           }
         ];
       };
+
+      nixosConfigurations.personal-desktop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+
+        specialArgs = {
+          inherit inputs;
+          username = "nicolaj-blach";
+          configModules = {
+            base = ./modules/base;
+            desktop = ./modules/desktop;
+            programs = ./modules/programs;
+          };
+        };
+
+        modules = [
+          ./hosts/personal-desktop
+          {
+            system.configurationRevision = self.rev or self.dirtyRev or "unknown";
+            system.nixos.label = label;
+          }
+        ];
+      };
     };
 }
