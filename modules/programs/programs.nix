@@ -33,7 +33,8 @@ in
     nix-ld = {
       enable = true;
       libraries = with pkgs; [
-        gcc14.cc.lib
+        # Use gcc lib from Hyprland flake for GLIBCXX_3.4.34 compatibility
+        inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.system}.stdenv.cc.cc.lib
         zlib
         openssl
         curl
