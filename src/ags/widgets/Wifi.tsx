@@ -20,24 +20,9 @@ function disconnectedIcon(): string {
 }
 
 function WiredDisplay() {
-  const network = AstalNetwork.get_default()
-  const wired = network.wired
-
-  if (!wired) {
-    return (
-      <box spacing={8}>
-        <label class="network-icon" label={ethernetIcon()} />
-        <label class="network-info" label="Ethernet" />
-      </box>
-    )
-  }
-
-  const speed = createBinding(wired, "speed")
-
   return (
     <box spacing={8}>
       <label class="network-icon" label={ethernetIcon()} />
-      <label class="network-info" label={speed((s) => s > 0 ? `${s} Mbps` : "Ethernet")} />
     </box>
   )
 }

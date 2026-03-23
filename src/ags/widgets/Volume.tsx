@@ -12,7 +12,19 @@ function volumeIcon(volume: number, muted: boolean): string {
 }
 
 export default function Volume() {
-  const speaker = AstalWp.get_default()!.defaultSpeaker!
+  const wp = AstalWp.get_default()
+  const speaker = wp?.defaultSpeaker
+
+  if (!speaker) {
+    return (
+      <button class="volume" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-audio`)}>
+        <box spacing={4}>
+          <label class="volume-icon" label={volumeIcon(0, true)} />
+          <label class="volume-text" label="--%"  />
+        </box>
+      </button>
+    )
+  }
 
   const vol = createBinding(speaker, "volume")
   const muted = createBinding(speaker, "mute")
