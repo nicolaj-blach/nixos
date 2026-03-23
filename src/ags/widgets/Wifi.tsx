@@ -11,30 +11,61 @@ function wifiIcon(strength: number): string {
   return "\u{f092b}" // nf-md-wifi_strength_off
 }
 
+function ethernetIcon(): string {
+  return "\u{f0200}" // nf-md-ethernet
+}
+
 function disconnectedIcon(): string {
   return "\u{f092b}" // nf-md-wifi_strength_off
 }
 
-export default function Wifi() {
+export default function Network() {
   const network = AstalNetwork.get_default()
   const wifi = createBinding(network, "wifi")
+  const wired = createBinding(network, "wired")
+  const primary = createBinding(network, "primary")
 
   return (
-    <button class="wifi" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
-      <With value={wifi}>
-        {(w) => {
-          if (!w) return <label class="wifi-icon" label={disconnectedIcon()} />
+    <button class="network" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
+      <With value={primary}>
+        {(p) => {
+          // Check if wired/ethernet is the primary connection
+          if (p === AstalNetwork.Primary.WIRED) {
+            return (
+              <With value={wired}>
+                {(w) => {
+                  if (!w) return <label class="network-icon" label={disconnectedIcon()} />
+                  const speed = createBinding(w, "speed")
+                  return (
+                    <box spacing={8}>
+                      <label class="network-icon" label={ethernetIcon()} />
+                      <label class="network-info" label={speed((s) => s > 0 ? `${s} Mbps` : "Ethernet")} />
+                    </box>
+                  )
+                }}
+              </With>
+            )
+          }
 
-          const strength = createBinding(w, "strength")
-          const ssid = createBinding(w, "ssid")
-
-          const icon = strength((s) => wifiIcon(s))
-
+          // Otherwise show wifi
           return (
-            <box spacing={8}>
-              <label class="wifi-icon" label={icon} />
-              <label class="wifi-ssid" label={ssid((s) => s ?? "")} />
-            </box>
+            <With value={wifi}>
+              {(w) => {
+                if (!w) return <label class="network-icon" label={disconnectedIcon()} />
+
+                const strength = createBinding(w, "strength")
+                const ssid = createBinding(w, "ssid")
+
+                const icon = strength((s) => wifiIcon(s))
+
+                return (
+                  <box spacing={8}>
+                    <label class="network-icon" label={icon} />
+                    <label class="network-ssid" label={ssid((s) => s ?? "")} />
+                  </box>
+                )
+              }}
+            </With>
           )
         }}
       </With>

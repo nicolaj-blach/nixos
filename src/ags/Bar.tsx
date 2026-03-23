@@ -7,7 +7,7 @@ import Clock from "./widgets/Clock"
 import Battery from "./widgets/Battery"
 import Volume from "./widgets/Volume"
 import Bluetooth from "./widgets/Bluetooth"
-import Wifi from "./widgets/Wifi"
+import Network from "./widgets/Wifi"
 
 export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let win: Astal.Window
@@ -31,7 +31,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     >
       <centerbox>
         <box $type="start" class="bar-start">
-          <Workspaces />
+          <Workspaces monitor={gdkmonitor.connector ?? ""} />
         </box>
         <box $type="center" class="bar-center">
           <Clock />
@@ -40,7 +40,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <Battery />
           <Volume />
           <Bluetooth />
-          <Wifi />
+          <Network />
         </box>
       </centerbox>
     </window>

@@ -21,20 +21,30 @@ function batteryIcon(percentage: number, charging: boolean): string {
   return "\u{f008e}" // nf-md-battery_alert
 }
 
-function readBattery(): { percentage: number; charging: boolean } {
+function readBattery(): { percentage: number; charging: boolean; isPresent: boolean } {
   try {
     const battery = AstalBattery.get_default()
+    // Check if battery is present (desktops won't have one)
+    const isPresent = battery.isPresent ?? false
+    if (!isPresent) {
+      return { percentage: -1, charging: false, isPresent: false }
+    }
     const p = Math.round((battery.percentage ?? 0) * 100)
     const c = battery.charging ?? false
-    return { percentage: p, charging: c }
+    return { percentage: p, charging: c, isPresent: true }
   } catch (e) {
     console.error("battery read error:", e)
-    return { percentage: -1, charging: false }
+    return { percentage: -1, charging: false, isPresent: false }
   }
 }
 
 export default function Battery() {
   const init = readBattery()
+
+  // Hide widget if no battery is present
+  if (!init.isPresent) {
+    return <box visible={false} />
+  }
 
   const icon = createPoll(batteryIcon(init.percentage, init.charging), 5000, () => {
     const { percentage, charging } = readBattery()
