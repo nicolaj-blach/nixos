@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Monitor-relative workspace switcher
 # Desktop (3 monitors) - each monitor has its own 1-9 workspaces:
-#   Center (DP-1):    1-9
-#   Left (HDMI-A-1): 11-19
+#   Center (DP-3):    1-9
+#   Left (HDMI-A-2): 11-19
 #   Right (DP-2):    21-29
 # Laptop/other - uses workspaces 1-9 directly (no offset)
 
@@ -15,10 +15,10 @@ focused_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 # Calculate workspace offset based on monitor
 # Unknown monitors (laptop eDP-1, etc.) default to offset 0
 case "$focused_monitor" in
-    "DP-1")
+    "DP-3")
         offset=0
         ;;
-    "HDMI-A-1")
+    "HDMI-A-2")
         offset=10
         ;;
     "DP-2")
