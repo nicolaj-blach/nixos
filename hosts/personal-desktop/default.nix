@@ -1,4 +1,9 @@
-{ inputs, configModules, ... }:
+{
+  inputs,
+  configModules,
+  config,
+  ...
+}:
 
 {
   networking.hostName = "personal-desktop";
@@ -12,4 +17,12 @@
     configModules.programs
     inputs.walker.nixosModules.default
   ];
+
+  # NVIDIA proprietary drivers for gaming (desktop only)
+  hardware.nvidia = {
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    open = false;
+    modesetting.enable = true;
+    powerManagement.enable = true;
+  };
 }

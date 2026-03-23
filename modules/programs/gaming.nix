@@ -28,6 +28,12 @@
 
     # Gaming utilities
     protonup-qt # Manage Proton-GE versions
-    mangohud # Performance overlay
+    mangohud # Performance overlay (NVIDIA-optimized)
+    vkbasalt # NVIDIA ReShade-like post-processing
+    libvdpau-va-gl # VA-API to VDPAU bridge for video acceleration
+    (python3.withPackages (ps: [ ps.psutil ])) # Required by mangohud
   ];
+
+  # OpenGL support (32-bit libs for Proton are now enabled by default)
+  hardware.graphics.enable = true;
 }
