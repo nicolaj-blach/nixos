@@ -3,5 +3,6 @@
     ./programs.nix
     ./protonmail-bridge.nix
     ./bit.nix
+    ./gaming.nix
   ];
 }
