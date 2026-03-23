@@ -29,6 +29,11 @@ window.Bar > box {
 .workspaces {
 }
 
+.monitor-key {
+  color: @bar_muted;
+  margin-right: 8px;
+}
+
 .workspace {
   padding: 0 6px;
   margin: 0;
