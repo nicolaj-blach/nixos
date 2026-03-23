@@ -143,6 +143,7 @@ in
       basalt
       smassh
       inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
+      hyprmon
 
       # Desktop Utilities
       swww
