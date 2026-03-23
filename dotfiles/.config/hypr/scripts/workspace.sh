@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Dynamic monitor-relative workspace switcher
-# Uses monitor index to calculate workspace offset:
-#   Monitor 0: workspaces 1-9   (offset 0)
-#   Monitor 1: workspaces 11-19 (offset 10)
-#   Monitor 2: workspaces 21-29 (offset 20)
+# Uses monitor x-position (left to right) to calculate workspace offset:
+#   Leftmost monitor:  workspaces 1-9   (offset 0)
+#   Center monitor:    workspaces 11-19 (offset 10)
+#   Rightmost monitor: workspaces 21-29 (offset 20)
 # Single monitor (laptop) uses offset 0
 
 ws_num="$1"
@@ -12,14 +12,17 @@ action="${2:-switch}"
 # Get the currently focused monitor
 focused_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
-# Get monitor count and index
+# Get monitor count
 monitor_count=$(hyprctl monitors -j | jq 'length')
-monitor_index=$(hyprctl monitors -j | jq -r --arg name "$focused_monitor" 'to_entries | .[] | select(.value.name == $name) | .key')
 
-# Calculate offset: single monitor = 0, otherwise index * 10
+# Calculate offset based on x-position order (left to right)
 if [[ "$monitor_count" -eq 1 ]]; then
     offset=0
 else
+    # Sort monitors by x-position and find index of focused monitor
+    monitor_index=$(hyprctl monitors -j | jq -r --arg name "$focused_monitor" '
+        sort_by(.x) | to_entries | .[] | select(.value.name == $name) | .key
+    ')
     offset=$((monitor_index * 10))
 fi
 

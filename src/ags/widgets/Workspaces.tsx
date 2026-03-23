@@ -1,16 +1,20 @@
 import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createState, createComputed } from "ags"
 
-// Dynamic monitor workspace mapping based on monitor index:
-// Monitor 0: workspaces 1-9   (offset 0)
-// Monitor 1: workspaces 11-19 (offset 10)
-// Monitor 2: workspaces 21-29 (offset 20)
+// Dynamic monitor workspace mapping based on x-position (left to right):
+// Leftmost monitor:  workspaces 1-9   (offset 0)
+// Center monitor:    workspaces 11-19 (offset 10)
+// Rightmost monitor: workspaces 21-29 (offset 20)
 // Single monitor (laptop) uses offset 0
 function getWorkspaceOffset(monitorName: string): number {
   const hyprland = AstalHyprland.get_default()
   const monitors = hyprland.get_monitors()
-  const index = monitors.findIndex((m) => m.name === monitorName)
-  if (index === -1 || monitors.length === 1) return 0
+  if (monitors.length === 1) return 0
+
+  // Sort monitors by x-position to get left-to-right order
+  const sorted = [...monitors].sort((a, b) => a.x - b.x)
+  const index = sorted.findIndex((m) => m.name === monitorName)
+  if (index === -1) return 0
   return index * 10
 }
 
