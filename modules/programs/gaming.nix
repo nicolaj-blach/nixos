@@ -34,6 +34,9 @@
     (python3.withPackages (ps: [ ps.psutil ])) # Required by mangohud
   ];
 
-  # OpenGL support (32-bit libs for Proton are now enabled by default)
-  hardware.graphics.enable = true;
+  # OpenGL/Vulkan support
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true; # 32-bit libs for Proton/Wine games
+  };
 }
