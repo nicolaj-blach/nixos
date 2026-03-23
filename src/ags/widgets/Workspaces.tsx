@@ -1,21 +1,26 @@
 import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createState, createComputed } from "ags"
 
-// Dynamic monitor workspace mapping based on x-position (left to right):
-// Leftmost monitor:  workspaces 1-9   (offset 0)
-// Center monitor:    workspaces 11-19 (offset 10)
-// Rightmost monitor: workspaces 21-29 (offset 20)
-// Single monitor (laptop) uses offset 0
-function getWorkspaceOffset(monitorName: string): number {
+// split-monitor-workspaces plugin workspace mapping:
+// Each monitor gets 10 workspace slots (1-9 visible, 10 reserved)
+// Monitor index 0: workspaces 1-9
+// Monitor index 1: workspaces 11-19
+// Monitor index 2: workspaces 21-29
+// The plugin assigns monitor indices in the order monitors are added
+const WORKSPACES_PER_MONITOR = 10
+
+function getMonitorWorkspaceRange(monitorName: string): { offset: number; count: number } {
   const hyprland = AstalHyprland.get_default()
   const monitors = hyprland.get_monitors()
-  if (monitors.length === 1) return 0
 
-  // Sort monitors by x-position to get left-to-right order
-  const sorted = [...monitors].sort((a, b) => a.x - b.x)
-  const index = sorted.findIndex((m) => m.name === monitorName)
-  if (index === -1) return 0
-  return index * 10
+  // Single monitor - no offset needed
+  if (monitors.length === 1) return { offset: 0, count: 9 }
+
+  // Find monitor index (plugin uses internal order)
+  const monitorIndex = monitors.findIndex((m) => m.name === monitorName)
+  if (monitorIndex === -1) return { offset: 0, count: 9 }
+
+  return { offset: monitorIndex * WORKSPACES_PER_MONITOR, count: 9 }
 }
 
 function getOccupiedIds(hyprland: AstalHyprland.Hyprland): Set<number> {
@@ -37,11 +42,11 @@ export default function Workspaces({ monitor }: { monitor: string }) {
   hyprland.connect("client-removed", refresh)
   hyprland.connect("client-moved", refresh)
 
-  const offset = getWorkspaceOffset(monitor)
+  const { offset, count } = getMonitorWorkspaceRange(monitor)
 
   return (
     <box class="workspaces">
-      {Array.from({ length: 9 }, (_, i) => i + 1).map((displayId) => {
+      {Array.from({ length: count }, (_, i) => i + 1).map((displayId) => {
         const actualId = displayId + offset
 
         const cls = createComputed(() => {
@@ -54,7 +59,7 @@ export default function Workspaces({ monitor }: { monitor: string }) {
         return (
           <button
             class={cls}
-            onClicked={() => hyprland.dispatch("workspace", `${actualId}`)}
+            onClicked={() => hyprland.dispatch("split-workspace", `${displayId}`)}
           >
             <label label={`${displayId}`} />
           </button>

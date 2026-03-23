@@ -3,6 +3,13 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";
 
+    hyprland.url = "github:hyprwm/Hyprland";
+
+    split-monitor-workspaces = {
+      url = "github:zjeffer/split-monitor-workspaces";
+      inputs.hyprland.follows = "hyprland";
+    };
+
     elephant.url = "github:abenz1267/elephant";
 
     walker = {
