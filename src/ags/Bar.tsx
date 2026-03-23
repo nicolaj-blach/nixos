@@ -13,6 +13,8 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let win: Astal.Window
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
+  console.log(`Bar created: connector=${gdkmonitor.connector}, geometry=${JSON.stringify(gdkmonitor.geometry)}`)
+
   onCleanup(() => {
     win.destroy()
   })

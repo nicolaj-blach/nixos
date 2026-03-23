@@ -2,25 +2,26 @@ import AstalHyprland from "gi://AstalHyprland"
 import { createBinding, createState, createComputed } from "ags"
 
 // split-monitor-workspaces plugin workspace mapping:
-// Each monitor gets 10 workspace slots (1-9 visible, 10 reserved)
-// Monitor index 0: workspaces 1-9
-// Monitor index 1: workspaces 11-19
-// Monitor index 2: workspaces 21-29
-// The plugin assigns monitor indices in the order monitors are added
-const WORKSPACES_PER_MONITOR = 10
+// Each monitor gets `count` workspaces (configured in hyprland.conf)
+// Offset is calculated as: monitorID * count
+// Monitor ID 0: workspaces 1-9 (offset 0)
+// Monitor ID 1: workspaces 10-18 (offset 9)
+// Monitor ID 2: workspaces 19-27 (offset 18)
+const WORKSPACES_PER_MONITOR = 9
 
 function getMonitorWorkspaceRange(monitorName: string): { offset: number; count: number } {
   const hyprland = AstalHyprland.get_default()
   const monitors = hyprland.get_monitors()
 
   // Single monitor - no offset needed
-  if (monitors.length === 1) return { offset: 0, count: 9 }
+  if (monitors.length === 1) return { offset: 0, count: WORKSPACES_PER_MONITOR }
 
-  // Find monitor index (plugin uses internal order)
-  const monitorIndex = monitors.findIndex((m) => m.name === monitorName)
-  if (monitorIndex === -1) return { offset: 0, count: 9 }
+  // Find monitor by name and use its ID for offset calculation
+  const monitor = monitors.find((m) => m.name === monitorName)
+  if (!monitor) return { offset: 0, count: WORKSPACES_PER_MONITOR }
 
-  return { offset: monitorIndex * WORKSPACES_PER_MONITOR, count: 9 }
+  // Plugin uses monitor.id * count for offset
+  return { offset: monitor.id * WORKSPACES_PER_MONITOR, count: WORKSPACES_PER_MONITOR }
 }
 
 function getOccupiedIds(hyprland: AstalHyprland.Hyprland): Set<number> {
@@ -43,15 +44,26 @@ export default function Workspaces({ monitor }: { monitor: string }) {
   hyprland.connect("client-moved", refresh)
 
   const { offset, count } = getMonitorWorkspaceRange(monitor)
+  console.log(`Workspaces: monitor=${monitor}, offset=${offset}, count=${count}`)
+
+  // Get keybind number based on physical position (left to right by x-coordinate)
+  const monitors = hyprland.get_monitors()
+  const sortedByX = [...monitors].sort((a, b) => a.x - b.x)
+  const monitorKey = sortedByX.findIndex((m) => m.name === monitor) + 1
 
   return (
     <box class="workspaces">
+      <label label={`${monitorKey}`} class="monitor-key" />
       {Array.from({ length: count }, (_, i) => i + 1).map((displayId) => {
         const actualId = displayId + offset
 
         const cls = createComputed(() => {
           const fw = focused()
-          if (fw?.id === actualId) return "workspace active"
+          const isActive = fw?.id === actualId
+          if (isActive) {
+            console.log(`ACTIVE: monitor=${monitor}, button=${displayId}, actualId=${actualId}, focusedId=${fw?.id}`)
+          }
+          if (isActive) return "workspace active"
           if (occupied().has(actualId)) return "workspace occupied"
           return "workspace"
         })
