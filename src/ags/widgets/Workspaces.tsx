@@ -50,10 +50,11 @@ export default function Workspaces({ monitor }: { monitor: string }) {
   const monitors = hyprland.get_monitors()
   const sortedByX = [...monitors].sort((a, b) => a.x - b.x)
   const monitorKey = sortedByX.findIndex((m) => m.name === monitor) + 1
+  const showMonitorKey = monitors.length > 1
 
   return (
     <box class="workspaces">
-      <label label={`${monitorKey}`} class="monitor-key" />
+      {showMonitorKey && <label label={`[${monitorKey}]`} class="monitor-key" />}
       {Array.from({ length: count }, (_, i) => i + 1).map((displayId) => {
         const actualId = displayId + offset
 
