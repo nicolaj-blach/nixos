@@ -33,7 +33,7 @@ in
     nix-ld = {
       enable = true;
       libraries = with pkgs; [
-        stdenv.cc.cc.lib
+        gcc14.cc.lib
         zlib
         openssl
         curl
