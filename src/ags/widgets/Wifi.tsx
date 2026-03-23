@@ -1,6 +1,6 @@
 import AstalNetwork from "gi://AstalNetwork"
 import GLib from "gi://GLib"
-import { createBinding, With } from "ags"
+import { createBinding, createComputed } from "ags"
 
 // Nerd Font wifi icons mapped to signal strength
 function wifiIcon(strength: number): string {
@@ -19,56 +19,65 @@ function disconnectedIcon(): string {
   return "\u{f092b}" // nf-md-wifi_strength_off
 }
 
+function WiredDisplay() {
+  const network = AstalNetwork.get_default()
+  const wired = network.wired
+
+  if (!wired) {
+    return (
+      <box spacing={8}>
+        <label class="network-icon" label={ethernetIcon()} />
+        <label class="network-info" label="Ethernet" />
+      </box>
+    )
+  }
+
+  const speed = createBinding(wired, "speed")
+
+  return (
+    <box spacing={8}>
+      <label class="network-icon" label={ethernetIcon()} />
+      <label class="network-info" label={speed((s) => s > 0 ? `${s} Mbps` : "Ethernet")} />
+    </box>
+  )
+}
+
+function WifiDisplay() {
+  const network = AstalNetwork.get_default()
+  const wifi = network.wifi
+
+  if (!wifi) {
+    return <label class="network-icon" label={disconnectedIcon()} />
+  }
+
+  const strength = createBinding(wifi, "strength")
+  const ssid = createBinding(wifi, "ssid")
+  const icon = strength((s) => wifiIcon(s))
+
+  return (
+    <box spacing={8}>
+      <label class="network-icon" label={icon} />
+      <label class="network-ssid" label={ssid((s) => s ?? "")} />
+    </box>
+  )
+}
+
 export default function Network() {
   const network = AstalNetwork.get_default()
-  const wifi = createBinding(network, "wifi")
-  const wired = createBinding(network, "wired")
   const primary = createBinding(network, "primary")
+
+  const isWired = createComputed(() => primary() === AstalNetwork.Primary.WIRED)
 
   return (
     <button class="network" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
-      <With value={primary}>
-        {(p) => {
-          // Check if wired/ethernet is the primary connection
-          if (p === AstalNetwork.Primary.WIRED) {
-            return (
-              <With value={wired}>
-                {(w) => {
-                  if (!w) return <label class="network-icon" label={disconnectedIcon()} />
-                  const speed = createBinding(w, "speed")
-                  return (
-                    <box spacing={8}>
-                      <label class="network-icon" label={ethernetIcon()} />
-                      <label class="network-info" label={speed((s) => s > 0 ? `${s} Mbps` : "Ethernet")} />
-                    </box>
-                  )
-                }}
-              </With>
-            )
-          }
-
-          // Otherwise show wifi
-          return (
-            <With value={wifi}>
-              {(w) => {
-                if (!w) return <label class="network-icon" label={disconnectedIcon()} />
-
-                const strength = createBinding(w, "strength")
-                const ssid = createBinding(w, "ssid")
-
-                const icon = strength((s) => wifiIcon(s))
-
-                return (
-                  <box spacing={8}>
-                    <label class="network-icon" label={icon} />
-                    <label class="network-ssid" label={ssid((s) => s ?? "")} />
-                  </box>
-                )
-              }}
-            </With>
-          )
-        }}
-      </With>
+      <box>
+        <box visible={isWired}>
+          <WiredDisplay />
+        </box>
+        <box visible={() => !isWired()}>
+          <WifiDisplay />
+        </box>
+      </box>
     </button>
   )
 }
