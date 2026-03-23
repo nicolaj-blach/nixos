@@ -4,7 +4,7 @@
 {
   boot.loader.limine.extraEntries = ''
     /Windows
-        PROTOCOL=efi_chainload
-        IMAGE_PATH=boot():/EFI/Microsoft/Boot/bootmgfw.efi
+        protocol: efi_chainload
+        image_path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
   '';
 }
