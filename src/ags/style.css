@@ -34,6 +34,10 @@ window.Bar > box {
   margin-right: 8px;
 }
 
+.monitor-key.active {
+  color: @bar_red;
+}
+
 .workspace {
   padding: 0 6px;
   margin: 0;

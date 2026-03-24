@@ -63,9 +63,14 @@ export default function Workspaces({ monitor }: { monitor: string }) {
   const monitorKey = sortedByX.findIndex((m) => m.name === monitor) + 1
   const showMonitorKey = monitors.length > 1
 
+  const monitorKeyCls = createComputed(() => {
+    const isMonitorFocused = focusedMonitor()?.name === monitor
+    return isMonitorFocused ? "monitor-key active" : "monitor-key"
+  })
+
   return (
     <box class="workspaces">
-      {showMonitorKey && <label label={`[${monitorKey}]`} class="monitor-key" />}
+      {showMonitorKey && <label label={`[${monitorKey}]`} class={monitorKeyCls} />}
       {Array.from({ length: count }, (_, i) => i + 1).map((displayId) => {
         const actualId = displayId + offset
 
