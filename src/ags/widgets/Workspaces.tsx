@@ -9,19 +9,19 @@ import { createBinding, createState, createComputed } from "ags"
 // Monitor ID 2: workspaces 19-27 (offset 18)
 const WORKSPACES_PER_MONITOR = 9
 
-function getMonitorWorkspaceRange(monitorName: string): { offset: number; count: number } {
+function getMonitorWorkspaceRange(monitorName: string): { offset: number; count: number; monitorId: number } {
   const hyprland = AstalHyprland.get_default()
   const monitors = hyprland.get_monitors()
 
   // Single monitor - no offset needed
-  if (monitors.length === 1) return { offset: 0, count: WORKSPACES_PER_MONITOR }
+  if (monitors.length === 1) return { offset: 0, count: WORKSPACES_PER_MONITOR, monitorId: 0 }
 
   // Find monitor by name and use its ID for offset calculation
   const monitor = monitors.find((m) => m.name === monitorName)
-  if (!monitor) return { offset: 0, count: WORKSPACES_PER_MONITOR }
+  if (!monitor) return { offset: 0, count: WORKSPACES_PER_MONITOR, monitorId: 0 }
 
   // Plugin uses monitor.id * count for offset
-  return { offset: monitor.id * WORKSPACES_PER_MONITOR, count: WORKSPACES_PER_MONITOR }
+  return { offset: monitor.id * WORKSPACES_PER_MONITOR, count: WORKSPACES_PER_MONITOR, monitorId: monitor.id }
 }
 
 function getOccupiedIds(hyprland: AstalHyprland.Hyprland): Set<number> {
@@ -33,18 +33,29 @@ function getOccupiedIds(hyprland: AstalHyprland.Hyprland): Set<number> {
   return ids
 }
 
+// Get the active workspace ID for a specific monitor
+function getMonitorActiveWorkspace(hyprland: AstalHyprland.Hyprland, monitorName: string): number | null {
+  const monitor = hyprland.get_monitors().find((m) => m.name === monitorName)
+  return monitor?.activeWorkspace?.id ?? null
+}
+
 export default function Workspaces({ monitor }: { monitor: string }) {
   const hyprland = AstalHyprland.get_default()
-  const focused = createBinding(hyprland, "focusedWorkspace")
+  const focusedMonitor = createBinding(hyprland, "focusedMonitor")
   const [occupied, setOccupied] = createState(getOccupiedIds(hyprland))
+  const [monitorActiveWs, setMonitorActiveWs] = createState(getMonitorActiveWorkspace(hyprland, monitor))
 
   const refresh = () => setOccupied(getOccupiedIds(hyprland))
   hyprland.connect("client-added", refresh)
   hyprland.connect("client-removed", refresh)
   hyprland.connect("client-moved", refresh)
 
+  // Track workspace changes on this monitor
+  hyprland.connect("notify::focused-workspace", () => {
+    setMonitorActiveWs(getMonitorActiveWorkspace(hyprland, monitor))
+  })
+
   const { offset, count } = getMonitorWorkspaceRange(monitor)
-  console.log(`Workspaces: monitor=${monitor}, offset=${offset}, count=${count}`)
 
   // Get keybind number based on physical position (left to right by x-coordinate)
   const monitors = hyprland.get_monitors()
@@ -59,12 +70,15 @@ export default function Workspaces({ monitor }: { monitor: string }) {
         const actualId = displayId + offset
 
         const cls = createComputed(() => {
-          const fw = focused()
-          const isActive = fw?.id === actualId
-          if (isActive) {
-            console.log(`ACTIVE: monitor=${monitor}, button=${displayId}, actualId=${actualId}, focusedId=${fw?.id}`)
+          const isActiveOnMonitor = monitorActiveWs() === actualId
+          const isMonitorFocused = focusedMonitor()?.name === monitor
+
+          if (isActiveOnMonitor) {
+            // Active workspace on focused monitor = blue underline
+            // Active workspace on unfocused monitor = gray underline
+            if (isMonitorFocused) return "workspace active"
+            return "workspace active-unfocused"
           }
-          if (isActive) return "workspace active"
           if (occupied().has(actualId)) return "workspace occupied"
           return "workspace"
         })
