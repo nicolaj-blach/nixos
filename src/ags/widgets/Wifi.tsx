@@ -21,18 +21,22 @@ export default function Network() {
   const primary = createBinding(network, "primary")
   const isWired = createComputed(() => primary() === AstalNetwork.Primary.WIRED)
 
+  // Create reactive bindings for wifi properties
+  const strength = wifi ? createBinding(wifi, "strength") : () => 0
+  const ssidBinding = wifi ? createBinding(wifi, "ssid") : () => null
+
   // Icon: ethernet if wired, otherwise wifi strength
   const icon = createComputed(() => {
     if (isWired()) return ETHERNET_ICON
     if (!wifi) return WIFI_OFF_ICON
-    return wifiIcon(wifi.strength)
+    return wifiIcon(strength())
   })
 
   // SSID: empty if wired, otherwise wifi ssid
   const ssid = createComputed(() => {
     if (isWired()) return ""
     if (!wifi) return ""
-    return wifi.ssid ?? ""
+    return ssidBinding() ?? ""
   })
 
   // Only show SSID label when not wired
