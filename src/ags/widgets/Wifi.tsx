@@ -22,7 +22,7 @@ function disconnectedIcon(): string {
 function WiredDisplay() {
   return (
     <box spacing={8}>
-      <label class="network-icon" label={ethernetIcon()} />
+      <label class="wifi-icon" label={ethernetIcon()} />
     </box>
   )
 }
@@ -32,7 +32,7 @@ function WifiDisplay() {
   const wifi = network.wifi
 
   if (!wifi) {
-    return <label class="network-icon" label={disconnectedIcon()} />
+    return <label class="wifi-icon" label={disconnectedIcon()} />
   }
 
   const strength = createBinding(wifi, "strength")
@@ -40,9 +40,9 @@ function WifiDisplay() {
   const icon = strength((s) => wifiIcon(s))
 
   return (
-    <box spacing={8}>
-      <label class="network-icon" label={icon} />
-      <label class="network-ssid" label={ssid((s) => s ?? "")} />
+    <box spacing={4}>
+      <label class="wifi-icon" label={icon} />
+      <label class="wifi-ssid" label={ssid((s) => s ?? "")} />
     </box>
   )
 }
@@ -54,7 +54,7 @@ export default function Network() {
   const isWired = createComputed(() => primary() === AstalNetwork.Primary.WIRED)
 
   return (
-    <button class="network" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
+    <button class="wifi" onClicked={() => GLib.spawn_command_line_async(`${GLib.get_home_dir()}/.local/bin/tui-wifi`)}>
       <box>
         <box visible={isWired}>
           <WiredDisplay />
