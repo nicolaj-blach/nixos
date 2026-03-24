@@ -20,11 +20,7 @@ function disconnectedIcon(): string {
 }
 
 function WiredDisplay() {
-  return (
-    <box spacing={8}>
-      <label class="wifi-icon" label={ethernetIcon()} />
-    </box>
-  )
+  return <label class="wifi-icon" label={ethernetIcon()} />
 }
 
 function WifiDisplay() {
