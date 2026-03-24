@@ -66,6 +66,11 @@ window.Bar > box {
   border-bottom: 2px solid @bar_muted;
 }
 
+.workspace.active-unfocused.occupied {
+  color: @bar_accent2;
+  border-bottom: 2px solid @bar_muted;
+}
+
 /* Clock center group */
 .clock {
   padding: 0 8px;

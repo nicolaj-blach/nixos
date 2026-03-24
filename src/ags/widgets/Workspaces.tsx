@@ -72,14 +72,16 @@ export default function Workspaces({ monitor }: { monitor: string }) {
         const cls = createComputed(() => {
           const isActiveOnMonitor = monitorActiveWs() === actualId
           const isMonitorFocused = focusedMonitor()?.name === monitor
+          const isOccupied = occupied().has(actualId)
 
           if (isActiveOnMonitor) {
             // Active workspace on focused monitor = blue underline
-            // Active workspace on unfocused monitor = gray underline
+            // Active workspace on unfocused monitor = gray underline, purple text if occupied
             if (isMonitorFocused) return "workspace active"
+            if (isOccupied) return "workspace active-unfocused occupied"
             return "workspace active-unfocused"
           }
-          if (occupied().has(actualId)) return "workspace occupied"
+          if (isOccupied) return "workspace occupied"
           return "workspace"
         })
 
