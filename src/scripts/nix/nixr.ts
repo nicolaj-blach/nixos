@@ -67,7 +67,7 @@ async function main() {
 
     // Step 4: stow dotfiles
     console.log(`${c.cyan}Stowing dotfiles...${c.reset}`);
-    const stowExit = await Bun.spawn(["stow", "-d", nixdir, "-t", Bun.env.HOME!, "--adopt", "dotfiles"], {
+    const stowExit = await Bun.spawn(["stow", "-d", nixdir, "-t", Bun.env.HOME!, "--no-folding", "--adopt", "dotfiles"], {
       stdout: "pipe",
       stderr: "pipe",
     }).exited;

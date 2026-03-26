@@ -68,6 +68,7 @@ in
       zsh-syntax-highlighting
       zsh-autopair
       starship
+      carapace
 
       # File Management
       yazi

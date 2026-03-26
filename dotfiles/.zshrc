@@ -64,6 +64,11 @@ zle -N zle-line-finish
 # Zoxide
 eval "$(zoxide init zsh)"
 
+# Carapace: multi-shell completion engine
+export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+source <(carapace _carapace)
+
 # fzf shell integration (CTRL-T, CTRL-R, ALT-C keybindings + fuzzy completion)
 source <(fzf --zsh)
 

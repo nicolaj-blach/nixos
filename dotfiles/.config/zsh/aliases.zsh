@@ -4,7 +4,7 @@
 alias nixu="sudo nix flake update --flake path:$HOME/nixos"
 alias nhs="nh search"
 alias nixb="nh os build ~/nixos"
-alias stowd="stow -d ~/nixos -t ~ dotfiles"
+alias stowd="stow -d ~/nixos -t ~ --no-folding dotfiles"
 
 # nix shell with auto-prefixing and package accumulation
 ns() {
