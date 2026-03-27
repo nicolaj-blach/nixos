@@ -69,5 +69,5 @@ alias oc="opencode"
 alias occ="opencode -c"
 
 # Terminal Tricks
-alias pipes="pipes-rs -k curved --palette darker"
+alias pipes="pipes-rs -k curved --palette darker -p 5 -r 0.95"
 alias matrix="cmatrix"

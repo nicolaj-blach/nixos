@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Wrapper for aerc that ensures GPG_TTY is set for OAuth token decryption
-export GPG_TTY=$(tty)
-exec aerc "$@"

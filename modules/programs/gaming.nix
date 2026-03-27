@@ -10,7 +10,16 @@
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     gamescopeSession.enable = true;
+    extraPackages = with pkgs; [
+      xorg.libXcursor # Cursor rendering
+      xorg.libXi # Input
+      xorg.libXinerama # Multi-monitor
+      xorg.libXScrnSaver # Screen saver
+    ];
   };
+
+  # Steam HiDPI scaling (set to your display scale factor, e.g., 1.5 or 2)
+  environment.sessionVariables.STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
 
   # Gamemode - optimizes system for gaming
   programs.gamemode = {

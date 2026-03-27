@@ -60,16 +60,22 @@ keybind = shift+enter=csi:13;2u
 keybind = ctrl+w=close_surface
 
 # Split navigation (vim-style)
-keybind = ctrl+h=goto_split:left
-keybind = ctrl+j=goto_split:down
-keybind = ctrl+k=goto_split:up
-keybind = ctrl+l=goto_split:right
+keybind = alt+h=goto_split:left
+keybind = alt+j=goto_split:down
+keybind = alt+k=goto_split:up
+keybind = alt+l=goto_split:right
 
 # Split resize
 keybind = ctrl+alt+h=resize_split:left,30
 keybind = ctrl+alt+j=resize_split:down,30
 keybind = ctrl+alt+k=resize_split:up,30
 keybind = ctrl+alt+l=resize_split:right,30
+
+# Split resize (large)
+keybind = ctrl+shift+alt+h=resize_split:left,90
+keybind = ctrl+shift+alt+j=resize_split:down,90
+keybind = ctrl+shift+alt+k=resize_split:up,90
+keybind = ctrl+shift+alt+l=resize_split:right,90
 
 # Tab navigation
 keybind = ctrl+shift+h=previous_tab
