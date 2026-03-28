@@ -18,8 +18,8 @@
     ];
   };
 
-  # Steam HiDPI scaling (set to your display scale factor, e.g., 1.5 or 2)
-  environment.sessionVariables.STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
+  # Steam scaling for HiDPI (1.25 to match your ultrawide)
+  environment.sessionVariables.STEAM_FORCE_DESKTOPUI_SCALING = "1.25";
 
   # Gamemode - optimizes system for gaming
   programs.gamemode = {
@@ -41,6 +41,7 @@
     vkbasalt # NVIDIA ReShade-like post-processing
     libvdpau-va-gl # VA-API to VDPAU bridge for video acceleration
     (python3.withPackages (ps: [ ps.psutil ])) # Required by mangohud
+    r2modman # modmanger
   ];
 
   # OpenGL/Vulkan support
