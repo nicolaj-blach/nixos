@@ -87,6 +87,7 @@ in
       glow
       tldr
       lue
+      ansifilter
 
       # Editors
       vim
