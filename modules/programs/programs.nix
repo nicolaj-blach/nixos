@@ -183,7 +183,7 @@ in
       aerc
       neomutt
       urlscan
-      pandoc
+      w3m
 
       # Communication
       vesktop
