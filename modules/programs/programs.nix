@@ -184,6 +184,7 @@ in
       aerc
       neomutt
       urlscan
+      lynx
 
       # Communication
       vesktop

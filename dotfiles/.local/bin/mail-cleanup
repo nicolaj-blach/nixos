@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Clean up common email encoding issues and spam tricks:
+# - Replace non-breaking spaces (U+00A0) with regular spaces
+# - Remove replacement characters (U+FFFD)
+# - Remove BOM (U+FEFF)
+# - Remove soft hyphens (U+00AD)
+# - Remove zero-width spaces (U+200B)
+# - Remove zero-width joiners (U+200D)
+# - Remove zero-width non-joiners (U+200C)
+# - Remove word joiners (U+2060)
+# - Remove combining grapheme joiner (U+034F)
+# - Remove empty markdown images ![](...)
+# - Remove [TABLE] placeholders
+sed $'s/\xC2\xA0/ /g; s/\xEF\xBF\xBD//g; s/\xEF\xBB\xBF//g; s/\xC2\xAD//g; s/\xE2\x80\x8B//g; s/\xE2\x80\x8D//g; s/\xE2\x80\x8C//g; s/\xE2\x81\xA0//g; s/\xCD\x8F//g' \
+  | sed 's/!\[\]([^)]*)//g' \
+  | sed 's/\[TABLE\]//g'
