@@ -88,6 +88,7 @@ in
       tldr
       lue
       ansifilter
+      pandoc
 
       # Editors
       vim
@@ -183,7 +184,6 @@ in
       aerc
       neomutt
       urlscan
-      w3m
 
       # Communication
       vesktop
