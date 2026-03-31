@@ -28,6 +28,15 @@
 
     libinput.enable = true;
     udisks2.enable = true;
+
+    syncthing = {
+      enable = true;
+      user = username;
+      dataDir = "/home/${username}";
+      configDir = "/home/${username}/.config/syncthing";
+      openDefaultPorts = true;
+      settings.folders."silverbullet-space".path = "/home/${username}/notes";
+    };
   };
 
   hardware.bluetooth = {
