@@ -43,6 +43,11 @@ in
     };
     firefox.enable = true;
 
+    git = {
+      enable = true;
+      config.pull.rebase = true;
+    };
+
     nh = {
       enable = true;
       clean.enable = true;
