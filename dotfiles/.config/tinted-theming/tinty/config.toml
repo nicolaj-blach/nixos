@@ -80,3 +80,11 @@ name = "tinted-swayosd"
 themes-dir = "scripts"
 hook = "~/.local/bin/tinty-swayosd-hook"
 supported-systems = ["base16"]
+
+# Posting HTTP client theme
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-posting"
+themes-dir = "scripts"
+hook = "~/.local/bin/tinty-posting-hook"
+supported-systems = ["base16"]
