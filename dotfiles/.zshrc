@@ -9,7 +9,7 @@ KEYTIMEOUT=1
 # Oh-my-zsh
 export ZSH="/run/current-system/sw/share/oh-my-zsh"
 plugins=(
-  # git removed - starship already handles git status, this was redundant overhead
+  git
   sudo
   vi-mode
   history-substring-search
@@ -27,7 +27,7 @@ source "$ZSH/oh-my-zsh.sh"
 
 # External plugins (sourced after oh-my-zsh)
 source /run/current-system/sw/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /run/current-system/sw/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /run/current-system/sw/share/zsh/zsh-autopair/autopair.zsh
 
 # Prompt

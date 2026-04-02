@@ -70,7 +70,7 @@ in
       zsh
       oh-my-zsh
       zsh-autosuggestions
-      zsh-fast-syntax-highlighting
+      zsh-syntax-highlighting
       zsh-autopair
       starship
       carapace
@@ -218,6 +218,11 @@ in
       NIXOS_OZONE_WL = "1";
       GTK_USE_PORTAL = "1";
       BROWSER = "zen";
+
+      # NVIDIA OpenGL fixes for Ghostty/GTK apps (reduces random freezes)
+      __GL_YIELD = "usleep"; # Prevents busy-wait GPU stalls
+      __GL_THREADED_OPTIMIZATION = "0"; # Disable threaded GL (can cause freezes)
+      __GL_MaxFramesAllowed = "1"; # Reduce frame queue depth
     };
   };
 }
