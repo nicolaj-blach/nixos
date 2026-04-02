@@ -127,16 +127,67 @@ local function setup_snippets()
   })
 end
 
--- Create new note with template auto-applied
-local function create_note(note_type)
-  local folder_map = {
-    fleeting = "fleeting",
-    resource = "resources",
-    atomic = "atomic",
-    project = "projects",
-    source = "sources",
-  }
+-- Folder mapping for note types
+local folder_map = {
+  fleeting = "f",
+  resource = "r",
+  atomic = "a",
+  project = "p",
+  source = "s",
+}
 
+-- Create new note with a specific name (used by picker)
+local function create_note_with_name(note_type, name)
+  local folder = folder_map[note_type]
+  if not folder then
+    vim.notify("Unknown note type: " .. note_type, vim.log.levels.ERROR)
+    return
+  end
+
+  -- Clean up name for filename
+  local filename = name:gsub("[^%w%s-]", ""):gsub("%s+", "-"):lower()
+  local filepath = notes_path .. "/" .. folder .. "/" .. filename .. ".md"
+
+  vim.fn.mkdir(notes_path .. "/" .. folder, "p")
+
+  -- Write template directly to file
+  local today = get_today()
+  local template
+
+  if note_type == "fleeting" then
+    template = "---\ntags: fleeting\nreview_date: " .. today .. "\n---\n\n# " .. name .. "\n\n"
+  elseif note_type == "resource" then
+    template = "---\ntags: resource\nsource: [[]]\n---\n\n# " .. name .. "\n\n"
+  elseif note_type == "atomic" then
+    template = "---\ntags: atomic\nup: [[]]\n---\n\n# " .. name .. "\n\n"
+  elseif note_type == "project" then
+    template = "---\ntags: project\nstatus: active\ndue: "
+      .. today
+      .. "\n---\n\n# "
+      .. name
+      .. "\n\n## Goals\n\n\n## Tasks\n\n- [ ] \n\n## Notes\n\n"
+  elseif note_type == "source" then
+    template = "---\ntags: source\nurl: \n---\n\n# "
+      .. name
+      .. "\n\n## Summary\n\n\n## Key Points\n\n\n## Quotes\n\n"
+  else
+    template = "# " .. name .. "\n\n"
+  end
+
+  -- Only write if file doesn't exist
+  if vim.fn.filereadable(filepath) == 0 then
+    local file = io.open(filepath, "w")
+    if file then
+      file:write(template)
+      file:close()
+    end
+  end
+
+  vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+end
+
+-- Create new note with template auto-applied (prompts for name)
+local function create_note(note_type)
   local folder = folder_map[note_type]
   if not folder then
     vim.notify("Unknown note type: " .. note_type, vim.log.levels.ERROR)
@@ -147,167 +198,190 @@ local function create_note(note_type)
     if not name or name == "" then
       return
     end
-
-    name = name:gsub("[^%w%s-]", ""):gsub("%s+", "-"):lower()
-    local filepath = notes_path .. "/" .. folder .. "/" .. name .. ".md"
-
-    vim.fn.mkdir(notes_path .. "/" .. folder, "p")
-    vim.cmd("edit " .. vim.fn.fnameescape(filepath))
-
-    local trigger = ";" .. note_type
-    vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes("i" .. trigger .. "<Tab>", true, false, true),
-      "n",
-      false
-    )
+    create_note_with_name(note_type, name)
   end)
 end
 
--- Check if current buffer is in notes directory
-local function is_notes_buffer()
-  local bufpath = vim.fn.expand("%:p")
-  return bufpath:sub(1, #notes_path) == notes_path
-end
-
--- Setup buffer-local keymaps for a specific buffer
-local function setup_buffer_keymaps(bufnr)
-  local opts = { buffer = bufnr }
-
-  -- Register which-key group
-  local wk_ok, wk = pcall(require, "which-key")
-  if wk_ok then
-    wk.add({
-      { "<leader>;", group = "notes", icon = "", buffer = bufnr },
-    })
-  end
-
-  -- Note search keymaps using Snacks picker
-  vim.keymap.set("n", "<leader>;f", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      search = "tags: fleeting",
-      title = "Fleeting Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find fleeting notes" }))
-
-  vim.keymap.set("n", "<leader>;a", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      search = "tags: atomic",
-      title = "Atomic Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find atomic notes" }))
-
-  vim.keymap.set("n", "<leader>;p", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      search = "tags: project",
-      title = "Project Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find project notes" }))
-
-  vim.keymap.set("n", "<leader>;r", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      search = "tags: resource",
-      title = "Resource Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find resource notes" }))
-
-  vim.keymap.set("n", "<leader>;o", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      search = "tags: source",
-      title = "Source Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find source notes" }))
-
-  vim.keymap.set("n", "<leader>;;", function()
-    require("snacks").picker.files({
-      cwd = notes_path,
-      title = "All Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Find all notes" }))
-
-  vim.keymap.set("n", "<leader>;g", function()
-    require("snacks").picker.grep({
-      cwd = notes_path,
-      title = "Grep Notes",
-    })
-  end, vim.tbl_extend("force", opts, { desc = "Grep in notes" }))
-
-  -- Snooze
-  vim.keymap.set("n", "<leader>;s", snooze_note, vim.tbl_extend("force", opts, { desc = "Snooze note (+3 days)" }))
-
-  -- Open Inbox
-  vim.keymap.set("n", "<leader>;i", function()
-    vim.cmd("edit " .. vim.fn.fnameescape(notes_path .. "/Inbox.md"))
-  end, vim.tbl_extend("force", opts, { desc = "Open Inbox" }))
-
-  -- Create new note
-  vim.keymap.set("n", "<leader>;n", function()
-    vim.ui.select(
-      { "fleeting", "atomic", "project", "resource", "source" },
-      { prompt = "Note type:" },
-      function(choice)
-        if choice then
-          create_note(choice)
-        end
-      end
-    )
-  end, vim.tbl_extend("force", opts, { desc = "New note" }))
-
-  -- Toggle todo state
-  vim.keymap.set("n", "<leader>;t", function()
-    local line = vim.api.nvim_get_current_line()
-    if line:match("%- %[ %]") then
-      vim.api.nvim_set_current_line(line:gsub("%- %[ %]", "- [/]", 1))
-    elseif line:match("%- %[/%]") then
-      vim.api.nvim_set_current_line(line:gsub("%- %[/%]", "- [x]", 1))
-    elseif line:match("%- %[x%]") then
-      vim.api.nvim_set_current_line(line:gsub("%- %[x%]", "- [ ]", 1))
-    end
-  end, vim.tbl_extend("force", opts, { desc = "Toggle todo" }))
-
-  -- Create link from clipboard
-  vim.keymap.set("n", "<leader>;l", function()
-    local clip = vim.fn.getreg("+")
-    if clip and clip ~= "" then
-      vim.api.nvim_put({ "[[" .. clip .. "]]" }, "c", true, true)
-    end
-  end, vim.tbl_extend("force", opts, { desc = "Link from clipboard" }))
-end
-
--- Track which buffers already have keymaps set
-local keymaps_set = {}
-
 -- Setup buffer-local keymaps ONLY for notes files
 local function setup_notes_keymaps()
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-    pattern = "*",
+  vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = vim.fn.expand("~/notes") .. "/**",
     callback = function()
       local bufnr = vim.api.nvim_get_current_buf()
+      local opts = { buffer = bufnr }
 
-      -- Skip if already set up or not a notes file
-      if keymaps_set[bufnr] then
-        return
+      -- Register which-key group
+      local wk_ok, wk = pcall(require, "which-key")
+      if wk_ok then
+        wk.add({
+          { "<leader>;", group = "notes", icon = "", buffer = bufnr },
+        })
       end
 
-      if not is_notes_buffer() then
-        return
+      -- Helper to get search text from picker
+      local function get_picker_search(picker)
+        local ok, result = pcall(function()
+          local input_win = picker.input.win
+          local input_buf = vim.api.nvim_win_get_buf(input_win)
+          local lines = vim.api.nvim_buf_get_lines(input_buf, 0, 1, false)
+          return lines[1] or ""
+        end)
+        return ok and result or ""
       end
 
-      keymaps_set[bufnr] = true
-      setup_buffer_keymaps(bufnr)
-    end,
-  })
+      -- Helper to create note picker for a specific type
+      local function note_picker(note_type, folder, title)
+        require("snacks").picker.files({
+          cwd = notes_path .. "/" .. folder,
+          title = title,
+          show_empty = true,
+          auto_confirm = false,
+          actions = {
+            create_note = function(picker)
+              -- Try different ways to get the search text
+              local search_text = ""
+              
+              -- Try filter pattern
+              if picker.filter and picker:filter().pattern then
+                search_text = picker:filter().pattern
+              end
+              
+              -- Try input:get()
+              if search_text == "" and picker.input and picker.input.get then
+                local ok, result = pcall(function() return picker.input:get() end)
+                if ok and result then search_text = result end
+              end
+              
+              -- Try getting from input buffer directly
+              if search_text == "" and picker.input and picker.input.buf then
+                local ok, lines = pcall(vim.api.nvim_buf_get_lines, picker.input.buf, 0, 1, false)
+                if ok and lines and lines[1] then search_text = lines[1] end
+              end
+              
+              picker:close()
+              vim.defer_fn(function()
+                if search_text ~= "" then
+                  create_note_with_name(note_type, search_text)
+                else
+                  create_note(note_type)
+                end
+              end, 50)
+            end,
+            confirm_or_create = function(picker)
+              local item = picker:current()
+              if item then
+                local file = item.file
+                -- Ensure absolute path
+                if not file:match("^/") then
+                  file = notes_path .. "/" .. folder .. "/" .. file
+                end
+                picker:close()
+                vim.defer_fn(function()
+                  vim.cmd("edit " .. vim.fn.fnameescape(file))
+                end, 10)
+              else
+                -- No match, create new note
+                local search_text = get_picker_search(picker)
+                picker:close()
+                vim.defer_fn(function()
+                  if search_text ~= "" then
+                    create_note_with_name(note_type, search_text)
+                  end
+                end, 50)
+              end
+            end,
+          },
+          win = {
+            input = {
+              keys = {
+                ["<CR>"] = { "confirm_or_create", mode = { "n", "i" }, desc = "Open or create note" },
+                ["<S-CR>"] = { "create_note", mode = { "n", "i" }, desc = "Create new " .. note_type .. " note" },
+              },
+            },
+            list = {
+              keys = {
+                ["<CR>"] = { "confirm_or_create", desc = "Open or create note" },
+              },
+            },
+          },
+        })
+      end
 
-  -- Clean up tracking when buffer is deleted
-  vim.api.nvim_create_autocmd("BufDelete", {
-    pattern = "*",
-    callback = function()
-      local bufnr = vim.api.nvim_get_current_buf()
-      keymaps_set[bufnr] = nil
+      -- Note search keymaps using Snacks picker
+      vim.keymap.set("n", "<leader>;f", function()
+        note_picker("fleeting", "f", "Fleeting Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find fleeting notes" }))
+
+      vim.keymap.set("n", "<leader>;a", function()
+        note_picker("atomic", "a", "Atomic Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find atomic notes" }))
+
+      vim.keymap.set("n", "<leader>;p", function()
+        note_picker("project", "p", "Project Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find project notes" }))
+
+      vim.keymap.set("n", "<leader>;r", function()
+        note_picker("resource", "r", "Resource Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find resource notes" }))
+
+      vim.keymap.set("n", "<leader>;o", function()
+        note_picker("source", "s", "Source Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find source notes" }))
+
+      vim.keymap.set("n", "<leader>;;", function()
+        require("snacks").picker.files({
+          cwd = notes_path,
+          title = "All Notes",
+        })
+      end, vim.tbl_extend("force", opts, { desc = "Find all notes" }))
+
+      vim.keymap.set("n", "<leader>;g", function()
+        require("snacks").picker.grep({
+          cwd = notes_path,
+          title = "Grep Notes",
+        })
+      end, vim.tbl_extend("force", opts, { desc = "Grep in notes" }))
+
+      -- Snooze
+      vim.keymap.set("n", "<leader>;s", snooze_note, vim.tbl_extend("force", opts, { desc = "Snooze note (+3 days)" }))
+
+      -- Open Inbox
+      vim.keymap.set("n", "<leader>;i", function()
+        vim.cmd("edit " .. vim.fn.fnameescape(notes_path .. "/Inbox.md"))
+      end, vim.tbl_extend("force", opts, { desc = "Open Inbox" }))
+
+      -- Create new note
+      vim.keymap.set("n", "<leader>;n", function()
+        vim.ui.select(
+          { "fleeting", "atomic", "project", "resource", "source" },
+          { prompt = "Note type:" },
+          function(choice)
+            if choice then
+              create_note(choice)
+            end
+          end
+        )
+      end, vim.tbl_extend("force", opts, { desc = "New note" }))
+
+      -- Toggle todo state
+      vim.keymap.set("n", "<leader>;t", function()
+        local line = vim.api.nvim_get_current_line()
+        if line:match("%- %[ %]") then
+          vim.api.nvim_set_current_line(line:gsub("%- %[ %]", "- [/]", 1))
+        elseif line:match("%- %[/%]") then
+          vim.api.nvim_set_current_line(line:gsub("%- %[/%]", "- [x]", 1))
+        elseif line:match("%- %[x%]") then
+          vim.api.nvim_set_current_line(line:gsub("%- %[x%]", "- [ ]", 1))
+        end
+      end, vim.tbl_extend("force", opts, { desc = "Toggle todo" }))
+
+      -- Create link from clipboard
+      vim.keymap.set("n", "<leader>;l", function()
+        local clip = vim.fn.getreg("+")
+        if clip and clip ~= "" then
+          vim.api.nvim_put({ "[[" .. clip .. "]]" }, "c", true, true)
+        end
+      end, vim.tbl_extend("force", opts, { desc = "Link from clipboard" }))
     end,
   })
 end
@@ -332,7 +406,7 @@ return {
         tables = true,
         yaml = false,
       },
-      filetypes = { md = true, markdown = true },
+      filetypes = { markdown = true },
       create_dirs = true,
       perspective = {
         priority = "current",
@@ -352,112 +426,62 @@ return {
       },
       links = {
         style = "wiki",
-        name_is_source = false,
+        compact = false,
         conceal = false,
-        context = 0,
+        search_range = 0,
         implicit_extension = "md",
-        transform_implicit = false,
-        transform_explicit = function(text)
+        transform_on_follow = false,
+        transform_on_create = function(text)
           if text:match("/") then
             return text
           end
           return text:gsub(" ", "-"):lower()
         end,
+        on_create_new = function(path, title)
+          -- Create file with folder-specific template
+          local today = get_today()
+          local template
+
+          if path:match("/f/") then
+            template = "---\ntags: fleeting\nreview_date: "
+              .. today
+              .. "\n---\n\n# "
+              .. (title or "Untitled")
+              .. "\n\n"
+          elseif path:match("/r/") then
+            template = "---\ntags: resource\nsource: [[]]\n---\n\n# " .. (title or "Untitled") .. "\n\n"
+          elseif path:match("/a/") then
+            template = "---\ntags: atomic\nup: [[]]\n---\n\n# " .. (title or "Untitled") .. "\n\n"
+          elseif path:match("/p/") then
+            template = "---\ntags: project\nstatus: active\ndue: "
+              .. today
+              .. "\n---\n\n# "
+              .. (title or "Untitled")
+              .. "\n\n## Goals\n\n\n## Tasks\n\n- [ ] \n\n## Notes\n\n"
+          elseif path:match("/s/") then
+            template = "---\ntags: source\nurl: \n---\n\n# "
+              .. (title or "Untitled")
+              .. "\n\n## Summary\n\n\n## Key Points\n\n\n## Quotes\n\n"
+          else
+            template = "# " .. (title or "Untitled") .. "\n\n"
+          end
+
+          -- Create parent directories if needed
+          local dir = vim.fn.fnamemodify(path, ":h")
+          vim.fn.mkdir(dir, "p")
+
+          -- Write the template to the file
+          local file = io.open(path, "w")
+          if file then
+            file:write(template)
+            file:close()
+          end
+
+          return path
+        end,
       },
       new_file_template = {
-        use_template = true,
-        placeholders = {
-          before = {
-            title = "link_title",
-            date = "os_date",
-          },
-          after = {},
-        },
-        template = function()
-          local bufpath = vim.fn.expand("%:p:h")
-          local today = get_today()
-
-          if bufpath:match("/fleeting$") or bufpath:match("/fleeting/") then
-            return {
-              "---",
-              "tags: fleeting",
-              "review_date: " .. today,
-              "---",
-              "",
-              "# {{ title }}",
-              "",
-              "",
-            }
-          elseif bufpath:match("/resources$") or bufpath:match("/resources/") then
-            return {
-              "---",
-              "tags: resource",
-              "source: [[]]",
-              "---",
-              "",
-              "# {{ title }}",
-              "",
-              "",
-            }
-          elseif bufpath:match("/atomic$") or bufpath:match("/atomic/") then
-            return {
-              "---",
-              "tags: atomic",
-              "up: [[]]",
-              "---",
-              "",
-              "# {{ title }}",
-              "",
-              "",
-            }
-          elseif bufpath:match("/projects$") or bufpath:match("/projects/") then
-            return {
-              "---",
-              "tags: project",
-              "status: active",
-              "due: " .. today,
-              "---",
-              "",
-              "# {{ title }}",
-              "",
-              "## Goals",
-              "",
-              "",
-              "## Tasks",
-              "",
-              "- [ ] ",
-              "",
-              "## Notes",
-              "",
-              "",
-            }
-          elseif bufpath:match("/sources$") or bufpath:match("/sources/") then
-            return {
-              "---",
-              "tags: source",
-              "url: ",
-              "---",
-              "",
-              "# {{ title }}",
-              "",
-              "## Summary",
-              "",
-              "",
-              "## Key Points",
-              "",
-              "",
-              "## Quotes",
-              "",
-              "",
-            }
-          else
-            return {
-              "# {{ title }}",
-              "",
-              "",
-            }
-          end
-        end,
+        enabled = false,
       },
       mappings = {
         MkdnEnter = { { "n", "v" }, "<CR>" },
@@ -499,13 +523,12 @@ return {
     },
   },
 
-  -- Setup snippets
+  -- Setup snippets and notes keymaps
   {
     "L3MON4D3/LuaSnip",
     config = function(_, opts)
       require("luasnip").setup(opts)
       setup_snippets()
-      -- Initialize notes keymaps after plugins are loaded
       setup_notes_keymaps()
     end,
   },
