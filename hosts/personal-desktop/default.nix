@@ -27,4 +27,11 @@
     powerManagement.enable = true;
     nvidiaSettings = true;
   };
+
+  # NVIDIA OpenGL fixes for Ghostty/GTK apps (reduces random freezes)
+  environment.sessionVariables = {
+    __GL_YIELD = "usleep";
+    __GL_THREADED_OPTIMIZATION = "0";
+    __GL_MaxFramesAllowed = "1";
+  };
 }
