@@ -70,7 +70,7 @@ in
       zsh
       oh-my-zsh
       zsh-autosuggestions
-      zsh-syntax-highlighting
+      zsh-fast-syntax-highlighting
       zsh-autopair
       starship
       carapace

@@ -91,5 +91,5 @@ gtk-toolbar-style = flat
 gtk-wide-tabs = true
 gtk-custom-css = tabs.css
 
-# Cursor shader (Neovide-like warp effect)
-custom-shader = shaders/cursor_warp.glsl
+# Cursor shader (disabled - file was missing, causing potential freezes)
+# custom-shader = shaders/cursor_warp.glsl

@@ -19,6 +19,70 @@ local function add_days(date_str, days)
   return os.date("%Y-%m-%d", new_time)
 end
 
+-- Helper: Parse frontmatter from file content
+local function parse_frontmatter(filepath)
+  local file = io.open(filepath, "r")
+  if not file then
+    return {}
+  end
+
+  local frontmatter = {}
+  local in_frontmatter = false
+  local line_count = 0
+
+  for line in file:lines() do
+    line_count = line_count + 1
+    if line_count > 20 then
+      break
+    end
+
+    if line == "---" then
+      if not in_frontmatter then
+        in_frontmatter = true
+      else
+        break
+      end
+    elseif in_frontmatter then
+      local key, value = line:match("^([%w_]+):%s*(.*)$")
+      if key and value then
+        frontmatter[key] = vim.trim(value)
+      end
+    end
+  end
+
+  file:close()
+  return frontmatter
+end
+
+-- Helper: Get notes with frontmatter data for dated pickers
+local function get_notes_with_metadata(folder, date_field)
+  local folder_path = notes_path .. "/" .. folder
+  local items = {}
+
+  local files = vim.fn.glob(folder_path .. "/*.md", false, true)
+
+  for _, filepath in ipairs(files) do
+    local filename = vim.fn.fnamemodify(filepath, ":t:r")
+    if filename ~= "index" then
+      local frontmatter = parse_frontmatter(filepath)
+      local date_value = frontmatter[date_field] or "9999-99-99"
+
+      table.insert(items, {
+        file = filepath,
+        name = filename,
+        date = date_value,
+        text = date_value .. " - " .. filename,
+      })
+    end
+  end
+
+  table.sort(items, function(a, b)
+    return a.date < b.date
+  end)
+
+  return items
+end
+
 -- Snooze function: increment review_date by 3 days
 local function snooze_note()
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -84,10 +148,10 @@ local function setup_snippets()
       t({ "", "", "" }),
       i(0),
     }),
-    s(";resource", {
-      t({ "---", "tags: resource", "source: [[" }),
-      i(1, "source"),
-      t({ "]]", "---", "", "# " }),
+    s(";reference", {
+      t({ "---", "tags: reference", "source: " }),
+      i(1),
+      t({ "", "---", "", "# " }),
       i(2, "Title"),
       t({ "", "", "" }),
       i(0),
@@ -112,28 +176,16 @@ local function setup_snippets()
       t({ "", "", "## Notes", "", "" }),
       i(0),
     }),
-    s(";source", {
-      t({ "---", "tags: source", "url: " }),
-      i(1),
-      t({ "", "---", "", "# " }),
-      i(2, "Title"),
-      t({ "", "", "## Summary", "", "" }),
-      i(3),
-      t({ "", "", "## Key Points", "", "" }),
-      i(4),
-      t({ "", "", "## Quotes", "", "" }),
-      i(0),
-    }),
+
   })
 end
 
 -- Folder mapping for note types
 local folder_map = {
   fleeting = "f",
-  resource = "r",
+  reference = "r",
   atomic = "a",
   project = "p",
-  source = "s",
 }
 
 -- Create new note with a specific name (used by picker)
@@ -156,8 +208,8 @@ local function create_note_with_name(note_type, name)
 
   if note_type == "fleeting" then
     template = "---\ntags: fleeting\nreview_date: " .. today .. "\n---\n\n# " .. name .. "\n\n"
-  elseif note_type == "resource" then
-    template = "---\ntags: resource\nsource: [[]]\n---\n\n# " .. name .. "\n\n"
+  elseif note_type == "reference" then
+    template = "---\ntags: reference\nsource: \n---\n\n# " .. name .. "\n\n"
   elseif note_type == "atomic" then
     template = "---\ntags: atomic\nup: [[]]\n---\n\n# " .. name .. "\n\n"
   elseif note_type == "project" then
@@ -166,10 +218,6 @@ local function create_note_with_name(note_type, name)
       .. "\n---\n\n# "
       .. name
       .. "\n\n## Goals\n\n\n## Tasks\n\n- [ ] \n\n## Notes\n\n"
-  elseif note_type == "source" then
-    template = "---\ntags: source\nurl: \n---\n\n# "
-      .. name
-      .. "\n\n## Summary\n\n\n## Key Points\n\n\n## Quotes\n\n"
   else
     template = "# " .. name .. "\n\n"
   end
@@ -202,11 +250,23 @@ local function create_note(note_type)
   end)
 end
 
--- Setup buffer-local keymaps ONLY for notes files
+-- Check if we're in a notes context (file in ~/notes OR cwd is ~/notes)
+local function is_notes_context()
+  local filepath = vim.fn.expand("%:p")
+  local cwd = vim.fn.getcwd()
+  local notes_expanded = vim.fn.expand("~/notes")
+  return filepath:find(notes_expanded, 1, true) == 1 or cwd:find(notes_expanded, 1, true) == 1
+end
+
+-- Setup buffer-local keymaps for notes context
 local function setup_notes_keymaps()
   vim.api.nvim_create_autocmd("BufEnter", {
-    pattern = vim.fn.expand("~/notes") .. "/**",
+    pattern = "*",
     callback = function()
+      if not is_notes_context() then
+        return
+      end
+
       local bufnr = vim.api.nvim_get_current_buf()
       local opts = { buffer = bufnr }
 
@@ -229,6 +289,36 @@ local function setup_notes_keymaps()
         return ok and result or ""
       end
 
+      -- Helper to get search text from picker input
+      local function get_picker_input(picker)
+        local search_text = ""
+
+        -- Try filter pattern
+        if picker.filter and picker:filter().pattern then
+          search_text = picker:filter().pattern
+        end
+
+        -- Try input:get()
+        if search_text == "" and picker.input and picker.input.get then
+          local ok, result = pcall(function()
+            return picker.input:get()
+          end)
+          if ok and result then
+            search_text = result
+          end
+        end
+
+        -- Try getting from input buffer directly
+        if search_text == "" and picker.input and picker.input.buf then
+          local ok, lines = pcall(vim.api.nvim_buf_get_lines, picker.input.buf, 0, 1, false)
+          if ok and lines and lines[1] then
+            search_text = lines[1]
+          end
+        end
+
+        return search_text
+      end
+
       -- Helper to create note picker for a specific type
       local function note_picker(note_type, folder, title)
         require("snacks").picker.files({
@@ -238,26 +328,7 @@ local function setup_notes_keymaps()
           auto_confirm = false,
           actions = {
             create_note = function(picker)
-              -- Try different ways to get the search text
-              local search_text = ""
-              
-              -- Try filter pattern
-              if picker.filter and picker:filter().pattern then
-                search_text = picker:filter().pattern
-              end
-              
-              -- Try input:get()
-              if search_text == "" and picker.input and picker.input.get then
-                local ok, result = pcall(function() return picker.input:get() end)
-                if ok and result then search_text = result end
-              end
-              
-              -- Try getting from input buffer directly
-              if search_text == "" and picker.input and picker.input.buf then
-                local ok, lines = pcall(vim.api.nvim_buf_get_lines, picker.input.buf, 0, 1, false)
-                if ok and lines and lines[1] then search_text = lines[1] end
-              end
-              
+              local search_text = get_picker_input(picker)
               picker:close()
               vim.defer_fn(function()
                 if search_text ~= "" then
@@ -281,7 +352,75 @@ local function setup_notes_keymaps()
                 end, 10)
               else
                 -- No match, create new note
-                local search_text = get_picker_search(picker)
+                local search_text = get_picker_input(picker)
+                picker:close()
+                vim.defer_fn(function()
+                  if search_text ~= "" then
+                    create_note_with_name(note_type, search_text)
+                  end
+                end, 50)
+              end
+            end,
+          },
+          win = {
+            input = {
+              keys = {
+                ["<CR>"] = { "confirm_or_create", mode = { "n", "i" }, desc = "Open or create note" },
+                ["<S-CR>"] = { "create_note", mode = { "n", "i" }, desc = "Create new " .. note_type .. " note" },
+              },
+            },
+            list = {
+              keys = {
+                ["<CR>"] = { "confirm_or_create", desc = "Open or create note" },
+              },
+            },
+          },
+        })
+      end
+
+      -- Helper to create note picker with date display (for fleeting/project notes)
+      local function dated_note_picker(note_type, folder, title, date_field)
+        local items = get_notes_with_metadata(folder, date_field)
+        local today = get_today()
+
+        require("snacks").picker({
+          title = title,
+          items = items,
+          format = function(item)
+            local date = item.date
+            local hl = nil
+            if date < today then
+              hl = "DiagnosticError" -- overdue: red
+            elseif date == today then
+              hl = "Statement" -- due today: purple
+            end
+            return { { item.text, hl } }
+          end,
+          show_empty = true,
+          auto_confirm = false,
+          actions = {
+            create_note = function(picker)
+              local search_text = get_picker_input(picker)
+              picker:close()
+              vim.defer_fn(function()
+                if search_text ~= "" then
+                  create_note_with_name(note_type, search_text)
+                else
+                  create_note(note_type)
+                end
+              end, 50)
+            end,
+            confirm_or_create = function(picker)
+              local item = picker:current()
+              if item then
+                local file = item.file
+                picker:close()
+                vim.defer_fn(function()
+                  vim.cmd("edit " .. vim.fn.fnameescape(file))
+                end, 10)
+              else
+                -- No match, create new note
+                local search_text = get_picker_input(picker)
                 picker:close()
                 vim.defer_fn(function()
                   if search_text ~= "" then
@@ -309,7 +448,7 @@ local function setup_notes_keymaps()
 
       -- Note search keymaps using Snacks picker
       vim.keymap.set("n", "<leader>;f", function()
-        note_picker("fleeting", "f", "Fleeting Notes")
+        dated_note_picker("fleeting", "f", "Fleeting Notes", "review_date")
       end, vim.tbl_extend("force", opts, { desc = "Find fleeting notes" }))
 
       vim.keymap.set("n", "<leader>;a", function()
@@ -317,16 +456,12 @@ local function setup_notes_keymaps()
       end, vim.tbl_extend("force", opts, { desc = "Find atomic notes" }))
 
       vim.keymap.set("n", "<leader>;p", function()
-        note_picker("project", "p", "Project Notes")
+        dated_note_picker("project", "p", "Project Notes", "due")
       end, vim.tbl_extend("force", opts, { desc = "Find project notes" }))
 
       vim.keymap.set("n", "<leader>;r", function()
-        note_picker("resource", "r", "Resource Notes")
-      end, vim.tbl_extend("force", opts, { desc = "Find resource notes" }))
-
-      vim.keymap.set("n", "<leader>;o", function()
-        note_picker("source", "s", "Source Notes")
-      end, vim.tbl_extend("force", opts, { desc = "Find source notes" }))
+        note_picker("reference", "r", "Reference Notes")
+      end, vim.tbl_extend("force", opts, { desc = "Find reference notes" }))
 
       vim.keymap.set("n", "<leader>;;", function()
         require("snacks").picker.files({
@@ -353,7 +488,7 @@ local function setup_notes_keymaps()
       -- Create new note
       vim.keymap.set("n", "<leader>;n", function()
         vim.ui.select(
-          { "fleeting", "atomic", "project", "resource", "source" },
+          { "fleeting", "atomic", "project", "reference" },
           { prompt = "Note type:" },
           function(choice)
             if choice then
@@ -363,17 +498,12 @@ local function setup_notes_keymaps()
         )
       end, vim.tbl_extend("force", opts, { desc = "New note" }))
 
-      -- Toggle todo state
-      vim.keymap.set("n", "<leader>;t", function()
-        local line = vim.api.nvim_get_current_line()
-        if line:match("%- %[ %]") then
-          vim.api.nvim_set_current_line(line:gsub("%- %[ %]", "- [/]", 1))
-        elseif line:match("%- %[/%]") then
-          vim.api.nvim_set_current_line(line:gsub("%- %[/%]", "- [x]", 1))
-        elseif line:match("%- %[x%]") then
-          vim.api.nvim_set_current_line(line:gsub("%- %[x%]", "- [ ]", 1))
-        end
-      end, vim.tbl_extend("force", opts, { desc = "Toggle todo" }))
+      -- Register which-key group for tables
+      if wk_ok then
+        wk.add({
+          { "<leader>;t", group = "table", buffer = bufnr },
+        })
+      end
 
       -- Create link from clipboard
       vim.keymap.set("n", "<leader>;l", function()
@@ -382,6 +512,24 @@ local function setup_notes_keymaps()
           vim.api.nvim_put({ "[[" .. clip .. "]]" }, "c", true, true)
         end
       end, vim.tbl_extend("force", opts, { desc = "Link from clipboard" }))
+
+      -- Table format (mkdnflow formats tables via :MkdnTable or cell navigation)
+      vim.keymap.set("n", "<leader>;tf", "<cmd>MkdnTable<CR>", vim.tbl_extend("force", opts, { desc = "Format table" }))
+
+      -- Delete current note
+      vim.keymap.set("n", "<leader>;d", function()
+        local filepath = vim.fn.expand("%:p")
+        local filename = vim.fn.expand("%:t")
+
+        vim.ui.input({ prompt = "Delete " .. filename .. "? [y/N] " }, function(input)
+          if input and input:lower() == "y" then
+            vim.fn.delete(filepath)
+            vim.cmd("bdelete!")
+            vim.cmd("bprevious")
+            vim.notify("Deleted " .. filename, vim.log.levels.INFO)
+          end
+        end)
+      end, vim.tbl_extend("force", opts, { desc = "Delete note" }))
     end,
   })
 end
@@ -449,7 +597,7 @@ return {
               .. (title or "Untitled")
               .. "\n\n"
           elseif path:match("/r/") then
-            template = "---\ntags: resource\nsource: [[]]\n---\n\n# " .. (title or "Untitled") .. "\n\n"
+            template = "---\ntags: reference\nsource: \n---\n\n# " .. (title or "Untitled") .. "\n\n"
           elseif path:match("/a/") then
             template = "---\ntags: atomic\nup: [[]]\n---\n\n# " .. (title or "Untitled") .. "\n\n"
           elseif path:match("/p/") then
@@ -458,10 +606,6 @@ return {
               .. "\n---\n\n# "
               .. (title or "Untitled")
               .. "\n\n## Goals\n\n\n## Tasks\n\n- [ ] \n\n## Notes\n\n"
-          elseif path:match("/s/") then
-            template = "---\ntags: source\nurl: \n---\n\n# "
-              .. (title or "Untitled")
-              .. "\n\n## Summary\n\n\n## Key Points\n\n\n## Quotes\n\n"
           else
             template = "# " .. (title or "Untitled") .. "\n\n"
           end
@@ -503,22 +647,37 @@ return {
         MkdnYankFileAnchorLink = false,
         MkdnIncreaseHeading = false,
         MkdnDecreaseHeading = false,
-        MkdnToggleToDo = false,
+        MkdnToggleToDo = { "n", "<C-x>" },
         MkdnNewListItem = false,
-        MkdnNewListItemBelowInsert = { "n", "o" },
-        MkdnNewListItemAboveInsert = { "n", "O" },
+        MkdnNewListItemBelowInsert = { "n", "<leader>;o" },
+        MkdnNewListItemAboveInsert = { "n", "<leader>;O" },
         MkdnExtendList = false,
         MkdnUpdateNumbering = false,
         MkdnTableNextCell = { "i", "<Tab>" },
         MkdnTablePrevCell = { "i", "<S-Tab>" },
         MkdnTableNextRow = false,
         MkdnTablePrevRow = false,
-        MkdnTableNewRowBelow = false,
+        MkdnTableNewRowBelow = { "n", "<leader>;tr" },
         MkdnTableNewRowAbove = false,
-        MkdnTableNewColAfter = false,
+        MkdnTableNewColAfter = { "n", "<leader>;tc" },
         MkdnTableNewColBefore = false,
         MkdnFoldSection = false,
         MkdnUnfoldSection = false,
+      },
+    },
+  },
+
+  -- Disable Marksman diagnostics for non-existent links
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        marksman = {
+          -- Disable diagnostics from marksman (non-existent link warnings)
+          handlers = {
+            ["textDocument/publishDiagnostics"] = function() end,
+          },
+        },
       },
     },
   },
