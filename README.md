@@ -233,6 +233,34 @@ systemctl --user start protonmail-bridge
 
 Use `Super+Shift+E` or run `aerc` in a terminal.
 
+## Syncthing
+
+Syncthing is configured to sync notes from the server to `~/notes`.
+
+### Initial setup (pairing devices)
+
+1. Open local Syncthing GUI: http://127.0.0.1:8384
+2. Go to **Actions** (top right) > **Show ID** and copy your Device ID
+3. On the server (https://sync.notes.n-b.dev):
+   - Click **+ Add Remote Device**
+   - Paste your local Device ID
+   - Give it a name (e.g., "laptop")
+   - Save
+4. Back on your local machine, accept the device pairing prompt
+5. On the server, edit the `silverbullet-space` folder:
+   - Under **Sharing**, check your local device
+   - Save
+6. Accept the folder share on your local machine
+
+Files will sync to `~/notes`. Edit with any editor and changes sync to Silver
+Bullet on the server.
+
+### Syncthing GUI
+
+```bash
+xdg-open http://127.0.0.1:8384
+```
+
 ## Installation
 
 Fresh install for any x86_64-linux machine.
