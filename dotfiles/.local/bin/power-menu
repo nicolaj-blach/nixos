@@ -6,7 +6,7 @@ choice=$(printf "poweroff\nreboot\nlock\nscreensaver\nswitch" | fsel --dmenu)
 
 case "$choice" in
     lock)
-        hyprlock
+        hyprlock-wrapper
         ;;
     screensaver)
         ghostty --title=screensaver --cursor-opacity=0 -e screensaver

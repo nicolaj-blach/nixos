@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Emoji picker using bemoji + fsel
-# Spawns terminal, returns focus to original window and types the emoji
+# This script must be run inside a terminal
+# Copies emoji to clipboard and types it into the previous window
 
 handler="$(hyprctl -j activewindow | jq -r '.address')"
 export BEMOJI_PICKER_CMD="fsel --dmenu"
-ghostty --title=terminal-float -e bemoji -t
+bemoji -t
 hyprctl dispatch focuswindow address:"$handler"
 wtype "$(wl-paste)"
