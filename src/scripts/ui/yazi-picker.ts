@@ -110,9 +110,9 @@ async function main() {
 
     const escaped = shellEscape(selected);
     if (existsSync(selected) && statSync(selected).isDirectory()) {
-      await hyprExec(`[silent] kitty --directory ${escaped}`);
+      await hyprExec(`[silent] $TERMINAL --directory ${escaped}`);
     } else if (await needsTerminal(selected)) {
-      await hyprExec(`[silent] kitty -e ${editor} ${escaped}`);
+      await hyprExec(`[silent] $TERMINAL -e ${editor} ${escaped}`);
     } else {
       await hyprExec(`[silent] xdg-open ${escaped}`);
     }

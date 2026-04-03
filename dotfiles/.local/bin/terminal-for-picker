@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ghostty --title=terminal-float -e "$@"
+exec $TERMINAL --title terminal-float -e "$@"

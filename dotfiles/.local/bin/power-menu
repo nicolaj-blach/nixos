@@ -9,10 +9,10 @@ case "$choice" in
         hyprlock-wrapper
         ;;
     screensaver)
-        ghostty --title=screensaver --cursor-opacity=0 -e screensaver
+        $TERMINAL --title screensaver -e screensaver
         ;;
     switch)
-        ghostty --title=terminal-float -e nixs
+        $TERMINAL --title terminal-float -e nixs
         ;;
     reboot)
         systemctl reboot

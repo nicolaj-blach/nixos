@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec ghostty --title=terminal-float --shell-integration-features=no-title -e wlctl
+exec $TERMINAL --title terminal-float -e wlctl
