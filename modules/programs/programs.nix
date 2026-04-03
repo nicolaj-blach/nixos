@@ -66,8 +66,7 @@ in
       glib
 
       # Shell & Terminal
-      ghostty
-      foot
+      kitty
       zsh
       oh-my-zsh
       zsh-autosuggestions

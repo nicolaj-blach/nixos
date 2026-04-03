@@ -110,9 +110,9 @@ async function main() {
 
     const escaped = shellEscape(selected);
     if (existsSync(selected) && statSync(selected).isDirectory()) {
-      await hyprExec(`[silent] ghostty --working-directory=${escaped}`);
+      await hyprExec(`[silent] kitty --directory ${escaped}`);
     } else if (await needsTerminal(selected)) {
-      await hyprExec(`[silent] ghostty -e ${editor} ${escaped}`);
+      await hyprExec(`[silent] kitty -e ${editor} ${escaped}`);
     } else {
       await hyprExec(`[silent] xdg-open ${escaped}`);
     }

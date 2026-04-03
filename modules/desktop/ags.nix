@@ -43,7 +43,7 @@ let
         --prefix PATH : ${
           pkgs.lib.makeBinPath [
             pkgs.hyprland
-            pkgs.ghostty
+            pkgs.kitty
           ]
         }
       )
