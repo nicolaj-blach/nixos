@@ -12,6 +12,11 @@ terminal_launcher = "ghostty -e"
 pin_color = "rgb(198,120,221)"
 pin_icon = "★"
 
+# Keybinds - vim style with j/k
+[keybinds]
+down = ["down", { key = "j", modifiers = "ctrl" }]
+up = ["up", { key = "k", modifiers = "ctrl" }]
+
 [app_launcher]
 filter_desktop = true
 list_executables_in_path = false
