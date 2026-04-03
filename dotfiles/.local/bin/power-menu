@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
-# Power menu using Walker dmenu mode
+# Power menu using fsel dmenu mode
+# This script must be run inside a terminal
 
-choice=$(printf "\uf011  poweroff\n\uf01e  reboot\n\uf023  lock\n\uf03e  screensaver\n\uf021  switch" | walker -d -p "power")
+choice=$(printf "poweroff\nreboot\nlock\nscreensaver\nswitch" | fsel --dmenu)
 
 case "$choice" in
-    *lock)
+    lock)
         hyprlock
         ;;
-    *screensaver)
+    screensaver)
         ghostty --title=screensaver --cursor-opacity=0 -e screensaver
         ;;
-    *switch)
+    switch)
         ghostty --title=terminal-float -e nixs
         ;;
-    *reboot)
+    reboot)
         systemctl reboot
         ;;
-    *poweroff)
+    poweroff)
         systemctl poweroff
         ;;
 esac

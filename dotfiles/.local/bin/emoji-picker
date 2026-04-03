@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Emoji picker using bemoji + fsel
-# Returns focus to original window and types the emoji
+# Spawns terminal, returns focus to original window and types the emoji
 
 handler="$(hyprctl -j activewindow | jq -r '.address')"
 export BEMOJI_PICKER_CMD="fsel --dmenu"
 ghostty --title=terminal-float -e bemoji -t
-hyprctl dispatch focuswindow address:$handler
+hyprctl dispatch focuswindow address:"$handler"
 wtype "$(wl-paste)"

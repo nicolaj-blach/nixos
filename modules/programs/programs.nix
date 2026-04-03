@@ -83,6 +83,7 @@ in
       fd
       ripgrep
       fzf
+      television
       zoxide
       tree
       unzip

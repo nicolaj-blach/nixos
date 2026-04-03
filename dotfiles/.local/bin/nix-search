@@ -1,12 +1,3 @@
 #!/usr/bin/env bash
-# Nix package search using nix-search-tv with fzf
-# Copies selected package name to clipboard
-
-selection=$(nix-search-tv print | fzf --preview 'nix-search-tv preview {}' --scheme history)
-
-if [[ -n "$selection" ]]; then
-    # Extract just the package name (first field)
-    name=$(echo "$selection" | awk '{print $1}')
-    echo -n "$name" | wl-copy
-    echo "Copied: $name"
-fi
+# Nix package search using nix-search-tv with television
+television nix
