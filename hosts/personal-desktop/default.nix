@@ -15,7 +15,6 @@
     configModules.base
     configModules.desktop
     configModules.programs
-    inputs.walker.nixosModules.default
   ];
 
   # NVIDIA proprietary drivers for gaming (desktop only)

@@ -10,6 +10,5 @@
     configModules.desktop
     configModules.programs
     configModules.fingerPrint
-    inputs.walker.nixosModules.default
   ];
 }

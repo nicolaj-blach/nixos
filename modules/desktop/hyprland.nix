@@ -34,9 +34,6 @@
     };
 
     hyprlock.enable = true;
-
-    # Requires inputs.walker.nixosModules.default to be imported at the host level
-    walker.enable = true;
   };
 
   # Load split-monitor-workspaces plugin at startup

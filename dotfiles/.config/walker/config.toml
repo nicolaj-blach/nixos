@@ -1,9 +1,0 @@
-theme = "base16"
-
-[keybinds]
-next = ["Down", "ctrl j"]
-previous = ["Up", "ctrl k"]
-
-[providers]
-default = ["desktopapplications", "calc"]
-empty = ["desktopapplications"]
