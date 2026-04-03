@@ -1,0 +1,20 @@
+# fsel configuration
+# https://github.com/Mjoyufull/fsel
+
+# Colors - using base16 onedark palette
+highlight_color = "LightBlue"
+cursor = "█"
+
+# Terminal launcher for terminal apps
+terminal_launcher = "ghostty -e"
+
+# Pin settings
+pin_color = "rgb(198,120,221)"
+pin_icon = "★"
+
+[app_launcher]
+filter_desktop = true
+list_executables_in_path = false
+match_mode = "fuzzy"
+ranking_mode = "frecency"
+pinned_order = "ranking"

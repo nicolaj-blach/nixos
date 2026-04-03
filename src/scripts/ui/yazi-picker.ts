@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Yazi file picker: opens files or directories picked from a floating yazi TUI.
+// Yazi file picker: opens files or directories picked from a floating terminal.
 // Launched via SUPER+SHIFT+E.
 //
 // Uses --chooser-file so yazi writes the picked path and exits on 'open'.

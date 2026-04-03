@@ -52,6 +52,9 @@ confirm-close-surface = false
 resize-overlay = never
 app-notifications = false
 
+# NVIDIA freeze fixes
+window-vsync = false
+
 # Tinty-managed color scheme (generated file, not in git)
 keybind = ctrl+enter=unbind
 keybind = shift+enter=csi:13;2u

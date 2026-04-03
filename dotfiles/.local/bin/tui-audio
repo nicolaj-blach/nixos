@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec ghostty --title=tui-float --shell-integration-features=no-title -e wiremix
+exec ghostty --title=terminal-float --shell-integration-features=no-title -e wiremix

@@ -11,7 +11,7 @@ case "$choice" in
         ghostty --title=screensaver --cursor-opacity=0 -e screensaver
         ;;
     *switch)
-        ghostty --title=tui-float -e nixs
+        ghostty --title=terminal-float -e nixs
         ;;
     *reboot)
         systemctl reboot

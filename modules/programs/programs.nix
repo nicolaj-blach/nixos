@@ -67,6 +67,7 @@ in
 
       # Shell & Terminal
       ghostty
+      foot
       zsh
       oh-my-zsh
       zsh-autosuggestions
@@ -153,6 +154,9 @@ in
       smassh
       inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
       hyprmon
+      inputs.fsel.packages.${pkgs.stdenv.hostPlatform.system}.default
+      cliphist
+      nix-search-tv
 
       # Desktop Utilities
       swww
@@ -162,6 +166,8 @@ in
       playerctl
       udiskie
       wl-clipboard
+      wtype
+      bemoji
       libqalculate
 
       # Media & Images

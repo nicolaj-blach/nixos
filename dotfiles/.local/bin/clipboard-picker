@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Clipboard history picker using cliphist + fsel
+selected=$(cliphist list | fsel --dmenu)
+[ -n "$selected" ] && echo "$selected" | cliphist decode | wl-copy

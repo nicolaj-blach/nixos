@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ghostty --title=tui-float -e "$@"
+exec ghostty --title=terminal-float -e "$@"
