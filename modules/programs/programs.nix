@@ -209,7 +209,15 @@ in
       inkscape
       obsidian
       (llm.withPlugins { llm-gemini = true; })
-      freecad
+      (pkgs.symlinkJoin {
+        name = "freecad";
+        paths = [ freecad ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/FreeCAD --set QT_QPA_PLATFORM xcb
+          wrapProgram $out/bin/FreeCADCmd --set QT_QPA_PLATFORM xcb
+        '';
+      })
 
       # Fun & Visual
       cowsay
