@@ -55,7 +55,7 @@ local function parse_frontmatter(filepath)
 end
 
 -- Helper: Get notes with frontmatter data for dated pickers
-local function get_notes_with_metadata(folder, date_field)
+local function get_notes_with_metadata(folder, date_field, exclude_status)
   local folder_path = notes_path .. "/" .. folder
   local items = {}
 
@@ -65,14 +65,18 @@ local function get_notes_with_metadata(folder, date_field)
     local filename = vim.fn.fnamemodify(filepath, ":t:r")
     if filename ~= "index" then
       local frontmatter = parse_frontmatter(filepath)
-      local date_value = frontmatter[date_field] or "9999-99-99"
 
-      table.insert(items, {
-        file = filepath,
-        name = filename,
-        date = date_value,
-        text = date_value .. " - " .. filename,
-      })
+      -- Skip if status matches exclude_status
+      if not (exclude_status and frontmatter.status == exclude_status) then
+        local date_value = frontmatter[date_field] or "9999-99-99"
+
+        table.insert(items, {
+          file = filepath,
+          name = filename,
+          date = date_value,
+          text = date_value .. " - " .. filename,
+        })
+      end
     end
   end
 
@@ -379,13 +383,29 @@ local function setup_notes_keymaps()
       end
 
       -- Helper to create note picker with date display (for fleeting/project notes)
-      local function dated_note_picker(note_type, folder, title, date_field)
-        local items = get_notes_with_metadata(folder, date_field)
+      local function dated_note_picker(note_type, folder, title, date_field, exclude_status)
         local today = get_today()
+        local show_archived = false
+
+        local function get_status_filter()
+          if show_archived then
+            return nil
+          end
+          return exclude_status
+        end
+
+        local function get_title()
+          if show_archived and exclude_status then
+            return title .. " (showing archived)"
+          end
+          return title
+        end
 
         require("snacks").picker({
-          title = title,
-          items = items,
+          title = get_title(),
+          finder = function()
+            return get_notes_with_metadata(folder, date_field, get_status_filter())
+          end,
           format = function(item)
             local date = item.date
             local hl = nil
@@ -419,7 +439,6 @@ local function setup_notes_keymaps()
                   vim.cmd("edit " .. vim.fn.fnameescape(file))
                 end, 10)
               else
-                -- No match, create new note
                 local search_text = get_picker_input(picker)
                 picker:close()
                 vim.defer_fn(function()
@@ -429,17 +448,24 @@ local function setup_notes_keymaps()
                 end, 50)
               end
             end,
+            toggle_archived = function(picker)
+              show_archived = not show_archived
+              picker.title = get_title()
+              picker:find()
+            end,
           },
           win = {
             input = {
               keys = {
                 ["<CR>"] = { "confirm_or_create", mode = { "n", "i" }, desc = "Open or create note" },
                 ["<S-CR>"] = { "create_note", mode = { "n", "i" }, desc = "Create new " .. note_type .. " note" },
+                ["<a-a>"] = { "toggle_archived", mode = { "n", "i" }, desc = "Toggle archived" },
               },
             },
             list = {
               keys = {
                 ["<CR>"] = { "confirm_or_create", desc = "Open or create note" },
+                ["<a-a>"] = { "toggle_archived", desc = "Toggle archived" },
               },
             },
           },
@@ -456,7 +482,7 @@ local function setup_notes_keymaps()
       end, vim.tbl_extend("force", opts, { desc = "Find atomic notes" }))
 
       vim.keymap.set("n", "<leader>;p", function()
-        dated_note_picker("project", "p", "Project Notes", "due")
+        dated_note_picker("project", "p", "Project Notes", "due", "archived")
       end, vim.tbl_extend("force", opts, { desc = "Find project notes" }))
 
       vim.keymap.set("n", "<leader>;r", function()

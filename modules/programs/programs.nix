@@ -209,6 +209,7 @@ in
       inkscape
       obsidian
       (llm.withPlugins { llm-gemini = true; })
+      freecad
 
       # Fun & Visual
       cowsay
