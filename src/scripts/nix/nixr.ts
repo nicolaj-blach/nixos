@@ -77,6 +77,9 @@ async function main() {
     } else {
       console.log(`${c.yellow}Stow failed${c.reset}`);
     }
+
+    // Step 5: refresh fsel cache so new apps appear in launcher
+    await Bun.spawn(["fsel", "--clear-cache"], { stdout: "pipe", stderr: "pipe" }).exited;
   } else {
     console.log(`${c.red}Build failed!${c.reset}`);
     if (committed) {
