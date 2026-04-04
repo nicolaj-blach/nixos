@@ -216,6 +216,12 @@ in
         postBuild = ''
           wrapProgram $out/bin/FreeCAD --set QT_QPA_PLATFORM xcb
           wrapProgram $out/bin/FreeCADCmd --set QT_QPA_PLATFORM xcb
+
+          # Update desktop file to use wrapped binary
+          rm $out/share/applications/org.freecad.FreeCAD.desktop
+          substitute ${freecad}/share/applications/org.freecad.FreeCAD.desktop \
+            $out/share/applications/org.freecad.FreeCAD.desktop \
+            --replace-fail "Exec=FreeCAD" "Exec=$out/bin/FreeCAD"
         '';
       })
 
