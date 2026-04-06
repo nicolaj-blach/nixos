@@ -224,6 +224,7 @@ in
             --replace-fail "Exec=FreeCAD" "Exec=$out/bin/FreeCAD"
         '';
       })
+      aseprite
 
       # Fun & Visual
       cowsay
