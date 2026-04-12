@@ -4,4 +4,8 @@
 # Copies emoji to clipboard
 
 export BEMOJI_PICKER_CMD="fsel --dmenu"
+terminal_address=$(hyprctl activewindow -j | jq -r '.address')
 bemoji -c
+if [ -n "$terminal_address" ] && [ "$terminal_address" != "null" ]; then
+  hyprctl dispatch closewindow "address:$terminal_address"
+fi
