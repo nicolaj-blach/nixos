@@ -159,6 +159,7 @@ in
       nix-search-tv
 
       # Desktop Utilities
+      xorg.xrandr
       swww
       swayosd
       mako
