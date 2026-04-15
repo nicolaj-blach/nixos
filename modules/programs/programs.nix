@@ -199,7 +199,6 @@ in
 
       # Communication
       vesktop
-      discordo
 
       # Browsers
       zen-browser
