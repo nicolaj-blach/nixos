@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Clipboard history picker using cliphist + fsel
+# Clipboard history picker using fsel --cclip
 terminal_address=$(hyprctl activewindow -j | jq -r '.address')
-selected=$(cliphist list | fsel --dmenu)
-[ -n "$selected" ] && echo "$selected" | cliphist decode | wl-copy
+fsel --cclip
 if [ -n "$terminal_address" ] && [ "$terminal_address" != "null" ]; then
   hyprctl dispatch closewindow "address:$terminal_address"
 fi

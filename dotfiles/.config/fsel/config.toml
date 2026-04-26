@@ -12,10 +12,10 @@ terminal_launcher = "ghostty -e"
 pin_color = "rgb(198,120,221)"
 pin_icon = "★"
 
-# Keybinds - vim style with j/k
+# Keybinds - vim style with Ctrl+N/P (Ctrl+J/K won't work - terminal limitation)
 [keybinds]
-down = ["down", { key = "j", modifiers = "ctrl" }]
-up = ["up", { key = "k", modifiers = "ctrl" }]
+down = ["down", { key = "n", modifiers = "ctrl" }]
+up = ["up", { key = "p", modifiers = "ctrl" }]
 
 [app_launcher]
 filter_desktop = true
