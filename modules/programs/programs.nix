@@ -27,6 +27,37 @@ let
           --replace-fail "StartupWMClass=zen-beta" "StartupWMClass=zen-beta"
       '';
     };
+
+  cclip = pkgs.stdenv.mkDerivation {
+    pname = "cclip";
+    version = "3.3.1";
+
+    src = inputs.cclip;
+
+    nativeBuildInputs = with pkgs; [
+      meson
+      ninja
+      pkg-config
+      wayland-scanner
+      scdoc
+      git
+    ];
+
+    buildInputs = with pkgs; [
+      wayland
+      sqlite
+      xxHash
+    ];
+
+    mesonFlags = [ "-Dman=true" ];
+
+    meta = {
+      description = "Clipboard manager for Wayland";
+      homepage = "https://github.com/heather7283/cclip";
+      license = pkgs.lib.licenses.gpl3Plus;
+      platforms = pkgs.lib.platforms.linux;
+    };
+  };
 in
 {
   programs = {
@@ -155,7 +186,7 @@ in
       inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
       hyprmon
       inputs.fsel.packages.${pkgs.stdenv.hostPlatform.system}.default
-      cliphist
+      cclip
       nix-search-tv
 
       # Desktop Utilities

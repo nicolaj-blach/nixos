@@ -40,6 +40,11 @@
       url = "github:3timeslazy/nix-search-tv";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    cclip = {
+      url = "github:heather7283/cclip";
+      flake = false;
+    };
   };
 
   outputs =

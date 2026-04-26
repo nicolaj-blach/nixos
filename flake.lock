@@ -76,6 +76,22 @@
         "type": "github"
       }
     },
+    "cclip": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773758759,
+        "narHash": "sha256-EFfLqMfP3MgEKK0NYEETHTMhWpe64MMXnNNPVBaeTQw=",
+        "owner": "heather7283",
+        "repo": "cclip",
+        "rev": "83b0d80519acd5868bf7ed0114cb312c89828e74",
+        "type": "github"
+      },
+      "original": {
+        "owner": "heather7283",
+        "repo": "cclip",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -664,6 +680,7 @@
       "inputs": {
         "ags": "ags",
         "astal": "astal",
+        "cclip": "cclip",
         "fsel": "fsel",
         "hyprland": "hyprland",
         "nix-search-tv": "nix-search-tv",

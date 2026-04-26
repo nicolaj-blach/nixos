@@ -2,8 +2,42 @@
   pkgs,
   inputs,
   username,
+  config,
   ...
 }:
+
+let
+  cclip = pkgs.stdenv.mkDerivation {
+    pname = "cclip";
+    version = "3.3.1";
+
+    src = inputs.cclip;
+
+    nativeBuildInputs = with pkgs; [
+      meson
+      ninja
+      pkg-config
+      wayland-scanner
+      scdoc
+      git
+    ];
+
+    buildInputs = with pkgs; [
+      wayland
+      sqlite
+      xxHash
+    ];
+
+    mesonFlags = [ "-Dman=true" ];
+
+    meta = {
+      description = "Clipboard manager for Wayland";
+      homepage = "https://github.com/heather7283/cclip";
+      license = pkgs.lib.licenses.gpl3Plus;
+      platforms = pkgs.lib.platforms.linux;
+    };
+  };
+in
 
 {
   # Autologin on tty1
@@ -49,14 +83,14 @@
     powerOnBoot = true;
   };
 
-  # cliphist clipboard history daemon (for clipboard picker)
-  systemd.user.services.cliphist = {
-    description = "cliphist clipboard history";
+  # cclipd clipboard history daemon (for fsel --cclip)
+  systemd.user.services.cclipd = {
+    description = "cclip clipboard manager daemon";
     wantedBy = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
     after = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store";
+      ExecStart = "${cclip}/bin/cclipd -s 2 -t 'image/png' -t 'image/*' -t 'text/plain;charset=utf-8' -t 'text/*' -t '*'";
       Restart = "on-failure";
       RestartSec = 3;
     };
