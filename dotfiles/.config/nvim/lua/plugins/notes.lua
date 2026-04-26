@@ -542,6 +542,22 @@ local function setup_notes_keymaps()
       -- Table format (mkdnflow formats tables via :MkdnTable or cell navigation)
       vim.keymap.set("n", "<leader>;tf", "<cmd>MkdnTable<CR>", vim.tbl_extend("force", opts, { desc = "Format table" }))
 
+      -- Backlinks: find notes that link to current note
+      vim.keymap.set("n", "<leader>;b", function()
+        local filename = vim.fn.expand("%:t:r") -- filename without extension
+        -- Match [[filename]] or [[../a/filename]] etc, with optional alias or heading
+        local pattern = "\\[\\[(\\.\\./[afrp]/)?" .. filename .. "(\\]\\]|\\||#)"
+        require("snacks").picker({
+          title = "Backlinks to " .. filename,
+          finder = "grep",
+          format = "file",
+          search = pattern,
+          cwd = notes_path,
+          live = false,
+          hidden = { "input" },
+        })
+      end, vim.tbl_extend("force", opts, { desc = "Find backlinks" }))
+
       -- Delete current note
       vim.keymap.set("n", "<leader>;d", function()
         local filepath = vim.fn.expand("%:p")
