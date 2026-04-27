@@ -84,11 +84,9 @@ in
   };
 
   # cclipd clipboard history daemon (for fsel --cclip)
+  # Started via Hyprland exec-once since graphical-session.target isn't reliably activated
   systemd.user.services.cclipd = {
     description = "cclip clipboard manager daemon";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${cclip}/bin/cclipd -s 2 -t 'image/png' -t 'image/*' -t 'text/plain;charset=utf-8' -t 'text/*' -t '*'";
       Restart = "on-failure";
