@@ -33,7 +33,6 @@
 
     fsel = {
       url = "github:Mjoyufull/fsel";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-search-tv = {
