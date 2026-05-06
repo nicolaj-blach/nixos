@@ -3,7 +3,8 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";
 
-    hyprland.url = "github:hyprwm/Hyprland";
+    # Pinned to include fix for plugin crash (config/legacy: fix crash on getConfigValue of plugin fns)
+    hyprland.url = "github:hyprwm/Hyprland/5f1350f522d3fe3af78cbe30a98311763b3509d5";
 
     split-monitor-workspaces = {
       url = "github:zjeffer/split-monitor-workspaces";
