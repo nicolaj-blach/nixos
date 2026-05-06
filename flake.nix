@@ -3,8 +3,8 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";
 
-    # Pin to older commit to avoid crash
-    hyprland.url = "github:hyprwm/Hyprland/6dc42e0f6d777109b6c8203dccf5c5d421b1fa04";
+    # Pin to mid-April commit before config refactoring that causes crash
+    hyprland.url = "github:hyprwm/Hyprland/a360c31d0434898888e710f4a5f560200f50cecf";
 
     split-monitor-workspaces = {
       url = "github:zjeffer/split-monitor-workspaces";
