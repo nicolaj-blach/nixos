@@ -547,14 +547,35 @@ local function setup_notes_keymaps()
         local filename = vim.fn.expand("%:t:r") -- filename without extension
         -- Match [[filename]] or [[../a/filename]] etc, with optional alias or heading
         local pattern = "\\[\\[(\\.\\./[afrp]/)?" .. filename .. "(\\]\\]|\\||#)"
-        require("snacks").picker({
-          title = "Backlinks to " .. filename,
-          finder = "grep",
-          format = "file",
-          search = pattern,
-          cwd = notes_path,
-          live = false,
-          hidden = { "input" },
+        -- Run rg and collect results, then show in picker without search field
+        local results = {}
+        local cmd = { "rg", "--line-number", "--column", "--no-heading", pattern, notes_path }
+        vim.fn.jobstart(cmd, {
+          stdout_buffered = true,
+          on_stdout = function(_, data)
+            for _, line in ipairs(data) do
+              if line ~= "" then
+                local file, lnum, col, text = line:match("^(.+):(%d+):(%d+):(.*)$")
+                if file then
+                  table.insert(results, {
+                    file = file,
+                    line = tonumber(lnum),
+                    col = tonumber(col),
+                    text = text,
+                  })
+                end
+              end
+            end
+          end,
+          on_exit = function()
+            vim.schedule(function()
+              require("snacks").picker({
+                title = "Backlinks to " .. filename,
+                items = results,
+                format = "file",
+              })
+            end)
+          end,
         })
       end, vim.tbl_extend("force", opts, { desc = "Find backlinks" }))
 
