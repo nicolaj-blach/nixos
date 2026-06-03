@@ -267,6 +267,9 @@ in
 
       # Disk & Partition
       parted
+
+      # DELETE AFTER MTCPS this is a horrible program!
+      uppaal
     ];
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
