@@ -222,6 +222,9 @@ in
       pinentry-curses
       pinentry-gnome3
 
+      # VPN
+      openconnect
+
       # Email
       protonmail-bridge
       aerc
