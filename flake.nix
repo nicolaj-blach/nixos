@@ -6,8 +6,9 @@
     # Pin to mid-April commit before config refactoring that causes crash
     hyprland.url = "github:hyprwm/Hyprland/a360c31d0434898888e710f4a5f560200f50cecf";
 
+    # Pin to version compatible with Hyprland 0.54.x (Mar 21 fix, before Lua refactor in May)
     split-monitor-workspaces = {
-      url = "github:zjeffer/split-monitor-workspaces";
+      url = "github:zjeffer/split-monitor-workspaces/5738d255abde51a9e33897f7fae8dfa2772b8292";
       inputs.hyprland.follows = "hyprland";
     };
 
