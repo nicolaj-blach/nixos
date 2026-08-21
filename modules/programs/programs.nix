@@ -73,6 +73,7 @@ in
       ];
     };
     firefox.enable = true;
+    bazecor.enable = true;
 
     git = {
       enable = true;
