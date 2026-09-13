@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-exec $TERMINAL --title terminal-float -e bluetui

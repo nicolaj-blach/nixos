@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Nix package search using nix-search-tv with television
-tv nix

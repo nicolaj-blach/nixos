@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-# Wrapper to launch hyprlock with focused monitor detection.
-# Sets HYPRLOCK_MONITOR env var to the currently focused monitor.
-
-HYPRLOCK_MONITOR=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
-export HYPRLOCK_MONITOR
-
-exec hyprlock "$@"

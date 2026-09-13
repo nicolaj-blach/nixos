@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Proton Mail
-Comment=Proton Mail web app
-Exec=chromium --app=https://mail.proton.me
-Icon=proton-mail
-Terminal=false
-Type=Application
-Categories=Network;Email;
-StartupWMClass=mail.proton.me

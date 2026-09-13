@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Package search - launches nix-search in a large floating terminal
-exec $TERMINAL --title terminal-float-large -e nix-search

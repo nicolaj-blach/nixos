@@ -1,4 +1,0 @@
-[filechooser]
-cmd=yazi-wrapper.sh
-default_dir=$HOME
-env=TERMCMD=/home/nicolaj-blach/.local/bin/terminal-for-picker

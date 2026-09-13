@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# SwayOSD wrapper that shows OSD on focused monitor only
-monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')
-exec swayosd-client --monitor "$monitor" "$@"
