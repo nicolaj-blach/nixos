@@ -67,7 +67,23 @@
           vim
           htop
           git
-          foot # Simple terminal that works in VMs
+          foot
+          (writeShellScriptBin "start-hyprland" ''
+            echo "Starting Hyprland..."
+            exec Hyprland
+          '')
+          (writeShellScriptBin "test-hm" ''
+            echo "Checking Home Manager..."
+            if [ -f ~/.hm-test ]; then
+              echo "Home Manager is active"
+              cat ~/.hm-test
+            else
+              echo "Home Manager not activated yet"
+            fi
+            echo ""
+            echo "Hyprland config:"
+            ls -la ~/.config/hypr/ 2>/dev/null || echo "No hypr config found"
+          '')
         ];
 
         # VM-specific Hyprland environment
@@ -81,7 +97,6 @@
           wayland.windowManager.hyprland.settings = {
             "$altMod" = "ALT";
             bind = [
-              # Alt-based bindings for VM testing
               "$altMod, RETURN, exec, foot"
               "$altMod, Q, killactive"
               "$altMod, T, exec, foot"
@@ -97,30 +112,8 @@
             ];
           };
 
-          # Ensure home directory exists and HM activates
           home.file.".hm-test".text = "Home Manager is working!";
         };
-
-        # Add a simple script to start Hyprland manually from TTY
-        environment.systemPackages = lib.mkAfter [
-          (pkgs.writeShellScriptBin "start-hyprland" ''
-            echo "Starting Hyprland..."
-            exec Hyprland
-          '')
-          (pkgs.writeShellScriptBin "test-hm" ''
-            echo "Checking Home Manager..."
-            if [ -f ~/.hm-test ]; then
-              echo "✓ Home Manager is active"
-              cat ~/.hm-test
-            else
-              echo "✗ Home Manager not activated yet"
-              echo "Run: systemctl --user start home-manager-${metaOwner.username}.service"
-            fi
-            echo ""
-            echo "Hyprland config:"
-            ls -la ~/.config/hypr/ 2>/dev/null || echo "No hypr config found"
-          '')
-        ];
       })
     ];
 
