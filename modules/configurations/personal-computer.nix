@@ -6,7 +6,7 @@
 }:
 
 {
-  flake.nixosModules.personal-computer = { ... }: {
+  flake.nixosModules.personal-computer = { lib, ... }: {
     imports = [
       # Core system modules
       self.nixosModules.boot
@@ -39,6 +39,18 @@
       # Packages
       self.nixosModules.packages
     ];
+
+    fileSystems."/" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "ext4";
+    };
+    fileSystems."/boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+    services.openssh.enable = true;
 
     home-manager = {
       useGlobalPkgs = true;

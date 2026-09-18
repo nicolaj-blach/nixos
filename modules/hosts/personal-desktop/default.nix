@@ -12,7 +12,7 @@
     modules = [
       inputs.home-manager.nixosModules.home-manager
       self.nixosModules.personal-computer
-      self.nixosModules.personal-desktop-hardware
+      ./_hw/hardware-configuration.nix
 
       ({ ... }: {
         networking.hostName = "personal-desktop";
