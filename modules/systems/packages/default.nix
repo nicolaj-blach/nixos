@@ -103,6 +103,8 @@
           opencode
           inputs.nix-search-tv.packages.${pkgs.stdenv.hostPlatform.system}.default
           inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fsel
+          inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nirimon
+          wl-mirror
 
           # Desktop Utilities
           fuzzel

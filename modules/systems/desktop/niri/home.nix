@@ -63,6 +63,7 @@
           spawn-at-startup "mako"
           spawn-at-startup "swww-daemon"
           spawn-at-startup "xwayland-satellite"
+          spawn-at-startup "nirimon" "-profile" "base"
 
           // Environment variables
           environment {
@@ -87,6 +88,13 @@
           // Skip hotkey overlay at startup
           hotkey-overlay {
               skip-at-startup
+          }
+
+          // Disable hot corners (overview triggered by clicking bar instead)
+          gestures {
+              hot-corners {
+                  off
+              }
           }
 
           // Keybindings

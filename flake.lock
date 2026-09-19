@@ -344,11 +344,11 @@
     "ghostel": {
       "flake": false,
       "locked": {
-        "lastModified": 1789764365,
-        "narHash": "sha256-TDa+ai99t4mlAjj4PynV6F1/A9NLTxw8qrYG6+A0xHg=",
+        "lastModified": 1789834264,
+        "narHash": "sha256-NpfnlggAcThNw9uY7Uq4qFPEJ+md8aZ8i32CQSUKz+w=",
         "owner": "dakra",
         "repo": "ghostel",
-        "rev": "6be56484c5375ea08a4888c949d118327ff3d1c4",
+        "rev": "829ac98a3e3183249028f9f4e029e7e9c0869be3",
         "type": "github"
       },
       "original": {
@@ -855,11 +855,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1789684949,
-        "narHash": "sha256-TAKa57gfBM/9a4IZrFaIQZhnHs9mXIFPlZbYrvhnaMY=",
-        "rev": "e554fab72f81915600f3f449b786fd9af40439a5",
+        "lastModified": 1789785513,
+        "narHash": "sha256-BMbikTjbh5H7ac/OjwGoJrlooh4dgNqhs51ABM83M7g=",
+        "rev": "20b1ddd1aa5ace70c9468305030aa4f9ef79671b",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1075591.e554fab72f81/nixexprs.tar.zst"
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1076192.20b1ddd1aa5a/nixexprs.tar.zst"
       },
       "original": {
         "id": "nixpkgs",
@@ -963,11 +963,11 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1789817313,
-        "narHash": "sha256-ylVsprB4GxLJMvYQUFtMOz8x8D1Mp7FPudbn89wCasU=",
+        "lastModified": 1789836462,
+        "narHash": "sha256-PDe/T14bM7mXQM3gwwdgMHKW8Nsfpbqto9FxsL85Jdc=",
         "owner": "kuokuo123",
         "repo": "otter-launcher",
-        "rev": "d764523df810d2b601222009393e886495100fb8",
+        "rev": "2c836a8f1066c4e3301c8a1acc8420de8aecba05",
         "type": "github"
       },
       "original": {
@@ -1027,11 +1027,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1789833940,
-        "narHash": "sha256-4puIwFziubVhURlWKc7HYV0nl1yqmHC+1TfCiT7M3Ew=",
+        "lastModified": 1789842296,
+        "narHash": "sha256-DArsp1bgN7jXx8QEccK6dwdkqWFUZhuNBURL7GIW1b0=",
         "owner": "nicolaj-blach",
         "repo": "quickshell-bar",
-        "rev": "42053a88132189a70227981e2f8b1655f62c490d",
+        "rev": "4769c21cce063dc076ade3adb9707b0980bb474f",
         "type": "github"
       },
       "original": {
