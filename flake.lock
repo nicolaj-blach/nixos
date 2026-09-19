@@ -1027,11 +1027,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1789842296,
-        "narHash": "sha256-DArsp1bgN7jXx8QEccK6dwdkqWFUZhuNBURL7GIW1b0=",
+        "lastModified": 1789844299,
+        "narHash": "sha256-57WehnG5zDYieHCGwURriHeEmFMco+/kd05NQui83AI=",
         "owner": "nicolaj-blach",
         "repo": "quickshell-bar",
-        "rev": "4769c21cce063dc076ade3adb9707b0980bb474f",
+        "rev": "4c68e936305938be346f96bde6a8466ced786192",
         "type": "github"
       },
       "original": {
