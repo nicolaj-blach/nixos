@@ -105,6 +105,7 @@
           inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fsel
 
           # Desktop Utilities
+          fuzzel
           swww
           swayosd
           mako
@@ -139,6 +140,9 @@
 
           # Communication
           vesktop
+
+          # Terminals
+          ghostty
 
           # Browsers
           chromium

@@ -12,14 +12,20 @@
     in
     {
       config = lib.mkIf (cfg.enable or false) {
+        # Prevent Hyprland from using Lua config - force it to use hyprland.conf
+        xdg.configFile."hypr/hyprland.lua".text = ''
+          -- Load the declarative config instead of Lua
+          hl.source("~/.config/hypr/hyprland.conf")
+        '';
+
         wayland.windowManager.hyprland = {
           settings = {
             # Program variables
             "$mainMod" = "SUPER";
-            "$terminal" = "$TERMINAL";
+            "$terminal" = "ghostty";
             "$fileManager" = "yazi";
             "$browser" = "zen";
-            "$menu" = "$TERMINAL --title terminal-float -e fsel --detach";
+            "$menu" = "ghostty --title=terminal-float -e fsel --detach";
 
             # Color variables (defaults, can be overridden by tinty)
             "$active_border_1" = "rgb(61afef)";
@@ -164,9 +170,10 @@
             };
 
             # Load split-monitor-workspaces plugin
-            plugin = [
-              "/run/current-system/sw/lib/libsplit-monitor-workspaces.so"
-            ];
+            # FIXME: Disabled - ABI mismatch with current Hyprland version
+            # plugin = [
+            #   "/run/current-system/sw/lib/libsplit-monitor-workspaces.so"
+            # ];
 
             # Exec-once commands (autostart)
             exec-once = [
@@ -199,7 +206,7 @@
               "gpg-connect-agent /bye"
 
               # Mail client in special workspace
-              "hyprctl dispatch -- exec [workspace special:mail silent] $TERMINAL -e aerc"
+              "hyprctl dispatch -- exec [workspace special:mail silent] ghostty -e aerc"
             ];
 
             # Keybindings
@@ -251,35 +258,35 @@
               "$mainMod SHIFT, K, movewindow, u"
               "$mainMod SHIFT, J, movewindow, d"
 
-              # Workspaces (split-monitor-workspaces plugin)
-              "$mainMod, 1, split-workspace, 1"
-              "$mainMod, 2, split-workspace, 2"
-              "$mainMod, 3, split-workspace, 3"
-              "$mainMod, 4, split-workspace, 4"
-              "$mainMod, 5, split-workspace, 5"
-              "$mainMod, 6, split-workspace, 6"
-              "$mainMod, 7, split-workspace, 7"
-              "$mainMod, 8, split-workspace, 8"
-              "$mainMod, 9, split-workspace, 9"
+              # Workspaces
+              "$mainMod, 1, workspace, 1"
+              "$mainMod, 2, workspace, 2"
+              "$mainMod, 3, workspace, 3"
+              "$mainMod, 4, workspace, 4"
+              "$mainMod, 5, workspace, 5"
+              "$mainMod, 6, workspace, 6"
+              "$mainMod, 7, workspace, 7"
+              "$mainMod, 8, workspace, 8"
+              "$mainMod, 9, workspace, 9"
 
-              # Move window to workspace on current monitor (and follow)
-              "$mainMod SHIFT, 1, split-movetoworkspace, 1"
-              "$mainMod SHIFT, 2, split-movetoworkspace, 2"
-              "$mainMod SHIFT, 3, split-movetoworkspace, 3"
-              "$mainMod SHIFT, 4, split-movetoworkspace, 4"
-              "$mainMod SHIFT, 5, split-movetoworkspace, 5"
-              "$mainMod SHIFT, 6, split-movetoworkspace, 6"
-              "$mainMod SHIFT, 7, split-movetoworkspace, 7"
-              "$mainMod SHIFT, 8, split-movetoworkspace, 8"
-              "$mainMod SHIFT, 9, split-movetoworkspace, 9"
+              # Move window to workspace (and follow)
+              "$mainMod SHIFT, 1, movetoworkspace, 1"
+              "$mainMod SHIFT, 2, movetoworkspace, 2"
+              "$mainMod SHIFT, 3, movetoworkspace, 3"
+              "$mainMod SHIFT, 4, movetoworkspace, 4"
+              "$mainMod SHIFT, 5, movetoworkspace, 5"
+              "$mainMod SHIFT, 6, movetoworkspace, 6"
+              "$mainMod SHIFT, 7, movetoworkspace, 7"
+              "$mainMod SHIFT, 8, movetoworkspace, 8"
+              "$mainMod SHIFT, 9, movetoworkspace, 9"
 
               # Special workspace (scratchpad)
               "$mainMod, S, togglespecialworkspace, magic"
               "$mainMod SHIFT, S, movetoworkspace, special:magic"
 
-              # Scroll through workspaces on current monitor
-              "$mainMod, mouse_down, split-workspace, +1"
-              "$mainMod, mouse_up, split-workspace, -1"
+              # Scroll through workspaces
+              "$mainMod, mouse_down, workspace, +1"
+              "$mainMod, mouse_up, workspace, -1"
 
               # Monitor focus (generic next/prev)
               "$mainMod CTRL, H, focusmonitor, +1"
@@ -380,18 +387,8 @@
             ];
           };
 
-          # Extra config for submap and plugin settings
+          # Extra config for submap
           extraConfig = ''
-            # split-monitor-workspaces plugin config
-            plugin {
-              split-monitor-workspaces {
-                count = 9
-                keep_focused = 0
-                enable_notifications = 0
-                enable_persistent_workspaces = 1
-              }
-            }
-
             # Resize submap
             submap = resize
             binde = , H, resizeactive, -20 0

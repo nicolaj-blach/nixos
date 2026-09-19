@@ -72,6 +72,11 @@
       flake = false;
     };
     nix-search-tv.url = "github:3timeslazy/nix-search-tv";
+
+    quickshell-bar = {
+      url = "github:nicolaj-blach/quickshell-bar";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

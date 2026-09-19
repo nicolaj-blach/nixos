@@ -998,6 +998,48 @@
         "type": "github"
       }
     },
+    "quickshell": {
+      "inputs": {
+        "nixpkgs": [
+          "quickshell-bar",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789461462,
+        "narHash": "sha256-J1n+c46qiTmV6gNDqndbhrfDR2R47QLXQNFrf1idTvM=",
+        "ref": "refs/heads/master",
+        "rev": "c6a516096dd84d5255b409482eb4bf740b952f88",
+        "revCount": 860,
+        "type": "git",
+        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
+      }
+    },
+    "quickshell-bar": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "quickshell": "quickshell"
+      },
+      "locked": {
+        "lastModified": 1789754811,
+        "narHash": "sha256-hCfe4Rs7Q0t/Ln+zGxcln2hNxzeRPWux+mliaXBZWOE=",
+        "owner": "nicolaj-blach",
+        "repo": "quickshell-bar",
+        "rev": "b47bc43b8c8f48c566aa68a810ad6be05716a010",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nicolaj-blach",
+        "repo": "quickshell-bar",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agent-markdown-files": "agent-markdown-files",
@@ -1015,6 +1057,7 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "otter-launcher": "otter-launcher",
+        "quickshell-bar": "quickshell-bar",
         "secrets": "secrets",
         "sops-nix": "sops-nix",
         "split-monitor-workspaces": "split-monitor-workspaces",
