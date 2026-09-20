@@ -36,6 +36,8 @@
                   natural-scroll
                   accel-speed 0.2
               }
+
+              focus-follows-mouse
           }
 
           // Layout configuration
@@ -86,9 +88,6 @@
           // Prefer no client-side decorations
           prefer-no-csd
 
-          // Focus window on mouse hover
-          focus-follows-mouse
-
           // Skip hotkey overlay at startup
           hotkey-overlay {
               skip-at-startup
@@ -104,7 +103,8 @@
           // Keybindings
           binds {
               // Launch programs
-              Mod+Return { spawn "ghostty"; }
+              Mod+Return { spawn "emacs-terminal"; }
+              Mod+Shift+Return { spawn "kitty"; }
               Mod+B { spawn "zen"; }
               Mod+Space { spawn "fuzzel"; }
 

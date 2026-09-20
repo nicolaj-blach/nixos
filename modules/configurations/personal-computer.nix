@@ -55,6 +55,7 @@
           # Apps
           self.homeManagerModules.zen-browser
           self.homeManagerModules.emacs
+          self.homeManagerModules.kitty
           self.homeManagerModules.pi-coding-agent
           self.homeManagerModules.git
           self.homeManagerModules.devenv
@@ -69,6 +70,7 @@
         # Enable apps
         programs.zen-browser.enable = true;
         custom.emacs.enable = true;
+        programs.kitty.enable = true;
         programs.pi-coding-agent.enable = true;
         programs.git.enable = true;
         programs.devenv.enable = true;
