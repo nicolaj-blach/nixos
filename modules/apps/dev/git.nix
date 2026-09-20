@@ -26,11 +26,7 @@
             diff.colorMoved = "default";
             merge.conflictStyle = "diff3";
             alias = {
-              st = "status";
-              co = "checkout";
-              br = "branch";
-              ci = "commit";
-              lg = "log --graph --oneline --decorate";
+              graph = "log --graph --oneline --decorate";
             };
           };
         };
@@ -58,6 +54,64 @@
 
         # Lazygit
         programs.lazygit.enable = true;
+
+        # Shell aliases (oh-my-zsh git style)
+        programs.zsh.shellAliases = {
+          # Status
+          gst = "git status";
+          gss = "git status -s";
+
+          # Add
+          ga = "git add";
+          gaa = "git add --all";
+          gap = "git add --patch";
+
+          # Commit
+          gc = "git commit";
+          gcm = "git commit -m";
+          gca = "git commit --amend";
+          gcane = "git commit --amend --no-edit";
+
+          # Push/Pull
+          gp = "git push";
+          gpf = "git push --force-with-lease";
+          gl = "git pull";
+
+          # Diff
+          gd = "git diff";
+          gds = "git diff --staged";
+
+          # Branch/Checkout/Switch
+          gb = "git branch";
+          gco = "git checkout";
+          gsw = "git switch";
+          gswc = "git switch -c";
+
+          # Rebase
+          grb = "git rebase";
+          grbi = "git rebase -i";
+          grbc = "git rebase --continue";
+          grba = "git rebase --abort";
+
+          # Restore
+          grs = "git restore";
+          grss = "git restore --staged";
+
+          # Stash
+          gsta = "git stash";
+          gstp = "git stash pop";
+          gstl = "git stash list";
+
+          # Log
+          glog = "git log --oneline";
+          glg = "git log --graph --oneline --decorate";
+          glast = "git log -1 HEAD --stat";
+
+          # Misc
+          gf = "git fetch";
+          gm = "git merge";
+          gcl = "git clone";
+        };
       };
     };
 }

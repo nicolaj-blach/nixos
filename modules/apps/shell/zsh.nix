@@ -1,0 +1,288 @@
+{ ... }:
+{
+  flake.homeManagerModules.zsh =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      cfg = config.programs.zsh;
+    in
+    {
+      config = lib.mkIf cfg.enable {
+        programs.zsh = {
+          autosuggestion.enable = true;
+          syntaxHighlighting.enable = true;
+          enableCompletion = true;
+
+          oh-my-zsh = {
+            enable = true;
+            plugins = [
+              "git"
+              "sudo"
+              "vi-mode"
+              "history-substring-search"
+              "colored-man-pages"
+              "extract"
+              "command-not-found"
+            ];
+          };
+
+          sessionVariables = {
+            EDITOR = "emacsclient -c";
+            VISUAL = "emacsclient -c";
+            KEYTIMEOUT = "1";
+
+            # fzf configuration
+            FZF_DEFAULT_COMMAND = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
+            FZF_CTRL_T_COMMAND = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
+            FZF_CTRL_T_OPTS = ''
+              --walker-skip .git,node_modules,target,.direnv
+              --preview 'bat -n --color=always {}'
+              --bind 'ctrl-/:change-preview-window(down|hidden|)' '';
+            FZF_ALT_C_COMMAND = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
+            FZF_ALT_C_OPTS = ''
+              --walker-skip .git,node_modules,target,.direnv
+              --preview 'eza --tree --level=2 --icons --color=always {}' '';
+            FZF_CTRL_R_OPTS = ''
+              --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort'
+              --color header:italic
+              --header 'CTRL-Y to copy command to clipboard' '';
+
+            # Carapace bridges
+            CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
+
+            # nix-ld library path
+            LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
+          };
+
+          shellAliases = {
+            # Navigation
+            cd = "z";
+            ".." = "cd ..";
+            "..." = "cd ../..";
+            "...." = "cd ../../..";
+
+            # List
+            ls = "eza -lh --group-directories-first --icons=auto";
+            lsa = "ls -a";
+            la = "ls -lah";
+            lm = "eza -lh --sort=modified --icons=auto";
+            lt = "eza --tree --level=2 --long --icons --git";
+            lta = "lt -a";
+
+            # Find
+            ff = "fzf --preview 'bat --style=numbers --color=always {}'";
+            ffind = "fd --type f | fzf";
+
+            # Git
+            lg = "lazygit";
+            ghd = "gh-dash";
+
+            # System
+            htop = "btop";
+            psg = "ps aux | grep";
+            df = "df -h";
+            du = "du -h";
+            free = "free -h";
+
+            # Network
+            ping = "ping -c 5";
+            wget = "wget -c";
+
+            # Misc
+            bat = "bat --theme=base16-256";
+            clear = "clear && fastfetch";
+            please = "sudo";
+
+            # AI
+            oc = "opencode";
+            occ = "opencode -c";
+
+            # Terminal tricks
+            pipes = "pipes-rs -k curved --palette darker -p 5 -r 0.95";
+            matrix = "cmatrix";
+          };
+
+          initExtra = ''
+            # Vi mode config (must be set before oh-my-zsh loads vi-mode plugin)
+            VI_MODE_SET_CURSOR=true
+
+            # zsh-autopair
+            source ${pkgs.zsh-autopair}/share/zsh/zsh-autopair/autopair.zsh
+
+            # Secondary prompt
+            PROMPT2="    "
+
+            # Shift+Enter inserts newline without executing
+            insert-newline() { LBUFFER+=$'\n'; }
+            zle -N insert-newline
+            bindkey '^[[13;2u' insert-newline
+
+            # Reset to insert mode on every new prompt
+            __reset_vi_mode() { zle vi-insert 2>/dev/null; }
+            if [[ -z "''${widgets[zle-line-init]+x}" ]]; then
+              zle -N zle-line-init __reset_vi_mode
+            else
+              __orig_line_init="''${widgets[zle-line-init]#user:}"
+              function zle-line-init() {
+                "''${__orig_line_init}" 2>/dev/null
+                zle vi-insert 2>/dev/null
+              }
+              zle -N zle-line-init
+            fi
+
+            # Transient prompt: redraw current prompt without vi indicator on Enter
+            function zle-line-finish() {
+              __saved_prompt="$PROMPT"
+              PROMPT=$' \e[1;32m>\e[0m '
+              zle reset-prompt
+              PROMPT="$__saved_prompt"
+            }
+            zle -N zle-line-finish
+
+            # Zoxide
+            eval "$(zoxide init zsh)"
+
+            # Carapace: multi-shell completion engine
+            zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+            source <(carapace _carapace)
+
+            # fzf shell integration (CTRL-T, CTRL-R, ALT-C keybindings + fuzzy completion)
+            source <(fzf --zsh)
+
+            # fzf: completion with fd (faster than default walker)
+            _fzf_compgen_path() {
+              fd --hidden --follow --exclude .git . "$1"
+            }
+            _fzf_compgen_dir() {
+              fd --type d --hidden --follow --exclude .git . "$1"
+            }
+
+            # GPG (required for pinentry to work in terminal)
+            export GPG_TTY=$(tty)
+
+            # Local overrides (API keys, secrets -- not tracked in git)
+            [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+          '';
+
+          profileExtra = ''
+            # User scripts
+            export PATH="$HOME/.local/bin:$PATH"
+          '';
+        };
+
+        # Starship prompt
+        programs.starship = {
+          enable = true;
+          settings = {
+            format = " $directory$git_branch$git_status$git_state$nix_shell$python$nodejs$rust$cmd_duration$fill$time$line_break$character";
+
+            character = {
+              success_symbol = "[ >](bold green)";
+              error_symbol = "[ >](bold red)";
+              vimcmd_symbol = " [\\[N\\] >](bold purple)";
+            };
+
+            directory = {
+              style = "bold blue";
+              truncation_length = 4;
+              truncate_to_repo = true;
+              format = "[$path]($style)[$read_only]($read_only_style) ";
+              read_only = " ro";
+              read_only_style = "red";
+            };
+
+            git_branch = {
+              style = "purple";
+              format = "[$symbol$branch(:$remote_branch)]($style) ";
+              symbol = "";
+            };
+
+            git_status = {
+              style = "red";
+              format = "([$all_status$ahead_behind]($style) )";
+              modified = "!";
+              untracked = "?";
+              staged = "+";
+              deleted = "x";
+              renamed = "r";
+              conflicted = "c";
+              ahead = "^\${count}";
+              behind = "v\${count}";
+              diverged = "^\${ahead_count}v\${behind_count}";
+            };
+
+            git_state = {
+              style = "yellow";
+              format = "[\\($state( $progress_current/$progress_total)\\)]($style)";
+            };
+
+            nix_shell = {
+              style = "cyan";
+              format = "[\\[$name\\]]($style) ";
+              symbol = "";
+              impure_msg = "";
+              pure_msg = "";
+              unknown_msg = "";
+            };
+
+            python = {
+              style = "yellow";
+              format = "[\${symbol}\${pyenv_prefix}(\${version} )((\$virtualenv) )]($style)";
+              symbol = "py ";
+            };
+
+            nodejs = {
+              style = "green";
+              format = "[$symbol($version )]($style)";
+              symbol = "node ";
+            };
+
+            rust = {
+              style = "red";
+              format = "[$symbol($version )]($style)";
+              symbol = "rs ";
+            };
+
+            cmd_duration = {
+              style = "yellow";
+              format = "[$duration]($style) ";
+              min_time = 2000;
+            };
+
+            fill = {
+              symbol = " ";
+            };
+
+            time = {
+              disabled = false;
+              style = "dimmed white";
+              format = "[\\[$time\\]]($style)";
+              time_format = "%H:%M";
+            };
+
+            line_break = {
+              disabled = false;
+            };
+
+            continuation_prompt = "     ";
+          };
+        };
+
+        # Zoxide
+        programs.zoxide.enable = true;
+
+        # fzf
+        programs.fzf.enable = true;
+
+        # bat
+        programs.bat.enable = true;
+
+        # eza
+        programs.eza.enable = true;
+      };
+    };
+}

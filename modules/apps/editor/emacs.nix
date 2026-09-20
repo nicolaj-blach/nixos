@@ -141,6 +141,9 @@
 
         ;; Ghostel terminal emulator (from local source)
         (package! ghostel :recipe (:local-repo "~/.local/share/ghostel"))
+
+        ;; Base16 themes (exact OneDark colors matching Kitty/Quickshell)
+        (package! base16-theme)
       '';
 
       # Doom config.el - user configuration
@@ -152,9 +155,17 @@
               user-mail-address "")
 
         ;;; Theme & UI
-        (setq doom-theme 'doom-one
-              doom-font (font-spec :family "monospace" :size 14)
+        ;; Use base16-onedark to match Kitty/Quickshell exactly
+        (setq doom-theme 'base16-onedark
+              doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 14)
               doom-variable-pitch-font (font-spec :family "sans-serif" :size 14))
+
+        ;; Disable solaire-mode for consistent background color
+        (after! solaire-mode
+          (solaire-global-mode -1))
+
+        ;; Remove fringes (the light gray lines on left/right)
+        (set-fringe-mode 0)
 
         ;; Line numbers
         (setq display-line-numbers-type 'relative)

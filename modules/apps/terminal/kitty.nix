@@ -11,6 +11,7 @@
       cfg = config.programs.kitty;
 
       # OneDark color scheme (matching doom-one)
+      # OneDark color scheme (matching quickshell bar)
       colorsConf = ''
         # vim:ft=kitty
 

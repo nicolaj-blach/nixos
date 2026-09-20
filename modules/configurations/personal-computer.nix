@@ -60,6 +60,9 @@
           self.homeManagerModules.git
           self.homeManagerModules.devenv
 
+          # Shell
+          self.homeManagerModules.zsh
+
           # System integration
           self.homeManagerModules.kanata
         ];
@@ -74,6 +77,7 @@
         programs.pi-coding-agent.enable = true;
         programs.git.enable = true;
         programs.devenv.enable = true;
+        programs.zsh.enable = true;
 
         home.stateVersion = "25.11";
       };
