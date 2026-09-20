@@ -62,6 +62,7 @@
           spawn-at-startup "quickshell-bar"
           spawn-at-startup "mako"
           spawn-at-startup "swww-daemon"
+          spawn-at-startup "sh" "-c" "sleep 1 && swww img ~/nixos/assets/background.png"
           spawn-at-startup "xwayland-satellite"
           spawn-at-startup "nirimon" "-profile" "base"
 
@@ -84,6 +85,9 @@
 
           // Prefer no client-side decorations
           prefer-no-csd
+
+          // Focus window on mouse hover
+          focus-follows-mouse
 
           // Skip hotkey overlay at startup
           hotkey-overlay {
@@ -110,15 +114,15 @@
               Mod+Shift+F { fullscreen-window; }
               Mod+V { toggle-window-floating; }
 
-              // Focus
-              Mod+H { focus-column-left; }
-              Mod+L { focus-column-right; }
+              // Focus (crosses monitors at edges)
+              Mod+H { focus-column-or-monitor-left; }
+              Mod+L { focus-column-or-monitor-right; }
               Mod+J { focus-window-down; }
               Mod+K { focus-window-up; }
 
-              // Move windows
-              Mod+Shift+H { move-column-left; }
-              Mod+Shift+L { move-column-right; }
+              // Move windows (crosses monitors at edges)
+              Mod+Shift+H { move-column-left-or-to-monitor-left; }
+              Mod+Shift+L { move-column-right-or-to-monitor-right; }
               Mod+Shift+J { move-window-down; }
               Mod+Shift+K { move-window-up; }
 
