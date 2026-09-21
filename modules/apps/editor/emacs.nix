@@ -142,6 +142,9 @@
         ;; Ghostel terminal emulator (from local source)
         (package! ghostel :recipe (:local-repo "~/.local/share/ghostel"))
 
+        ;; Ghostel extensions
+        (package! evil-ghostel)
+
         ;; Base16 themes (exact OneDark colors matching Kitty/Quickshell)
         (package! base16-theme)
       '';
@@ -157,8 +160,8 @@
         ;;; Theme & UI
         ;; Use base16-onedark to match Kitty/Quickshell exactly
         (setq doom-theme 'base16-onedark
-              doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 14)
-              doom-variable-pitch-font (font-spec :family "sans-serif" :size 14))
+              doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 16)
+              doom-variable-pitch-font (font-spec :family "sans-serif" :size 16))
 
         ;; Disable solaire-mode for consistent background color
         (after! solaire-mode
@@ -196,9 +199,17 @@
           (map! :leader
                 :desc "Open terminal" "o t" #'ghostel
                 :desc "Project terminal" "p t" #'ghostel-project)
-          ;; Evil integration - use emacs state in ghostel
-          (after! evil
-            (evil-set-initial-state 'ghostel-mode 'emacs)))
+          ;; Add magit to allowed eval commands
+          (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
+
+        ;; Evil integration for Ghostel
+        (use-package! evil-ghostel
+          :after (ghostel evil)
+          :hook (ghostel-mode . evil-ghostel-mode))
+
+        ;; Org link type for Ghostel (built into ghostel package)
+        (use-package! ghostel-org
+          :after org)
 
         ;;; Additional Keybindings
         ;; Quick access to common commands

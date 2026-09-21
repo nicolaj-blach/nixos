@@ -105,7 +105,7 @@
               // Launch programs
               Mod+Return { spawn "emacs-terminal"; }
               Mod+Shift+Return { spawn "kitty"; }
-              Mod+B { spawn "zen"; }
+              Mod+B { spawn "zen-beta"; }
               Mod+Space { spawn "fuzzel"; }
 
               // Window management
