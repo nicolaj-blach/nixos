@@ -80,6 +80,7 @@
         (doom! :input
 
                :completion
+               company           ; Code completion (in-buffer suggestions)
                (vertico +icons)
 
                :ui
@@ -113,6 +114,7 @@
                syntax
 
                :tools
+               docker            ; Docker/Podman management + Dockerfile editing
                (eval +overlay)
                lookup
                lsp
@@ -122,13 +124,26 @@
                (:if (featurep :system 'macos) macos)
 
                :lang
+               (cc +lsp +tree-sitter)              ; C/C++ with clangd
+               (csharp +lsp +dotnet +tree-sitter)  ; C#
+               data                                 ; CSV, TOML, XML, etc.
                emacs-lisp
-               (json +lsp)
-               (markdown +grip)
-               (nix +lsp)
-               (org +pretty +roam2)
-               (sh +lsp)
-               (yaml +lsp)
+               (go +lsp +tree-sitter)              ; Go with gopls
+               graphql                              ; GraphQL schemas
+               (haskell +lsp +tree-sitter)         ; Haskell with HLS
+               (javascript +lsp +tree-sitter)      ; JS/TS/React/JSX/TSX
+               (json +lsp +tree-sitter)
+               (latex +lsp +fold)                  ; LaTeX with texlab
+               (lua +lsp +tree-sitter)             ; Lua with lua-language-server
+               (markdown +grip +lsp)               ; Markdown with marksman LSP
+               (nix +lsp +tree-sitter)
+               (org +pretty +roam2)                ; Org mode (jupyter via devenv)
+               (python +lsp +pyright +tree-sitter) ; Python with pyright
+               (rust +lsp +tree-sitter)            ; Rust with rust-analyzer
+               (sh +lsp +tree-sitter)
+               (web +lsp +tree-sitter)             ; HTML/CSS/Tailwind
+               (yaml +lsp +tree-sitter)
+               (zig +lsp +tree-sitter)             ; Zig with zls
 
                :config
                (default +bindings +smartparens))
@@ -147,6 +162,12 @@
 
         ;; Base16 themes (exact OneDark colors matching Kitty/Quickshell)
         (package! base16-theme)
+
+        ;; Direnv integration (per-buffer environments for project-local LSPs)
+        (package! envrc)
+
+        ;; Typst support (not built into Doom yet)
+        (package! typst-ts-mode :recipe (:host github :repo "Ziqi-Yang/typst-ts-mode"))
       '';
 
       # Doom config.el - user configuration
@@ -224,6 +245,103 @@
         (after! lsp-mode
           (setq lsp-idle-delay 0.5
                 lsp-log-io nil))
+
+        ;;; Direnv Integration (envrc)
+        ;; Enables per-buffer direnv environments for project-local LSPs
+        ;; When you open a file in a direnv-enabled project, envrc will
+        ;; automatically load that project's environment (including LSP servers)
+        (use-package! envrc
+          :hook (after-init . envrc-global-mode)
+          :config
+          ;; Show envrc status in minibuffer when environment changes
+          (setq envrc-show-summary-in-minibuffer t)
+          ;; Keybindings for manual control
+          (map! :leader
+                :prefix ("e" . "envrc")
+                :desc "Allow .envrc" "a" #'envrc-allow
+                :desc "Deny .envrc" "d" #'envrc-deny
+                :desc "Reload env" "r" #'envrc-reload
+                :desc "Show env" "s" #'envrc-show))
+
+        ;;; C# LSP Configuration
+        ;; csharp-ls will be auto-detected from $PATH when provided by devenv
+        ;; No need to set lsp-csharp-server-path - it uses PATH automatically
+        (after! lsp-csharp
+          ;; Prefer csharp-ls from PATH over downloading omnisharp
+          (setq lsp-csharp-server-path nil))
+
+        ;;; JavaScript/TypeScript Configuration
+        (after! lsp-javascript
+          ;; Use project-local tsserver when available (via devenv)
+          (setq lsp-clients-typescript-prefer-use-project-ts-server t))
+
+        ;;; Rust Configuration
+        (after! rustic
+          ;; Use rust-analyzer from PATH (via rustup or devenv)
+          (setq rustic-lsp-server 'rust-analyzer))
+
+        ;;; Python Configuration
+        (after! lsp-pyright
+          ;; Pyright settings
+          (setq lsp-pyright-typechecking-mode "basic"))
+
+        ;;; Web Mode (HTML/CSS/JSX/TSX)
+        (after! web-mode
+          ;; Better defaults for JSX/TSX
+          (setq web-mode-markup-indent-offset 2
+                web-mode-css-indent-offset 2
+                web-mode-code-indent-offset 2
+                web-mode-enable-auto-quoting nil))
+
+        ;;; Tailwind CSS
+        ;; Enable Tailwind LSP for relevant file types
+        (after! lsp-tailwindcss
+          (setq lsp-tailwindcss-add-on-mode t))
+
+        ;;; Format on save exceptions
+        ;; Disable format-on-save for certain modes if needed
+        ;; (setq +format-on-save-disabled-modes '(sql-mode))
+
+        ;;; Go Configuration
+        (after! go-mode
+          ;; Use goimports for auto-imports on format
+          (setq gofmt-command "goimports"))
+
+        ;;; Zig Configuration
+        (after! zig-mode
+          ;; zls is auto-detected from PATH
+          (setq lsp-zig-zls-executable (executable-find "zls")))
+
+        ;;; Lua Configuration
+        (after! lua-mode
+          ;; lua-language-server is auto-detected from PATH
+          )
+
+        ;;; Typst Configuration
+        (use-package! typst-ts-mode
+          :mode "\\.typ\\'"
+          :config
+          ;; Enable LSP for Typst (tinymist)
+          (add-hook 'typst-ts-mode-hook #'lsp!))
+
+        ;;; LaTeX Configuration
+        ;; texlab LSP is auto-detected from PATH
+        ;; Full texlive should be installed via devenv per-project
+        (after! tex
+          ;; Use pdf-tools for viewing if available, otherwise zathura
+          (setq +latex-viewers '(pdf-tools zathura evince)))
+
+        ;;; Docker/Podman Configuration
+        ;; docker.el works with both Docker and Podman
+        (after! docker
+          ;; Both docker and podman available - docker is default
+          ;; To use podman, set these:
+          ;; (setq docker-command "podman")
+          ;; (setq docker-compose-command "podman-compose")
+          )
+
+        ;;; GraphQL Configuration
+        ;; graphql-language-service-cli is auto-detected from PATH
       '';
     in
     {
@@ -250,9 +368,66 @@
           sqlite # For org-roam
           graphviz # For org-roam graph
           pandoc # For markdown export
-          shellcheck # For shell script linting
-          nixfmt-rfc-style # For nix formatting
+
+          # LSP Servers (global - always available)
+          # Nix
           nil # Nix LSP
+          nixfmt-rfc-style # Nix formatting
+
+          # Shell
+          shellcheck # Shell script linting
+          nodePackages.bash-language-server
+
+          # Web (HTML/CSS/JS/TS)
+          nodePackages.typescript-language-server # JS/TS LSP
+          nodePackages.vscode-langservers-extracted # HTML/CSS/JSON LSP
+          tailwindcss-language-server # Tailwind CSS
+          emmet-ls # Emmet for HTML/JSX
+
+          # C/C++
+          clang-tools # clangd LSP + clang-format
+
+          # Python
+          pyright # Python LSP (fast, type-focused)
+          ruff # Python linter/formatter
+
+          # Rust (rust-analyzer typically via rustup/devenv, but can have fallback)
+          # rust-analyzer # Uncomment for global install
+
+          # Haskell (HLS is large, better via devenv per-project)
+          # haskell-language-server # Uncomment for global install
+
+          # YAML/TOML
+          yaml-language-server
+          taplo # TOML LSP
+
+          # Go
+          gopls # Go LSP
+          gotools # goimports, etc.
+
+          # Zig
+          zls # Zig LSP
+
+          # Lua
+          lua-language-server # Lua LSP
+
+          # LaTeX (LSP only - full texlive via devenv per-project)
+          texlab # LaTeX LSP
+
+          # Typst
+          typst # Typst compiler
+          tinymist # Typst LSP
+
+          # GraphQL
+          graphql-language-service-cli # GraphQL LSP
+
+          # Markdown
+          marksman # Markdown LSP (wiki links, references)
+
+          # Docker/Containers
+          dockerfile-language-server-nodejs # Dockerfile LSP
+          hadolint # Dockerfile linter
+          docker-compose-language-service # docker-compose LSP
 
           # Helper scripts
           emacs-terminal

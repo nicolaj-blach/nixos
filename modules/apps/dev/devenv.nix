@@ -70,6 +70,27 @@
             "~/work"
           ]
         '';
+
+        # Define use_devenv function for direnv
+        xdg.configFile."direnv/lib/use_devenv.sh".text = ''
+          # use_devenv - activate a devenv environment
+          # Usage in .envrc: use devenv
+          use_devenv() {
+            watch_file devenv.nix
+            watch_file devenv.lock
+            watch_file devenv.yaml
+            watch_file .devenv.flake.nix
+
+            # Check if devenv is available
+            if ! command -v devenv &> /dev/null; then
+              log_error "devenv is not installed. Install it with: nix profile install nixpkgs#devenv"
+              return 1
+            fi
+
+            # Use devenv's built-in direnv integration
+            eval "$(devenv print-dev-env --impure)"
+          }
+        '';
       };
     };
 }
