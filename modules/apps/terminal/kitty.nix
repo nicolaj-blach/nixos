@@ -10,6 +10,15 @@
     let
       cfg = config.programs.kitty;
 
+      # Wrapper script for popup windows with padding
+      kitty-popup = pkgs.writeShellScriptBin "kitty-popup" ''
+        exec kitty --class popup -o window_padding_width=8 "$@"
+      '';
+
+      kitty-popup-term = pkgs.writeShellScriptBin "kitty-popup-term" ''
+        exec kitty --class popup-term -o window_padding_width=8 "$@"
+      '';
+
       # OneDark color scheme (matching doom-one)
       # OneDark color scheme (matching quickshell bar)
       colorsConf = ''
@@ -132,6 +141,11 @@
 
           extraConfig = colorsConf;
         };
+
+        home.packages = [
+          kitty-popup
+          kitty-popup-term
+        ];
       };
     };
 }

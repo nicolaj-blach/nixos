@@ -10,7 +10,6 @@
     system = "x86_64-linux";
 
     modules = [
-      inputs.home-manager.nixosModules.home-manager
       self.nixosModules.personal-computer
       ./_hw/hardware-configuration.nix
 

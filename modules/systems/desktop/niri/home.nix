@@ -67,6 +67,7 @@
           spawn-at-startup "sh" "-c" "sleep 1 && swww img ~/nixos/assets/background.png"
           spawn-at-startup "xwayland-satellite"
           spawn-at-startup "nirimon" "-profile" "base"
+          spawn-at-startup "cclipd" "-s" "2" "-t" "image/png" "-t" "image/*" "-t" "text/plain;charset=utf-8" "-t" "text/*"
 
           // Environment variables
           environment {
@@ -100,19 +101,34 @@
               }
           }
 
+          // Window rules - floating popup windows
+          window-rule {
+              match app-id="popup"
+              open-floating true
+              default-column-width { fixed 450; }
+              default-window-height { fixed 500; }
+          }
+
+          window-rule {
+              match app-id="popup-term"
+              open-floating true
+              default-column-width { fixed 700; }
+              default-window-height { fixed 500; }
+          }
+
           // Keybindings
           binds {
               // Launch programs
               Mod+Return { spawn "emacs-terminal"; }
               Mod+Shift+Return { spawn "kitty"; }
               Mod+B { spawn "zen-beta"; }
-              Mod+Space { spawn "fuzzel"; }
+              Mod+Space { spawn "kitty-popup" "-e" "otter-launcher" "-c" "/home/nicolaj-blach/.config/otter-launcher/config.toml"; }
 
               // Window management
               Mod+W { close-window; }
               Mod+F { maximize-column; }
               Mod+Shift+F { fullscreen-window; }
-              Mod+V { toggle-window-floating; }
+              Mod+T { toggle-window-floating; }
 
               // Focus (crosses monitors at edges)
               Mod+H { focus-column-or-monitor-left; }
@@ -160,6 +176,11 @@
               // Screenshots
               Print { screenshot; }
               Mod+Print { screenshot-window; }
+
+              // Clipboard
+              Mod+C { spawn "wtype" "-M" "ctrl" "c" "-m" "ctrl"; }
+              Mod+V { spawn "wtype" "-M" "ctrl" "v" "-m" "ctrl"; }
+              Mod+Shift+V { spawn "kitty-popup" "-e" "fsel" "--cclip"; }
 
               // Session
               Mod+Shift+E { quit; }

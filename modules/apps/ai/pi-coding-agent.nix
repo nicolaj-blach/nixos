@@ -29,8 +29,7 @@
         '';
 
         programs.zsh.shellAliases = {
-          pi = "pi-coding-agent";
-          agent = "pi-coding-agent";
+          agent = "pi";
         };
       };
     };

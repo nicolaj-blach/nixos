@@ -73,6 +73,11 @@
     };
     nix-search-tv.url = "github:3timeslazy/nix-search-tv";
 
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     quickshell-bar = {
       url = "github:nicolaj-blach/quickshell-bar";
       inputs.nixpkgs.follows = "nixpkgs";

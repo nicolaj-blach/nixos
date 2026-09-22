@@ -8,7 +8,12 @@
 {
   flake.nixosModules.personal-computer = { lib, ... }: {
     imports = [
+      # External modules
+      inputs.home-manager.nixosModules.home-manager
+      inputs.nix-index-database.nixosModules.nix-index
+
       # Core system modules
+      self.nixosModules.cclip
       self.nixosModules.boot
       self.nixosModules.user
       self.nixosModules.nix-settings
@@ -42,6 +47,12 @@
 
     services.openssh.enable = true;
 
+    # Enable comma with prebuilt nix-index database
+    programs.nix-index-database.comma.enable = true;
+    programs.nix-index.enable = true;
+    programs.nix-index.enableZshIntegration = true;
+    programs.command-not-found.enable = false;
+
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
@@ -59,6 +70,7 @@
           self.homeManagerModules.pi-coding-agent
           self.homeManagerModules.git
           self.homeManagerModules.devenv
+          self.homeManagerModules.otter-launcher
 
           # Shell
           self.homeManagerModules.zsh
@@ -77,6 +89,7 @@
         programs.pi-coding-agent.enable = true;
         programs.git.enable = true;
         programs.devenv.enable = true;
+        programs.otter-launcher.enable = true;
         programs.zsh.enable = true;
 
         home.stateVersion = "25.11";
