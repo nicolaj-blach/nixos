@@ -20,6 +20,13 @@
         xdg.configFile."niri/config.kdl".text = ''
           // Input configuration
           input {
+              keyboard {
+                  xkb {
+                      layout "us"
+                      options "compose:ralt"
+                  }
+              }
+
               mouse {
                   accel-speed 0.0
               }
