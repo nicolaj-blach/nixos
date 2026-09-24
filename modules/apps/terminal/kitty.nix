@@ -137,6 +137,10 @@
             "ctrl+shift+h" = "previous_tab";
             "ctrl+shift+l" = "next_tab";
             "ctrl+shift+t" = "new_tab_with_cwd";
+
+            # Universal copy/paste (kanata sends these for Super+C / Super+V)
+            "ctrl+insert" = "copy_to_clipboard";
+            "shift+insert" = "paste_from_clipboard";
           };
 
           extraConfig = colorsConf;

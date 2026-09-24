@@ -22,6 +22,7 @@
 
       # Desktop environment
       self.nixosModules.niri
+      self.nixosModules.hyprlock
       self.nixosModules.quickshell-bar
       self.nixosModules.greetd
       self.nixosModules.theming
@@ -62,6 +63,8 @@
         imports = [
           # Desktop environment
           self.homeManagerModules.niri
+          self.homeManagerModules.hyprlock
+          self.homeManagerModules.mako
 
           # Apps
           self.homeManagerModules.zen-browser
@@ -71,6 +74,7 @@
           self.homeManagerModules.git
           self.homeManagerModules.devenv
           self.homeManagerModules.otter-launcher
+          self.homeManagerModules.fsel
 
           # Shell
           self.homeManagerModules.zsh
@@ -81,6 +85,8 @@
 
         # Enable niri (Home Manager config)
         custom.niri.enable = true;
+        custom.hyprlock.enable = true;
+        custom.mako.enable = true;
 
         # Enable apps
         programs.zen-browser.enable = true;
@@ -90,6 +96,7 @@
         programs.git.enable = true;
         programs.devenv.enable = true;
         programs.otter-launcher.enable = true;
+        programs.fsel.enable = true;
         programs.zsh.enable = true;
 
         home.stateVersion = "25.11";

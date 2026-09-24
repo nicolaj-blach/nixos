@@ -48,7 +48,22 @@
         [[modules]]
         description = "launch apps"
         prefix = "app"
-        cmd = "fsel"
+        cmd = "fsel --detach"
+
+        [[modules]]
+        description = "clipboard history"
+        prefix = "cb"
+        cmd = "fsel --cclip"
+
+        [[modules]]
+        description = "notifications"
+        prefix = "n"
+        cmd = "fsel-notifications"
+
+        [[modules]]
+        description = "emoji"
+        prefix = "e"
+        cmd = "fsel-emoji"
 
         [[modules]]
         description = "google search"

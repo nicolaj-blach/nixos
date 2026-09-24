@@ -15,14 +15,10 @@
           package = inputs.hyprland.packages.${system}.hyprland;
           portalPackage = inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
         };
-
-        hyprlock.enable = true;
       };
 
       environment.systemPackages = [
         inputs.split-monitor-workspaces.packages.${system}.split-monitor-workspaces
       ];
-
-      security.pam.services.hyprlock.nodelay = true;
     };
 }

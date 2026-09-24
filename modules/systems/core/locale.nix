@@ -19,11 +19,12 @@
       };
     };
 
-    console.keyMap = "dk";
+    # TTYs use the same layout as below
+    console.useXkbConfig = true;
 
     services.xserver.xkb = {
-      layout = "dk";
-      variant = "";
+      layout = "us";
+      options = "compose:ralt";
     };
   };
 }

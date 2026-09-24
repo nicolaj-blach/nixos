@@ -20,13 +20,6 @@
         xdg.configFile."niri/config.kdl".text = ''
           // Input configuration
           input {
-              keyboard {
-                  xkb {
-                      layout "us"
-                      options "compose:ralt"
-                  }
-              }
-
               mouse {
                   accel-speed 0.0
               }
@@ -60,7 +53,8 @@
               }
           }
 
-          // Spawn at startup
+          // Spawn at startup (lock first: greetd auto-logs in at boot)
+          spawn-at-startup "hyprlock-wrapper"
           spawn-at-startup "quickshell-bar"
           spawn-at-startup "mako"
           spawn-at-startup "swww-daemon"
@@ -94,9 +88,22 @@
               skip-at-startup
           }
 
+          // NVIDIA: hardware cursor plane shows garbage until the cursor first changes
+          debug {
+              disable-cursor-plane
+          }
+
           // Disable hot corners (overview triggered by clicking bar instead)
           gestures {
               hot-corners {
+                  off
+              }
+          }
+
+          // Disable close animation: on NVIDIA the closing-window snapshot
+          // renders as garbage and lingers on screen
+          animations {
+              window-close {
                   off
               }
           }
@@ -177,12 +184,18 @@
               Print { screenshot; }
               Mod+Print { screenshot-window; }
 
-              // Clipboard
-              Mod+C { spawn "wtype" "-M" "ctrl" "c" "-m" "ctrl"; }
-              Mod+V { spawn "wtype" "-M" "ctrl" "v" "-m" "ctrl"; }
+              // Clipboard (Super+C / Super+V copy/paste are handled by kanata)
               Mod+Shift+V { spawn "kitty-popup" "-e" "fsel" "--cclip"; }
 
+              // Notifications
+              Mod+BackSpace { spawn "makoctl" "dismiss" "--all"; }
+              Mod+N { spawn "kitty-popup" "-e" "fsel-notifications"; }
+
+              // Emoji picker
+              Mod+Period { spawn "kitty-popup" "-e" "fsel-emoji"; }
+
               // Session
+              Mod+X { spawn "hyprlock-wrapper"; }
               Mod+Shift+E { quit; }
               Mod+Shift+Slash { show-hotkey-overlay; }
 

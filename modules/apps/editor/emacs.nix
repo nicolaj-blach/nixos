@@ -221,7 +221,11 @@
                 :desc "Open terminal" "o t" #'ghostel
                 :desc "Project terminal" "p t" #'ghostel-project)
           ;; Add magit to allowed eval commands
-          (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
+          (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer))
+          ;; Let C-<insert> (Super+C via kanata) reach Emacs as copy instead of the shell.
+          ;; setopt so ghostel rebuilds its keymap.
+          (setopt ghostel-keymap-exceptions
+                  (append ghostel-keymap-exceptions '("C-<insert>"))))
 
         ;; Evil integration for Ghostel
         (use-package! evil-ghostel
