@@ -5,10 +5,18 @@
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
       cfg = config.custom.niri;
+      niri-monitor = pkgs.writeShellScriptBin "niri-monitor" ''
+        action="$1"
+        n="$2"
+        output=$(niri msg -j outputs | ${pkgs.jq}/bin/jq -r --argjson n "$n" \
+          '[to_entries[] | {name: .key, x: .value.logical.x}] | sort_by(.x) | .[$n - 1].name // empty')
+        [ -n "$output" ] && niri msg action "$action" "$output"
+      '';
     in
     {
       options.custom.niri = {
@@ -16,6 +24,8 @@
       };
 
       config = lib.mkIf cfg.enable {
+        home.packages = [ niri-monitor ];
+
         # Write niri config as KDL
         xdg.configFile."niri/config.kdl".text = ''
           // Input configuration
@@ -37,7 +47,7 @@
                   accel-speed 0.2
               }
 
-              focus-follows-mouse
+              focus-follows-mouse max-scroll-amount="10%"
           }
 
           // Layout configuration
@@ -143,6 +153,7 @@
               Mod+F { maximize-column; }
               Mod+Shift+F { fullscreen-window; }
               Mod+T { toggle-window-floating; }
+              Mod+O { toggle-overview; }
 
               // Focus (crosses monitors at edges)
               Mod+H { focus-column-or-monitor-left; }
@@ -155,6 +166,44 @@
               Mod+Shift+L { move-column-right-or-to-monitor-right; }
               Mod+Shift+J { move-window-down; }
               Mod+Shift+K { move-window-up; }
+
+              // Mouse wheel
+              Mod+WheelScrollDown { focus-column-left; }
+              Mod+WheelScrollUp { focus-column-right; }
+              Mod+Shift+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+              Mod+Shift+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+              Mod+WheelScrollRight cooldown-ms=150 { focus-workspace-down; }
+              Mod+WheelScrollLeft cooldown-ms=150 { focus-workspace-up; }
+              Mod+Shift+TouchpadScrollDown { focus-workspace-down; }
+              Mod+Shift+TouchpadScrollUp { focus-workspace-up; }
+
+              // Monitors
+              Mod+Ctrl+H { focus-monitor-left; }
+              Mod+Ctrl+L { focus-monitor-right; }
+              Mod+Ctrl+J { focus-workspace-down; }
+              Mod+Ctrl+K { focus-workspace-up; }
+              Mod+Ctrl+Shift+H { move-window-to-monitor-left; }
+              Mod+Ctrl+Shift+L { move-window-to-monitor-right; }
+              Mod+Ctrl+Shift+J { move-window-to-workspace-down; }
+              Mod+Ctrl+Shift+K { move-window-to-workspace-up; }
+              Mod+Ctrl+1 { spawn "niri-monitor" "focus-monitor" "1"; }
+              Mod+Ctrl+2 { spawn "niri-monitor" "focus-monitor" "2"; }
+              Mod+Ctrl+3 { spawn "niri-monitor" "focus-monitor" "3"; }
+              Mod+Ctrl+4 { spawn "niri-monitor" "focus-monitor" "4"; }
+              Mod+Ctrl+5 { spawn "niri-monitor" "focus-monitor" "5"; }
+              Mod+Ctrl+6 { spawn "niri-monitor" "focus-monitor" "6"; }
+              Mod+Ctrl+7 { spawn "niri-monitor" "focus-monitor" "7"; }
+              Mod+Ctrl+8 { spawn "niri-monitor" "focus-monitor" "8"; }
+              Mod+Ctrl+9 { spawn "niri-monitor" "focus-monitor" "9"; }
+              Mod+Ctrl+Shift+1 { spawn "niri-monitor" "move-window-to-monitor" "1"; }
+              Mod+Ctrl+Shift+2 { spawn "niri-monitor" "move-window-to-monitor" "2"; }
+              Mod+Ctrl+Shift+3 { spawn "niri-monitor" "move-window-to-monitor" "3"; }
+              Mod+Ctrl+Shift+4 { spawn "niri-monitor" "move-window-to-monitor" "4"; }
+              Mod+Ctrl+Shift+5 { spawn "niri-monitor" "move-window-to-monitor" "5"; }
+              Mod+Ctrl+Shift+6 { spawn "niri-monitor" "move-window-to-monitor" "6"; }
+              Mod+Ctrl+Shift+7 { spawn "niri-monitor" "move-window-to-monitor" "7"; }
+              Mod+Ctrl+Shift+8 { spawn "niri-monitor" "move-window-to-monitor" "8"; }
+              Mod+Ctrl+Shift+9 { spawn "niri-monitor" "move-window-to-monitor" "9"; }
 
               // Workspaces
               Mod+1 { focus-workspace 1; }
@@ -182,10 +231,15 @@
               Mod+R { switch-preset-column-width; }
               Mod+Alt+H { set-column-width "-10%"; }
               Mod+Alt+L { set-column-width "+10%"; }
+              Mod+Alt+J { set-window-height "-10%"; }
+              Mod+Alt+K { set-window-height "+10%"; }
 
               // Column management
               Mod+BracketLeft { consume-window-into-column; }
-              Mod+BracketRight { expel-window-from-column; }
+              Mod+BracketRight { spawn "sh" "-c" "niri msg action expel-window-from-column && niri msg action reset-window-height"; }
+              Mod+Shift+BracketLeft { spawn "sh" "-c" "niri msg action consume-or-expel-window-left && niri msg action reset-window-height"; }
+              Mod+Shift+BracketRight { spawn "sh" "-c" "niri msg action consume-or-expel-window-right && niri msg action reset-window-height"; }
+              Mod+Shift+T { toggle-column-tabbed-display; }
 
               // Screenshots
               Print { screenshot; }
