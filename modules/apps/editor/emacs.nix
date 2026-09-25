@@ -159,6 +159,10 @@
 
         ;; Ghostel extensions
         (package! evil-ghostel)
+        ;; Terminal picker with live preview (from the same local ghostel source)
+        (package! consult-ghostel
+          :recipe (:local-repo "~/.local/share/ghostel"
+                   :files ("extensions/consult-ghostel/*.el")))
 
         ;; Base16 themes (exact OneDark colors matching Kitty/Quickshell)
         (package! base16-theme)
@@ -216,21 +220,81 @@
           :init
           (setq ghostel-shell (or (getenv "SHELL") "/bin/bash"))
           :config
-          ;; Keybindings
-          (map! :leader
-                :desc "Open terminal" "o t" #'ghostel
-                :desc "Project terminal" "p t" #'ghostel-project)
+          ;; Clear inherited DIRENV_* vars so direnv in the shell actually
+          ;; re-runs instead of silently no-oping (taken from Doom's :term ghostel)
+          (add-hook 'ghostel-pre-spawn-hook
+                    (defun +ghostel-strip-direnv-initvars-h (&rest _)
+                      (when (getenv "DIRENV_FILE")
+                        (setq-local process-environment
+                                    (seq-remove (lambda (v) (string-prefix-p "DIRENV_" v))
+                                                process-environment)))))
           ;; Add magit to allowed eval commands
           (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer))
           ;; Let C-<insert> (Super+C via kanata) reach Emacs as copy instead of the shell.
           ;; setopt so ghostel rebuilds its keymap.
           (setopt ghostel-keymap-exceptions
-                  (append ghostel-keymap-exceptions '("C-<insert>"))))
+                  (append ghostel-keymap-exceptions '("C-<insert>")))
+          ;; C-c C-k: enter char mode (all keys to terminal; exit with M-RET)
+          (define-key ghostel-mode-map (kbd "C-c C-k") #'ghostel-char-mode)
+          ;; SPC m k (localleader): only exists in ghostel buffers, no conflicts
+          (map! :map ghostel-mode-map
+                :localleader
+                :desc "Char mode" "k" #'ghostel-char-mode))
+
+        (defun +ghostel/new ()
+          "Always open a new ghostel terminal (same as SPC u SPC o t)."
+          (interactive)
+          (ghostel '(4)))
+
+        (defun +ghostel/popup-toggle (&optional arg)
+          "Show/hide a persistent ghostel popup at the project root.
+        Each project gets its own popup; hiding keeps the shell running.
+        With prefix ARG, kill and recreate it."
+          (interactive "P")
+          (let* ((default-directory (or (doom-project-root) default-directory))
+                 ;; The *doom:ghostel-popup* prefix matches Doom's built-in popup
+                 ;; rule: bottom, 35% height, stays open, not auto-killed.
+                 (name (format "*doom:ghostel-popup:%s*"
+                               (or (doom-project-name)
+                                   (file-name-nondirectory
+                                    (directory-file-name default-directory)))))
+                 (buf (get-buffer name)))
+            (when (and arg (buffer-live-p buf))
+              (let (confirm-kill-processes kill-buffer-query-functions)
+                (kill-buffer buf))
+              (setq buf nil))
+            (if-let* ((win (and buf (get-buffer-window buf))))
+                (delete-window win)
+              ;; dlet: ghostel may not be loaded yet, so force dynamic binding
+              (dlet ((ghostel-buffer-name name)
+                     (ghostel-buffer-name-function nil))
+                (with-current-buffer (ghostel)
+                  ;; Don't let ghostel rename it, or the popup rule stops matching
+                  (setq-local ghostel-buffer-name-function nil)
+                  (current-buffer))))))
+
+        (map! :leader
+              :desc "Open terminal"         "o t" #'ghostel
+              :desc "New terminal"          "o T" #'+ghostel/new
+              :desc "Toggle terminal popup" "o p" #'+ghostel/popup-toggle
+              :desc "Project terminal"      "p t" #'ghostel-project
+              :desc "Switch terminal"       "b t" #'consult-ghostel)
+
+        (use-package! consult-ghostel
+          :commands (consult-ghostel consult-ghostel-project))
+
+        ;; Treat ghostel buffers as "real" so they show up in SPC b b / SPC ,
+        ;; and buffer cycling ([b / ]b) instead of being hidden like *special* buffers
+        (add-to-list 'doom-real-buffer-modes 'ghostel-mode)
 
         ;; Evil integration for Ghostel
         (use-package! evil-ghostel
           :after (ghostel evil)
-          :hook (ghostel-mode . evil-ghostel-mode))
+          :hook (ghostel-mode . evil-ghostel-mode)
+          :init
+          ;; ESC always goes to Evil (insert -> normal) in every new ghostel
+          ;; buffer, even in vim/less/TUIs. Toggle per buffer with C-c C-r.
+          (setq evil-ghostel-escape 'evil))
 
         ;; Org link type for Ghostel (built into ghostel package)
         (use-package! ghostel-org
