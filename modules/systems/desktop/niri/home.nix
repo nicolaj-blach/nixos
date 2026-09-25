@@ -257,6 +257,7 @@
 
               // Session
               Mod+X { spawn "hyprlock-wrapper"; }
+              Mod+Escape { spawn "kitty-popup" "-e" "fsel-system"; }
               Mod+Shift+E { quit; }
               Mod+Shift+Slash { show-hotkey-overlay; }
 

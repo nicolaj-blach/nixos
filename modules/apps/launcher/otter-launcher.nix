@@ -13,6 +13,21 @@
     let
       cfg = config.programs.otter-launcher;
       system = pkgs.stdenv.hostPlatform.system;
+
+      web-open = pkgs.writeShellScript "otter-web-open" ''
+        if [ -n "$3" ]; then url="$2$3"; else url="$1"; fi
+        exec niri msg action spawn -- zen-beta "$url"
+      '';
+
+      webModule = description: prefix: home: search: ''
+        [[modules]]
+        description = "${description}"
+        prefix = "${prefix}"
+        cmd = "${web-open} '${home}' '${search}' '{}'"
+        with_argument = true
+        url_encode = true
+      '';
+
       otterConfig = ''
         [general]
         default_module = "gg"
@@ -66,11 +81,11 @@
         cmd = "fsel-emoji"
 
         [[modules]]
-        description = "google search"
-        prefix = "gg"
-        cmd = "niri msg action spawn -- zen-beta 'https://www.google.com/search?q={}'"
-        with_argument = true
-        url_encode = true
+        description = "system menu"
+        prefix = "sys"
+        cmd = "fsel-system"
+
+        ${webModule "google search" "gg" "https://www.google.com/" "https://www.google.com/search?q="}
 
         [[modules]]
         description = "run command"
@@ -91,26 +106,11 @@
         prefix = "b"
         cmd = "niri msg action spawn -- zen-beta"
 
-        [[modules]]
-        description = "nix packages"
-        prefix = "nix"
-        cmd = "niri msg action spawn -- zen-beta 'https://search.nixos.org/packages?query={}'"
-        with_argument = true
-        url_encode = true
+        ${webModule "nix packages" "nix" "https://search.nixos.org/packages" "https://search.nixos.org/packages?query="}
 
-        [[modules]]
-        description = "github"
-        prefix = "gh"
-        cmd = "niri msg action spawn -- zen-beta 'https://github.com/search?q={}'"
-        with_argument = true
-        url_encode = true
+        ${webModule "github" "gh" "https://github.com/" "https://github.com/search?q="}
 
-        [[modules]]
-        description = "youtube"
-        prefix = "yt"
-        cmd = "niri msg action spawn -- zen-beta 'https://www.youtube.com/results?search_query={}'"
-        with_argument = true
-        url_encode = true
+        ${webModule "youtube" "yt" "https://www.youtube.com/" "https://www.youtube.com/results?search_query="}
       '';
     in
     {

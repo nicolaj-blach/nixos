@@ -28,13 +28,23 @@
           default = true;
           description = "Start quickshell-bar automatically with niri";
         };
+        systemMenuCommand = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+          description = "Command run when left-clicking the monitor label";
+        };
       };
 
       config = lib.mkIf cfg.enable {
-        # Autostart with niri if enabled
-        xdg.configFile."niri/config.kdl".text = lib.mkAfter ''
-          spawn-at-startup "quickshell-bar"
-        '';
+        xdg.configFile."quickshell/config.json".text = builtins.toJSON {
+          system_menu_cmd = cfg.systemMenuCommand;
+        };
+
+        xdg.configFile."niri/config.kdl".text = lib.mkIf cfg.autostart (
+          lib.mkAfter ''
+            spawn-at-startup "quickshell-bar"
+          ''
+        );
       };
     };
 }

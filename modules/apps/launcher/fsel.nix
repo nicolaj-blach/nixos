@@ -44,6 +44,21 @@
         printf '%s' "$history" | ${jq} -r --argjson id "$id" '.data[0][]
           | select(.id.data == $id) | .summary.data + "\n" + .body.data' | ${wl-copy}
       '';
+      fsel-system = pkgs.writeShellScriptBin "fsel-system" ''
+        confirm() {
+          [ "$(printf '%s\n' "Yes, $1" "No, cancel" | fsel --dmenu --only-match)" = "Yes, $1" ]
+        }
+        choice=$(printf '%s\n' Lock Shutdown Reboot "Rebuild system" | fsel --dmenu --only-match)
+        case "$choice" in
+          Lock) niri msg action spawn -- hyprlock-wrapper ;;
+          Shutdown) confirm shutdown && systemctl poweroff ;;
+          Reboot) confirm reboot && systemctl reboot ;;
+          "Rebuild system")
+            niri msg action spawn -- kitty-popup-term sh -c \
+              'sudo nixos-rebuild switch --flake ~/nixos#personal-desktop; echo; read -rp "Press Enter to close"' ;;
+        esac
+      '';
+
       fselConfig = ''
         # fsel configuration
 
@@ -93,6 +108,7 @@
         home.packages = [
           fsel-emoji
           fsel-notifications
+          fsel-system
         ];
       };
     };

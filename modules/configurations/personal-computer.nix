@@ -34,7 +34,6 @@
 
       # Services
       self.nixosModules.services
-      self.nixosModules.syncthing
 
       # Input
       self.nixosModules.kanata
@@ -75,6 +74,7 @@
           self.homeManagerModules.devenv
           self.homeManagerModules.otter-launcher
           self.homeManagerModules.fsel
+          self.homeManagerModules.quickshell-bar
 
           # Shell
           self.homeManagerModules.zsh
@@ -87,6 +87,15 @@
         custom.niri.enable = true;
         custom.hyprlock.enable = true;
         custom.mako.enable = true;
+        services.quickshell-bar = {
+          enable = true;
+          autostart = false;
+          systemMenuCommand = [
+            "kitty-popup"
+            "-e"
+            "fsel-system"
+          ];
+        };
 
         # Enable apps
         programs.zen-browser.enable = true;
