@@ -1079,24 +1079,11 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "otter-launcher": "otter-launcher",
         "quickshell-bar": "quickshell-bar",
-        "secrets": "secrets",
         "sops-nix": "sops-nix",
         "split-monitor-workspaces": "split-monitor-workspaces",
         "stylix": "stylix",
         "zen-browser": "zen-browser"
       }
-    },
-    "secrets": {
-      "flake": false,
-      "locked": {
-        "path": "../secrets",
-        "type": "path"
-      },
-      "original": {
-        "path": "../secrets",
-        "type": "path"
-      },
-      "parent": []
     },
     "sops-nix": {
       "inputs": {

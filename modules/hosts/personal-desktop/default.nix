@@ -11,6 +11,7 @@
 
     modules = [
       self.nixosModules.personal-computer
+      self.nixosModules.sops
       ./_hw/hardware-configuration.nix
 
       ({ ... }: {

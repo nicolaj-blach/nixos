@@ -2,6 +2,8 @@
   description = "NixOS configuration";
 
   inputs = {
+    self.submodules = true;
+
     nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
@@ -51,11 +53,6 @@
       flake = false;
     };
 
-    secrets = {
-      url = "path:../secrets";
-      flake = false;
-    };
-
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     doom-emacs = {
       url = "github:doomemacs/doomemacs";
@@ -88,11 +85,11 @@
     inputs:
     let
       secretsRoot = ./secrets;
-      hasSecrets = builtins.pathExists secretsRoot;
+      hasSecrets = builtins.pathExists (secretsRoot + "/github.yaml");
       metaOwner = {
         username = "nicolaj-blach";
-        fullName = "Nicolaj Blach";
-        email = "";
+        fullName = "Nicolaj Blach Jensen";
+        email = "me@nicolaj-blach.dev";
       };
     in
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
