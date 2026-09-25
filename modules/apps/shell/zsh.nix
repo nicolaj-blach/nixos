@@ -164,6 +164,11 @@
             # GPG (required for pinentry to work in terminal)
             export GPG_TTY=$(tty)
 
+            # Inside Emacs (ghostel): open files in the current frame instead of a new one
+            if [[ -n "$INSIDE_EMACS" ]]; then
+              export EDITOR="emacsclient" VISUAL="emacsclient"
+            fi
+
             # Local overrides (API keys, secrets -- not tracked in git)
             [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
           '';
