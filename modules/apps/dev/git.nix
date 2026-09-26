@@ -130,6 +130,11 @@
           gco = "git checkout";
           gsw = "git switch";
           gswc = "git switch -c";
+          gswca = "git switch canary";
+          gswma = "git switch main";
+          gswms = "git switch master";
+          gsws = "git switch staging";
+          gswp = "git switch production";
 
           # Rebase
           grb = "git rebase";
@@ -150,6 +155,7 @@
           glog = "git log --oneline";
           glg = "git log --graph --oneline --decorate";
           glast = "git log -1 HEAD --stat";
+          glfp = "git log --first-parent --oneline --decorate";
 
           # Misc
           gf = "git fetch";
