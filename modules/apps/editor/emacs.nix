@@ -296,6 +296,18 @@
           ;; buffer, even in vim/less/TUIs. Toggle per buffer with C-c C-r.
           (setq evil-ghostel-escape 'evil))
 
+        ;; Relative line numbers in ghostel only while navigating (normal/visual),
+        ;; hidden while typing (insert/emacs state). Applies to popup and full window.
+        (defun +ghostel-line-numbers-on-h ()
+          (setq-local display-line-numbers 'relative))
+        (defun +ghostel-line-numbers-off-h ()
+          (setq-local display-line-numbers nil))
+        (add-hook 'ghostel-mode-hook
+                  (defun +ghostel-setup-line-numbers-h ()
+                    (add-hook 'evil-normal-state-entry-hook #'+ghostel-line-numbers-on-h nil t)
+                    (add-hook 'evil-insert-state-entry-hook #'+ghostel-line-numbers-off-h nil t)
+                    (add-hook 'evil-emacs-state-entry-hook #'+ghostel-line-numbers-off-h nil t)))
+
         ;; Org link type for Ghostel (built into ghostel package)
         (use-package! ghostel-org
           :after org)
