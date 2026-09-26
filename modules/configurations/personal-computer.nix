@@ -15,6 +15,7 @@
       # Core system modules
       self.nixosModules.cclip
       self.nixosModules.boot
+      self.nixosModules.plymouth
       self.nixosModules.user
       self.nixosModules.nix-settings
       self.nixosModules.locale

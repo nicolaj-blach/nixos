@@ -3,6 +3,7 @@
 {
   flake.nixosModules.test-vm-hardware = { lib, ... }: {
     boot.loader.systemd-boot.enable = true;
+    boot.loader.limine.enable = false;
     boot.loader.efi.canTouchEfiVariables = true;
 
     boot.initrd.availableKernelModules = [
