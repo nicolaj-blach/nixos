@@ -76,6 +76,8 @@
           self.homeManagerModules.otter-launcher
           self.homeManagerModules.fsel
           self.homeManagerModules.quickshell-bar
+          self.homeManagerModules.file-managers
+          self.homeManagerModules.xdg-dirs
 
           # Shell
           self.homeManagerModules.zsh

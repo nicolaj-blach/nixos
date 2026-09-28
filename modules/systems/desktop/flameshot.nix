@@ -34,7 +34,7 @@
         showStartupLaunchMessage=false
         startupLaunch=false
         showDesktopNotification=true
-        savePath=${config.home.homeDirectory}/Pictures/Screenshots
+        savePath=${config.home.homeDirectory}/media/pictures/screenshots
         savePathFixed=false
         showHelp=false
         showSidePanelButton=false
@@ -57,7 +57,7 @@
           pkgs.slurp
         ];
         xdg.configFile."flameshot/flameshot.ini".text = flameshotConfig;
-        home.file."Pictures/Screenshots/.keep".text = "";
+        home.file."media/pictures/screenshots/.keep".text = "";
 
         custom.hyprland.windowRules.overlayClasses = [ "flameshot" ];
 

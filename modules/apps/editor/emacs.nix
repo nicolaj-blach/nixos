@@ -204,7 +204,7 @@
               scroll-preserve-screen-position t)
 
         ;;; Org Mode
-        (setq org-directory "~/org/")
+        (setq org-directory "~/notes/")
 
         ;;; Editor Settings
         ;; Indentation

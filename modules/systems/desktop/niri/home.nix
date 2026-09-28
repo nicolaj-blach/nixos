@@ -100,6 +100,8 @@
           // Prefer no client-side decorations
           prefer-no-csd
 
+          screenshot-path "~/media/pictures/screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
           // Skip hotkey overlay at startup
           hotkey-overlay {
               skip-at-startup
