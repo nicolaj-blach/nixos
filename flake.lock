@@ -1047,11 +1047,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1790276479,
-        "narHash": "sha256-bFScBvi1QS6u/zoPtUON70w0lYIsYNyfzy24P6+sJAc=",
+        "lastModified": 1790787395,
+        "narHash": "sha256-sqAAqfktpLRyxlja2PmvVRlRVkeLeh8xNi0gB6TCJL0=",
         "owner": "nicolaj-blach",
         "repo": "quickshell-bar",
-        "rev": "e80f8c0ef12803509616bda976cfe3161b30bbea",
+        "rev": "f5660d3c749200fbc747867945ae7fa019d2ca1a",
         "type": "github"
       },
       "original": {
@@ -1082,6 +1082,7 @@
         "sops-nix": "sops-nix",
         "split-monitor-workspaces": "split-monitor-workspaces",
         "stylix": "stylix",
+        "wlctl": "wlctl",
         "zen-browser": "zen-browser"
       }
     },
@@ -1299,6 +1300,26 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "wlctl": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788059764,
+        "narHash": "sha256-ekrzW0MF8umqEopkcM1NCruC6X2G5nf3wQCVYzG+yAs=",
+        "owner": "aashish-thapa",
+        "repo": "wlctl",
+        "rev": "8a885dbbdf76e1b3ace99912f0f6f6ccfe53e0b8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aashish-thapa",
+        "repo": "wlctl",
         "type": "github"
       }
     },

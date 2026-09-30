@@ -31,21 +31,6 @@
         # Add devenv to user packages (system package is also available)
         home.packages = [ pkgs.devenv ];
 
-        # Shell integration for direnv
-        programs.zsh.initContent = lib.mkAfter ''
-          # Devenv/direnv hook (if not already loaded by programs.direnv)
-          if command -v direnv &> /dev/null; then
-            eval "$(direnv hook zsh)"
-          fi
-        '';
-
-        programs.bash.initExtra = lib.mkAfter ''
-          # Devenv/direnv hook (if not already loaded by programs.direnv)
-          if command -v direnv &> /dev/null; then
-            eval "$(direnv hook bash)"
-          fi
-        '';
-
         # Useful aliases for devenv
         home.shellAliases = {
           de = "devenv";

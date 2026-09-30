@@ -102,15 +102,25 @@
         unbind_proc = true
 
         [[modules]]
+        description = "package search"
+        prefix = "pkg"
+        cmd = "niri msg action spawn -- kitty-popup-large -e tv nix --input '{}'"
+        with_argument = true
+
+        [[modules]]
         description = "browser"
         prefix = "b"
         cmd = "niri msg action spawn -- zen-beta"
 
-        ${webModule "nix packages" "nix" "https://search.nixos.org/packages" "https://search.nixos.org/packages?query="}
+        ${webModule "nix packages" "nix" "https://search.nixos.org/packages"
+          "https://search.nixos.org/packages?query="
+        }
 
         ${webModule "github" "gh" "https://github.com/" "https://github.com/search?q="}
 
-        ${webModule "youtube" "yt" "https://www.youtube.com/" "https://www.youtube.com/results?search_query="}
+        ${webModule "youtube" "yt" "https://www.youtube.com/"
+          "https://www.youtube.com/results?search_query="
+        }
       '';
     in
     {

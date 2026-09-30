@@ -26,14 +26,37 @@
               "history-substring-search"
               "colored-man-pages"
               "extract"
-              "command-not-found"
+              "copypath"
+              "copyfile"
+              "fancy-ctrl-z"
+              "magic-enter"
+              "systemd"
+              "bgnotify"
             ];
           };
+
+          plugins = [
+            {
+              name = "fzf-tab";
+              src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+            }
+            {
+              name = "you-should-use";
+              src = "${pkgs.zsh-you-should-use}/share/zsh/plugins/you-should-use";
+            }
+            {
+              name = "nix-shell";
+              src = "${pkgs.zsh-nix-shell}/share/zsh/plugins/zsh-nix-shell";
+            }
+          ];
 
           sessionVariables = {
             EDITOR = "emacsclient -c";
             VISUAL = "emacsclient -c";
             KEYTIMEOUT = "1";
+            MAGIC_ENTER_GIT_COMMAND = "gst";
+            MAGIC_ENTER_OTHER_COMMAND = "ls";
+            bgnotify_threshold = "30";
 
             # fzf configuration
             FZF_DEFAULT_COMMAND = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
@@ -94,8 +117,14 @@
 
             # Misc
             bat = "bat --theme=base16-256";
-            clear = "clear && fastfetch";
+            clear = "clear && fe";
             please = "sudo";
+
+            # Clipboard
+            cpi = "wl-copy";
+            cpp = "copypath";
+            cpf = "copyfile";
+            cb = "wl-paste";
 
             # AI
             oc = "opencode";
@@ -149,6 +178,11 @@
             # Carapace: multi-shell completion engine
             zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
             source <(carapace _carapace)
+
+            zstyle ':completion:*:descriptions' format '[%d]'
+            zstyle ':completion:*' menu no
+            zstyle ':fzf-tab:complete:*:*' fzf-preview '[[ -d $realpath ]] && eza -1 --color=always --icons=always $realpath || bat -n --color=always $realpath 2>/dev/null'
+            zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
             # fzf shell integration (CTRL-T, CTRL-R, ALT-C keybindings + fuzzy completion)
             source <(fzf --zsh)

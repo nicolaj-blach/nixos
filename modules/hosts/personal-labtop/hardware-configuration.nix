@@ -1,7 +1,9 @@
 { ... }:
 
 {
-  flake.nixosModules.personal-labtop-hardware = { config, lib, ... }: {
+  flake.nixosModules.personal-labtop-hardware = { config, lib, modulesPath, ... }: {
+    imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+
     boot.initrd.availableKernelModules = [
       "nvme"
       "xhci_pci"

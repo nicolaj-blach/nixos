@@ -43,11 +43,13 @@
 
         general {
             grace = 0
-            no_fade_in = true
-            no_fade_out = true
             immediate_render = true
             hide_cursor = true
             fail_timeout = 10000
+        }
+
+        animations {
+            enabled = false
         }
 
         auth {

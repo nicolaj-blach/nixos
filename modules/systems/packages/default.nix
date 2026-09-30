@@ -28,7 +28,7 @@
         sessionVariables = {
           NIXOS_OZONE_WL = "1";
           GTK_USE_PORTAL = "1";
-          BROWSER = "zen";
+          BROWSER = "zen-beta";
         };
 
         systemPackages = with pkgs; [
@@ -82,6 +82,8 @@
 
           # Dev Tools
           gnumake
+          posting
+          vscode
           lazydocker
           lazysql
 
@@ -100,6 +102,8 @@
           bluetui
           bluez
           wiremix
+          smassh
+          inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
           opencode
           inputs.nix-search-tv.packages.${pkgs.stdenv.hostPlatform.system}.default
           inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fsel
@@ -159,6 +163,8 @@
           cowsay
           fortune
           cmatrix
+          pipes-rs
+          terminaltexteffects
 
           # Disk
           parted

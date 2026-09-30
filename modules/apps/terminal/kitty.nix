@@ -19,6 +19,10 @@
         exec kitty --class popup-term -o window_padding_width=8 "$@"
       '';
 
+      kitty-popup-large = pkgs.writeShellScriptBin "kitty-popup-large" ''
+        exec kitty --class popup-large -o window_padding_width=8 "$@"
+      '';
+
       # OneDark color scheme (matching doom-one)
       # OneDark color scheme (matching quickshell bar)
       colorsConf = ''
@@ -141,6 +145,8 @@
             # Universal copy/paste (kanata sends these for Super+C / Super+V)
             "ctrl+insert" = "copy_to_clipboard";
             "shift+insert" = "paste_from_clipboard";
+
+            "ctrl+shift+y" = "launch --type=clipboard --stdin-source=@last_cmd_output";
           };
 
           extraConfig = colorsConf;
@@ -149,6 +155,7 @@
         home.packages = [
           kitty-popup
           kitty-popup-term
+          kitty-popup-large
         ];
       };
     };

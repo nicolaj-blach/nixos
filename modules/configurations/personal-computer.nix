@@ -44,6 +44,7 @@
 
       # Packages
       self.nixosModules.packages
+      self.nixosModules.bit
     ];
 
     services.openssh.enable = true;
@@ -78,6 +79,9 @@
           self.homeManagerModules.quickshell-bar
           self.homeManagerModules.file-managers
           self.homeManagerModules.xdg-dirs
+          self.homeManagerModules.qalculate
+          self.homeManagerModules.system-info
+          self.homeManagerModules.desktop-services
 
           # Shell
           self.homeManagerModules.zsh
@@ -98,6 +102,21 @@
             "-e"
             "fsel-system"
           ];
+          wifiCommand = [
+            "kitty-popup-large"
+            "-e"
+            "wlctl"
+          ];
+          bluetoothCommand = [
+            "kitty-popup-large"
+            "-e"
+            "bluetui"
+          ];
+          audioCommand = [
+            "kitty-popup-large"
+            "-e"
+            "wiremix"
+          ];
         };
 
         # Enable apps
@@ -110,6 +129,13 @@
         programs.otter-launcher.enable = true;
         programs.fsel.enable = true;
         programs.zsh.enable = true;
+        programs.qalculate.enable = true;
+
+        xdg.mimeApps.enable = true;
+        xdg.mimeApps.defaultApplications = {
+          "inode/directory" = "yazi.desktop";
+          "x-scheme-handler/discord" = "vesktop.desktop";
+        };
 
         home.stateVersion = "25.11";
       };

@@ -54,6 +54,7 @@
           layout {
               gaps 16
               center-focused-column "never"
+              background-color "#282c34"
 
               preset-column-widths {
                   proportion 0.33333
@@ -75,9 +76,8 @@
           spawn-at-startup "quickshell-bar"
           spawn-at-startup "mako"
           spawn-at-startup "swww-daemon"
-          spawn-at-startup "sh" "-c" "sleep 1 && swww img ~/nixos/assets/background.png"
           spawn-at-startup "xwayland-satellite"
-          spawn-at-startup "nirimon" "-profile" "base"
+          spawn-at-startup "sh" "-c" "nirimon -profile base; sleep 0.5; swww img --transition-type none ${config.home.homeDirectory}/nixos/assets/background.png"
           spawn-at-startup "cclipd" "-s" "2" "-t" "image/png" "-t" "image/*" "-t" "text/plain;charset=utf-8" "-t" "text/*"
 
           // Environment variables
@@ -136,6 +136,13 @@
           }
 
           window-rule {
+              match app-id="popup-large"
+              open-floating true
+              default-column-width { fixed 1200; }
+              default-window-height { fixed 750; }
+          }
+
+          window-rule {
               match app-id="popup-term"
               open-floating true
               default-column-width { fixed 700; }
@@ -149,6 +156,14 @@
               Mod+Shift+Return { spawn "kitty"; }
               Mod+B { spawn "zen-beta"; }
               Mod+Space { spawn "kitty-popup" "-e" "otter-launcher" "-c" "/home/nicolaj-blach/.config/otter-launcher/config.toml"; }
+              Mod+D { spawn "vesktop"; }
+
+              // TUI popups
+              Mod+Shift+C { spawn "kitty-popup-term" "-e" "qalc"; }
+              Mod+Shift+W { spawn "kitty-popup-large" "-e" "wlctl"; }
+              Mod+Shift+B { spawn "kitty-popup-large" "-e" "bluetui"; }
+              Mod+Shift+A { spawn "kitty-popup-large" "-e" "wiremix"; }
+              Mod+Shift+N { spawn "kitty-popup-large" "-e" "tv" "nix"; }
 
               // Window management
               Mod+W { close-window; }
@@ -270,6 +285,10 @@
               XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
               XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
               XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+              XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+              XF86AudioMicMute allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
+              XF86MonBrightnessUp allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
+              XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
           }
         '';
       };
