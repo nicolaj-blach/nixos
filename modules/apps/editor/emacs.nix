@@ -233,13 +233,60 @@
           ;; Let C-<insert> (Super+C via kanata) reach Emacs as copy instead of the shell.
           ;; setopt so ghostel rebuilds its keymap.
           (setopt ghostel-keymap-exceptions
-                  (append ghostel-keymap-exceptions '("C-<insert>")))
+                  (append ghostel-keymap-exceptions '("C-<insert>" "C-S-y")))
+          (map! :map ghostel-mode-map
+                :n "gY" #'+ghostel/copy-last-output
+                :i "C-S-y" #'+ghostel/copy-last-output)
           ;; C-c C-k: enter char mode (all keys to terminal; exit with M-RET)
           (define-key ghostel-mode-map (kbd "C-c C-k") #'ghostel-char-mode)
           ;; SPC m k (localleader): only exists in ghostel buffers, no conflicts
           (map! :map ghostel-mode-map
                 :localleader
                 :desc "Char mode" "k" #'ghostel-char-mode))
+
+        (defun +ghostel/copy-last-output ()
+          "Copy the output of the last finished command in this ghostel buffer."
+          (interactive)
+          (cond
+           ((and ghostel--term (ghostel--alt-screen-p ghostel--term))
+            (message "Full-screen app running, no command output to copy"))
+           (ghostel--command-running
+            (message "Command still running"))
+           (t
+            (save-excursion
+              (let* ((last (let ((p (point-max)))
+                             (while (and (> p (point-min))
+                                         (not (get-text-property (1- p) 'ghostel-prompt)))
+                               (setq p (previous-single-property-change p 'ghostel-prompt nil (point-min))))
+                             (and (> p (point-min)) (1- p))))
+                     (end (when last
+                            (goto-char last)
+                            (beginning-of-line)
+                            (while (and (> (point) (point-min))
+                                        (save-excursion
+                                          (forward-line -1)
+                                          (get-text-property (point) 'ghostel-prompt)))
+                              (forward-line -1))
+                            (point)))
+                     (start (when end
+                              (let ((p end))
+                                (while (and (> p (point-min))
+                                            (not (or (get-text-property (1- p) 'ghostel-input)
+                                                     (get-text-property (1- p) 'ghostel-prompt))))
+                                  (setq p (previous-property-change p nil (point-min))))
+                                (when (> p (point-min))
+                                  (goto-char (1- p))
+                                  (forward-line 1)
+                                  (point)))))
+                     (text (and start (< start end)
+                                (string-trim-right
+                                 (ghostel--clean-copy-text
+                                  (buffer-substring-no-properties start end))))))
+                (if (and text (not (string-empty-p text)))
+                    (progn
+                      (kill-new text)
+                      (message "Copied %d lines of output" (1+ (cl-count ?\n text))))
+                  (message "No previous output")))))))
 
         (defun +ghostel/new ()
           "Always open a new ghostel terminal (same as SPC u SPC o t)."
