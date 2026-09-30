@@ -1,0 +1,69 @@
+diff --git a/src/internal/common/config_type.go b/src/internal/common/config_type.go
+index 9a868a0..621b1a6 100644
+--- a/src/internal/common/config_type.go
++++ b/src/internal/common/config_type.go
+@@ -165,4 +165,5 @@ type HotkeysType struct {
+ 	FilePanelSelectModeItemsSelectDown []string `toml:"file_panel_select_mode_items_select_down" comment:"=================================================================================================\nSelect mode hotkeys (can conflict with other modes, cananot conflict with global hotkeys)"`
+ 	FilePanelSelectModeItemsSelectUp   []string `toml:"file_panel_select_mode_items_select_up"`
+ 	FilePanelSelectAllItem             []string `toml:"file_panel_select_all_items"`
++	FilePanelSelectModeInvertSelection []string `toml:"file_panel_select_mode_invert_selection"`
+ }
+diff --git a/src/internal/handle_panel_movement.go b/src/internal/handle_panel_movement.go
+index 37229cc..9040ea0 100644
+--- a/src/internal/handle_panel_movement.go
++++ b/src/internal/handle_panel_movement.go
+@@ -119,8 +119,22 @@ func (m *model) sidebarSelectDirectory() {
+ func (m *model) selectAllItem() {
+ 	panel := &m.fileModel.filePanels[m.filePanelFocusIndex]
+ 	for _, item := range panel.element {
+-		panel.selected = append(panel.selected, item.location)
++		if !arrayContains(panel.selected, item.location) {
++			panel.selected = append(panel.selected, item.location)
++		}
++	}
++}
++
++// Invert the selection in the file panel (only work on select mode)
++func (m *model) invertSelection() {
++	panel := &m.fileModel.filePanels[m.filePanelFocusIndex]
++	inverted := []string{}
++	for _, item := range panel.element {
++		if !arrayContains(panel.selected, item.location) {
++			inverted = append(inverted, item.location)
++		}
+ 	}
++	panel.selected = inverted
+ }
+ 
+ // Select the item where cursor located (only work on select mode)
+diff --git a/src/internal/key_function.go b/src/internal/key_function.go
+index e25be96..fdfd54e 100644
+--- a/src/internal/key_function.go
++++ b/src/internal/key_function.go
+@@ -162,6 +162,8 @@ func (m *model) normalAndBrowserModeKey(msg string) {
+ 			m.copyMultipleItem(true)
+ 		case slices.Contains(common.Hotkeys.FilePanelSelectAllItem, msg):
+ 			m.selectAllItem()
++		case slices.Contains(common.Hotkeys.FilePanelSelectModeInvertSelection, msg):
++			m.invertSelection()
+ 		}
+ 		return
+ 	}
+diff --git a/src/superfile_config/hotkeys.toml b/src/superfile_config/hotkeys.toml
+index 188867b..0cff312 100644
+--- a/src/superfile_config/hotkeys.toml
++++ b/src/superfile_config/hotkeys.toml
+@@ -57,3 +57,4 @@ search_bar = ['/', '']
+ file_panel_select_mode_items_select_down = ['shift+down', 'J']
+ file_panel_select_mode_items_select_up = ['shift+up', 'K']
+ file_panel_select_all_items = ['A', '']
++file_panel_select_mode_invert_selection = ['I', '']
+diff --git a/src/superfile_config/vimHotkeys.toml b/src/superfile_config/vimHotkeys.toml
+index 6da2fbb..ef9ed3e 100644
+--- a/src/superfile_config/vimHotkeys.toml
++++ b/src/superfile_config/vimHotkeys.toml
+@@ -57,3 +57,4 @@ search_bar = ['/', '']
+ file_panel_select_mode_items_select_down = ['J', '']
+ file_panel_select_mode_items_select_up = ['K', '']
+ file_panel_select_all_items = ['A', '']
++file_panel_select_mode_invert_selection = ['I', '']

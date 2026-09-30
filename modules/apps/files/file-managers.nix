@@ -29,7 +29,15 @@
 
       # superfile has no config for folder icons or sidebar labels, so patch them in:
       # lowercase labels for the XDG sidebar entries, and dirIcons for folder names.
+      spf-dir-editor = pkgs.writeShellScriptBin "spf-dir-editor" ''
+        if [ -n "$INSIDE_EMACS" ]; then
+          exec emacsclient -n "$@"
+        fi
+        exec emacsclient -c -n "$@"
+      '';
+
       superfile = pkgs.superfile.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [ ./superfile-invert-selection.patch ];
         postPatch = (old.postPatch or "") + ''
           substituteInPlace src/internal/ui/sidebar/directory_utils.go \
             ${
@@ -85,6 +93,11 @@
           fi
         }
       '';
+
+      home.packages = [
+        pkgs.exiftool
+        spf-dir-editor
+      ];
 
       programs.superfile = {
         enable = true;
@@ -163,7 +176,7 @@
         settings = {
           theme = "onedark-pro";
           editor = "";
-          dir_editor = "";
+          dir_editor = "spf-dir-editor";
           auto_check_update = false;
           cd_on_quit = true;
           default_open_file_preview = true;
@@ -177,7 +190,7 @@
           shell_close_on_success = false;
           debug = false;
           ignore_missing_fields = false;
-          code_previewer = "";
+          code_previewer = "bat";
           nerdfont = true;
           transparent_background = false;
           file_preview_width = 0;
@@ -192,7 +205,7 @@
           border_bottom_right = "┘";
           border_middle_left = "├";
           border_middle_right = "┤";
-          metadata = false;
+          metadata = true;
           enable_md5_checksum = false;
           zoxide_support = true;
         };
@@ -232,11 +245,11 @@
           ];
           next_file_panel = [
             "tab"
-            ""
+            "L"
           ];
           previous_file_panel = [
             "shift+tab"
-            ""
+            "H"
           ];
           toggle_file_preview_panel = [
             "f"
@@ -364,6 +377,10 @@
           ];
           file_panel_select_all_items = [
             "A"
+            ""
+          ];
+          file_panel_select_mode_invert_selection = [
+            "I"
             ""
           ];
         };
