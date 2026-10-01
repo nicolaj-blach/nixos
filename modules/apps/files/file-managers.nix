@@ -27,8 +27,6 @@
         nixos = ""; # U+F313
       };
 
-      # superfile has no config for folder icons or sidebar labels, so patch them in:
-      # lowercase labels for the XDG sidebar entries, and dirIcons for folder names.
       spf-dir-editor = pkgs.writeShellScriptBin "spf-dir-editor" ''
         if [ -n "$INSIDE_EMACS" ]; then
           exec emacsclient -n "$@"
@@ -36,6 +34,8 @@
         exec emacsclient -c -n "$@"
       '';
 
+      # superfile has no config for folder icons or sidebar labels, so patch them in:
+      # lowercase labels for the XDG sidebar entries, and dirIcons for folder names.
       superfile = pkgs.superfile.overrideAttrs (old: {
         patches = (old.patches or [ ]) ++ [ ./superfile-invert-selection.patch ];
         postPatch = (old.postPatch or "") + ''
@@ -98,6 +98,31 @@
         pkgs.exiftool
         spf-dir-editor
       ];
+
+      xdg.desktopEntries.superfile = {
+        name = "superfile";
+        genericName = "File Manager";
+        exec = "kitty --class superfile -e superfile %F";
+        icon = "system-file-manager";
+        terminal = false;
+        categories = [
+          "System"
+          "FileTools"
+          "FileManager"
+        ];
+        mimeType = [ "inode/directory" ];
+      };
+
+      # File dialogs (xdg portal) open yazi in a floating popup
+      xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
+        [filechooser]
+        cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+        env=TERMCMD=kitty --class popup-large --title file-picker
+        default_dir=${home}/downloads
+        create_help_file=0
+        open_mode=suggested
+        save_mode=default
+      '';
 
       programs.superfile = {
         enable = true;

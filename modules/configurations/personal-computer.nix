@@ -133,7 +133,7 @@
 
         xdg.mimeApps.enable = true;
         xdg.mimeApps.defaultApplications = {
-          "inode/directory" = "yazi.desktop";
+          "inode/directory" = "superfile.desktop";
           "x-scheme-handler/discord" = "vesktop.desktop";
         };
 

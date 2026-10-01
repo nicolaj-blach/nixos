@@ -157,6 +157,7 @@
               Mod+B { spawn "zen-beta"; }
               Mod+Space { spawn "kitty-popup" "-e" "otter-launcher" "-c" "/home/nicolaj-blach/.config/otter-launcher/config.toml"; }
               Mod+D { spawn "vesktop"; }
+              Mod+E { spawn "kitty" "--class" "superfile" "-e" "superfile"; }
 
               // TUI popups
               Mod+Shift+C { spawn "kitty-popup-term" "-e" "qalc"; }

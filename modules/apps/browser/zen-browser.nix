@@ -19,7 +19,19 @@
         enable = lib.mkEnableOption "Zen Browser";
         package = lib.mkOption {
           type = lib.types.package;
-          default = inputs.zen-browser.packages.${system}.beta;
+          default = inputs.zen-browser.packages.${system}.beta.override {
+            extraPolicies.Preferences = {
+              # Use the xdg portal file picker (yazi) and ask where to save downloads
+              "widget.use-xdg-desktop-portal.file-picker" = {
+                Value = 1;
+                Status = "default";
+              };
+              "browser.download.useDownloadDir" = {
+                Value = false;
+                Status = "default";
+              };
+            };
+          };
         };
         setAsDefault = lib.mkOption {
           type = lib.types.bool;
