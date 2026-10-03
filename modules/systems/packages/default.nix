@@ -108,7 +108,6 @@
           inputs.nix-search-tv.packages.${pkgs.stdenv.hostPlatform.system}.default
           inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fsel
           inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nirimon
-          inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pi-coding-agent
           inputs.otter-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
           wl-mirror
 

@@ -53,6 +53,9 @@
       flake = false;
     };
 
+    # pi and other coding agents, updated daily; no follows so cache.numtide.com hits
+    llm-agents.url = "github:numtide/llm-agents.nix";
+
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     doom-emacs = {
       url = "github:doomemacs/doomemacs";
