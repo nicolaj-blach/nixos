@@ -176,14 +176,14 @@
               // Focus (crosses monitors at edges)
               Mod+H { focus-column-or-monitor-left; }
               Mod+L { focus-column-or-monitor-right; }
-              Mod+J { focus-window-down; }
-              Mod+K { focus-window-up; }
+              Mod+J { focus-window-or-workspace-down; }
+              Mod+K { focus-window-or-workspace-up; }
 
-              // Move windows (crosses monitors at edges)
+              // Move windows (crosses monitors and workspaces at edges)
               Mod+Shift+H { move-column-left-or-to-monitor-left; }
               Mod+Shift+L { move-column-right-or-to-monitor-right; }
-              Mod+Shift+J { move-window-down; }
-              Mod+Shift+K { move-window-up; }
+              Mod+Shift+J { move-window-down-or-to-workspace-down; }
+              Mod+Shift+K { move-window-up-or-to-workspace-up; }
 
               // Mouse wheel
               Mod+WheelScrollDown { focus-column-left; }
