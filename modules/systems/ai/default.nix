@@ -18,19 +18,17 @@
         config.allowUnfree = true;
       };
 
-      ollamaPackage =
-        {
-          cuda = unstable.ollama-cuda;
-          rocm = unstable.ollama-rocm;
-          vulkan = unstable.ollama-vulkan;
-          cpu = unstable.ollama;
-        }
-        .${cfg.gpu};
+      ports = {
+        ollama = 11434;
+        gateway = 4000;
+        atuin = 8080; # also in apps/shell/zsh.nix (ai.endpoint)
+      };
 
       envFile = config.sops.templates."ai-gateway.env".path;
-      serverDir = "/var/lib/atuin-ai-server";
+      # atuin-ai-server config plus cached OpenRouter/Ollama model lists (read by ai-model)
+      stateDir = "/var/lib/atuin-ai-server";
 
-      # Writes atuin-ai-server's config with every tool-capable model it can reach
+      # Refreshes the cached model lists and writes atuin-ai-server's config
       atuinModels = pkgs.writeShellApplication {
         name = "atuin-ai-models";
         runtimeInputs = with pkgs; [
@@ -39,51 +37,47 @@
           coreutils
         ];
         text = ''
-          out=${serverDir}/config.toml
-          tmp=$(mktemp)
+          cd ${stateDir}
 
-          local_model() {
-            jq -cn --arg m "$1" '{ alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", model: ("ollama/" + $m) }'
+          # Replace a cached list only on a successful download, keeping the old one otherwise
+          fetch() {
+            if curl -fsS "''${@:2}" > "$1.new"; then
+              mv "$1.new" "$1"
+            else
+              rm -f "$1.new"
+              echo "Couldn't refresh $1, using the cached copy" >&2
+            fi
+            [ -s "$1" ] || echo '{}' > "$1"
+            chmod 0644 "$1"
           }
+          fetch openrouter.json --max-time 20 https://openrouter.ai/api/v1/models
+          fetch ollama.json --max-time 10 --retry 10 --retry-connrefused --retry-delay 2 \
+            http://127.0.0.1:${toString ports.ollama}/api/tags
+
+          # Local first (declared models may still be downloading), then tool-capable OpenRouter models
+          jq -n --argjson declared ${lib.escapeShellArg (builtins.toJSON cfg.models)} \
+            --slurpfile ol ollama.json --slurpfile or openrouter.json '
+              def local($m): { alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", model: ("ollama/" + $m) };
+              ([ $declared[], ($ol[0].models // [] | .[].name) ] | unique | map(local(.)))
+              + [ $or[0].data // [] | .[] | select(.supported_parameters | index("tools"))
+                  | { alias: ("openrouter/" + .id), name, description: "OpenRouter", model: ("openrouter/" + .id) } ]
+            ' > models.json
+
+          default=$(jq -r --arg d ${lib.escapeShellArg cfg.defaultModel} \
+            'if any(.[]; .alias == $d) then $d else .[0].alias end' models.json)
 
           {
-            # Local first: declared models (may still be downloading), then anything else pulled
-            for m in ${lib.escapeShellArgs cfg.models}; do local_model "$m"; done
-            curl -fsS --max-time 10 --retry 10 --retry-connrefused --retry-delay 2 \
-              http://127.0.0.1:${toString cfg.ollamaPort}/api/tags \
-              | jq -r '.models[].name' \
-              | while read -r m; do local_model "$m"; done \
-              || echo "Ollama unreachable, using declared models only" >&2
-
-            curl -fsS --max-time 20 https://openrouter.ai/api/v1/models \
-              | jq -c '.data[] | select(.supported_parameters | index("tools"))
-                  | { alias: ("openrouter/" + .id), name: .name, description: "OpenRouter", model: ("openrouter/" + .id) }' \
-              || echo "OpenRouter unreachable, skipping its models" >&2
-          } | jq -sc 'unique_by(.alias) | sort_by(.description != "Local (Ollama)") | .[]' > "$tmp"
-          count=$(wc -l < "$tmp")
-
-          default=${lib.escapeShellArg cfg.defaultModel}
-          grep -qF "\"alias\":\"$default\"" "$tmp" || default=$(head -n1 "$tmp" | jq -r .alias)
-
-          {
-            echo 'port = ${toString cfg.atuinPort}'
-            echo 'endpoint = "http://127.0.0.1:${toString cfg.gatewayPort}/v1"'
+            echo 'port = ${toString ports.atuin}'
+            echo 'endpoint = "http://127.0.0.1:${toString ports.gateway}/v1"'
             echo 'api_key = { env = "AUTH_TOKEN" }'
-            printf 'default_model = %s\n' "$(jq -Rn --arg v "$default" '$v')"
-            echo
-            echo '[request.body]'
-            echo 'stream_options = { include_usage = true }'
-            jq -r '"\n[[models]]",
-              "alias = \(.alias | tojson)",
-              "name = \(.name | tojson)",
-              "description = \(.description | tojson)",
-              "model = \(.model | tojson)"' "$tmp"
-          } > "$out.new"
-
-          mv "$out.new" "$out"
-          chmod 0644 "$out"
-          rm -f "$tmp"
-          echo "atuin-ai-server: $count models, default $default"
+            jq -rn --arg d "$default" '"default_model = \($d | tojson)"'
+            printf '\n[request.body]\nstream_options = { include_usage = true }\n'
+            jq -r '.[] | "\n[[models]]", (to_entries[] | "\(.key) = \(.value | tojson)")' models.json
+          } > config.toml.new
+          mv config.toml.new config.toml
+          chmod 0644 config.toml
+          echo "atuin-ai-server: $(jq length models.json) models, default $default"
+          rm -f models.json
         '';
       };
 
@@ -96,7 +90,7 @@
         ];
         text = ''
           if systemctl restart podman-atuin-ai-server.service; then
-            n=$(grep -c '^\[\[models\]\]' ${serverDir}/config.toml || true)
+            n=$(grep -c '^\[\[models\]\]' ${stateDir}/config.toml || true)
             notify-send -a "AI" "AI models refreshed" "$n models available"
           else
             notify-send -u critical -a "AI" "AI refresh failed" "journalctl -u podman-atuin-ai-server"
@@ -105,51 +99,54 @@
         '';
       };
 
-      # One row per model: alias <TAB> visible columns <TAB> preview text
+      # One row per model, current first: alias <TAB> visible columns <TAB> preview text
       modelRows = pkgs.writeText "ai-model-rows.jq" ''
-        def money: if . == null then null else (tonumber * 1000000) end;
-        def usd: if . == null then "-" elif . == 0 then "free" elif . < 0.01 then "<$0.01" else "$" + ((. * 100 | round) / 100 | tostring | if test("\\.") then (if test("\\.[0-9]$") then . + "0" else . end) else . + ".00" end) end;
-        def ctx: if . == null then "" elif . >= 1000000 then ((. / 1000000 * 10 | round) / 10 | tostring) + "M ctx" elif . >= 1000 then ((. / 1000 | round) | tostring) + "K ctx" else tostring + " ctx" end;
-        def gb: ((. / 1e9 * 10 | round) / 10 | tostring) + " GB";
-        def pad($n): tostring | if length >= $n then .[0:$n] else . + (" " * ($n - length)) end;
+        def per1m: if . == null then null else tonumber * 1000000 end;
+        def usd: if . == null then "-" elif . == 0 then "free" elif . < 0.01 then "<$0.01"
+          else (. * 100 | round | tostring | (if length < 3 then ("00" + .)[-3:] else . end))
+            | "$" + .[:-2] + "." + .[-2:] end;
+        def ctx: if . == null then "" elif . >= 1000000 then "\(. / 100000 | round / 10)M ctx"
+          elif . >= 1000 then "\(. / 1000 | round)K ctx" else "\(.) ctx" end;
+        def gb: "\(. / 1e8 | round / 10) GB";
+        def pad($n): tostring | .[0:$n] | . + " " * ($n - length);
 
         ($or[0].data // [] | map({ key: ("openrouter/" + .id), value: . }) | from_entries) as $routes
         | ($ol[0].models // [] | map({ key: ("ollama/" + .name), value: . }) | from_entries) as $locals
-        | $srv[0].models[]
+        | $srv[0].models
+        | (map(select(.alias == $cur)) + map(select(.alias != $cur)))[]
         | .alias as $a
         | ($routes[$a]) as $r
         | ($locals[$a]) as $l
-        | (if $a == $cur then "* " else "  " end) as $mark
-        | if $l != null or ($a | startswith("ollama/")) then
+        | (if $a == $cur then "* " else "  " end) + (.name | pad(40)) + "  " as $lead
+        | if ($a | startswith("ollama/")) then
             [ $a,
-              $mark + (.name | pad(40)) + "  " + ("local" | pad(18)) + "  "
-                + ((($l.details.parameter_size // "?") + " " + ($l.details.quantization_level // "")) | pad(14))
+              $lead + ("local" | pad(18)) + "  "
+                + ("\($l.details.parameter_size // "?") \($l.details.quantization_level // "")" | pad(14))
                 + ($l.size | if . then gb else "" end),
               ([ .name, $a, "",
                  "Runs locally with Ollama (free)",
-                 "Parameters:   " + ($l.details.parameter_size // "?"),
-                 "Quantization: " + ($l.details.quantization_level // "?"),
-                 "Family:       " + ($l.details.family // "?"),
-                 "Size on disk: " + ($l.size | if . then gb else "?" end)
+                 "Parameters:   \($l.details.parameter_size // "?")",
+                 "Quantization: \($l.details.quantization_level // "?")",
+                 "Family:       \($l.details.family // "?")",
+                 "Size on disk: \($l.size | if . then gb else "?" end)"
                ] | join("\\n"))
             ]
           else
-            ($r.pricing.prompt | money) as $in
-            | ($r.pricing.completion | money) as $out
+            ($r.pricing.prompt | per1m) as $in
+            | ($r.pricing.completion | per1m) as $out
             | [ $a,
-                $mark + (.name | pad(40)) + "  " + (($in | usd) + " / " + ($out | usd) | pad(18)) + "  "
-                  + ($r.context_length | ctx),
+                $lead + ("\($in | usd) / \($out | usd)" | pad(18)) + "  " + ($r.context_length | ctx),
                 ([ .name, $a, "",
                    "Price per 1M tokens",
-                   "  input:       " + ($in | usd),
-                   "  output:      " + ($out | usd),
-                   "  cache read:  " + ($r.pricing.input_cache_read | money | usd),
-                   "  cache write: " + ($r.pricing.input_cache_write | money | usd),
-                   "  web search:  " + ($r.pricing.web_search | if . == null then "-" else "$" + . + " / search" end),
+                   "  input:       \($in | usd)",
+                   "  output:      \($out | usd)",
+                   "  cache read:  \($r.pricing.input_cache_read | per1m | usd)",
+                   "  cache write: \($r.pricing.input_cache_write | per1m | usd)",
+                   "  web search:  \($r.pricing.web_search | if . == null then "-" else "$\(.) / search" end)",
                    "",
-                   "Context:     " + ($r.context_length | ctx),
-                   "Max output:  " + ($r.top_provider.max_completion_tokens // "?" | tostring) + " tokens",
-                   "Inputs:      " + (($r.architecture.input_modalities // []) | join(", ")),
+                   "Context:     \($r.context_length | ctx)",
+                   "Max output:  \($r.top_provider.max_completion_tokens // "?") tokens",
+                   "Inputs:      \($r.architecture.input_modalities // [] | join(", "))",
                    "",
                    ($r.description // "" | gsub("[\\t\\n]+"; " "))
                  ] | join("\\n"))
@@ -178,39 +175,30 @@
 
           token_file=/run/secrets/ai-gateway-token
           [ -r "$token_file" ] || { echo "ai-model: can't read $token_file" >&2; exit 1; }
+
+          srv=$(curl -fsS --max-time 10 -H "Authorization: Bearer $(cat "$token_file")" \
+            http://127.0.0.1:${toString ports.atuin}/api/cli/models) \
+            || { echo "ai-model: AI server not reachable (try ai-refresh)" >&2; exit 1; }
+
+          default=$(jq -r .default <<< "$srv")
           cur=$(cat "$state" 2>/dev/null || true)
+          cur=''${cur:-$default}
 
-          tmp=$(mktemp -d)
-          trap 'rm -rf "$tmp"' EXIT
+          # Cached by atuin-ai-models on server start; no prices until the first refresh
+          or=${stateDir}/openrouter.json
+          ol=${stateDir}/ollama.json
+          [ -r "$or" ] || or=/dev/null
+          [ -r "$ol" ] || ol=/dev/null
 
-          curl -fsS --max-time 10 -H "Authorization: Bearer $(cat "$token_file")" \
-            http://127.0.0.1:${toString cfg.atuinPort}/api/cli/models > "$tmp/srv.json" &
-          curl -fsS --max-time 20 https://openrouter.ai/api/v1/models > "$tmp/or.json" 2>/dev/null &
-          curl -fsS --max-time 5 http://127.0.0.1:${toString cfg.ollamaPort}/api/tags > "$tmp/ol.json" 2>/dev/null &
-          wait
+          choice=$(jq -rn --arg cur "$cur" --argjson srv "[$srv]" \
+              --slurpfile or "$or" --slurpfile ol "$ol" \
+              --from-file ${modelRows} \
+            | fzf --delimiter $'\t' --with-nth 2 --accept-nth 1 \
+                --header "AI model: $cur   (price = \$ per 1M tokens in / out)" \
+                --header-first --layout reverse --height 80% \
+                --preview 'echo {3} | sed "s/\\\\n/\n/g"' --preview-window 'right,45%,wrap') \
+            || exit 0
 
-          [ -s "$tmp/srv.json" ] || { echo "ai-model: AI server not reachable (try ai-refresh)" >&2; exit 1; }
-          [ -s "$tmp/or.json" ] || echo '{}' > "$tmp/or.json"
-          [ -s "$tmp/ol.json" ] || echo '{}' > "$tmp/ol.json"
-
-          default=$(jq -r '.default' "$tmp/srv.json")
-          [ -n "$cur" ] || cur=$default
-
-          jq -r --arg cur "$cur" \
-            --slurpfile srv "$tmp/srv.json" --slurpfile or "$tmp/or.json" --slurpfile ol "$tmp/ol.json" \
-            -n -f ${modelRows} > "$tmp/rows"
-
-          # Current model first
-          { grep -F "$(printf '%s\t' "$cur")" "$tmp/rows" || true
-            grep -vF "$(printf '%s\t' "$cur")" "$tmp/rows" || true; } > "$tmp/sorted"
-
-          choice=$(fzf --delimiter $'\t' --with-nth 2 --accept-nth 1 \
-            --header "AI model: $cur   (price = \$ per 1M tokens in / out)" \
-            --header-first --layout reverse --height 80% \
-            --preview 'echo {3} | sed "s/\\\\n/\n/g"' --preview-window 'right,45%,wrap' \
-            < "$tmp/sorted") || exit 0
-
-          [ -n "$choice" ] || exit 0
           mkdir -p "$(dirname "$state")"
           if [ "$choice" = "$default" ]; then
             rm -f "$state"
@@ -270,19 +258,6 @@
           # llama3.2:3b emits malformed tool calls with atuin; qwen2.5:7b handles them
           default = "ollama/qwen2.5:7b";
         };
-
-        ollamaPort = lib.mkOption {
-          type = lib.types.port;
-          default = 11434;
-        };
-        gatewayPort = lib.mkOption {
-          type = lib.types.port;
-          default = 4000;
-        };
-        atuinPort = lib.mkOption {
-          type = lib.types.port;
-          default = 8080;
-        };
       };
 
       config = lib.mkIf cfg.enable {
@@ -294,9 +269,16 @@
 
         services.ollama = {
           enable = true;
-          package = ollamaPackage;
+          package =
+            {
+              cuda = unstable.ollama-cuda;
+              rocm = unstable.ollama-rocm;
+              vulkan = unstable.ollama-vulkan;
+              cpu = unstable.ollama;
+            }
+            .${cfg.gpu};
           host = "127.0.0.1";
-          port = cfg.ollamaPort;
+          port = ports.ollama;
           loadModels = cfg.models;
           rocmOverrideGfx = lib.mkIf (cfg.gpu == "rocm") cfg.rocmOverrideGfx;
           environmentVariables = lib.mkIf (cfg.gpu == "vulkan") { OLLAMA_VULKAN = "1"; };
@@ -305,7 +287,7 @@
         services.litellm = {
           enable = true;
           host = "127.0.0.1";
-          port = cfg.gatewayPort;
+          port = ports.gateway;
           environmentFile = envFile;
           settings = {
             model_list = [
@@ -321,7 +303,7 @@
                 litellm_params = {
                   # Ollama's OpenAI-compatible API accepts content-part arrays (ollama_chat doesn't)
                   model = "openai/*";
-                  api_base = "http://127.0.0.1:${toString cfg.ollamaPort}/v1";
+                  api_base = "http://127.0.0.1:${toString ports.ollama}/v1";
                   api_key = "ollama";
                 };
               }
@@ -331,34 +313,23 @@
           };
         };
 
-        virtualisation.podman = {
-          enable = true;
-          dockerCompat = true;
+        virtualisation.podman.enable = true;
+
+        virtualisation.oci-containers.containers.atuin-ai-server = {
+          image = "ghcr.io/atuinsh/atuin-ai-server@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92";
+          environmentFiles = [ envFile ];
+          volumes = [ "${stateDir}/config.toml:/etc/atuin-ai/config.toml:ro" ];
+          extraOptions = [ "--network=host" ];
         };
 
-        virtualisation.oci-containers = {
-          backend = "podman";
-          containers.atuin-ai-server = {
-            image = "ghcr.io/atuinsh/atuin-ai-server@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92";
-            environmentFiles = [ envFile ];
-            volumes = [ "${serverDir}/config.toml:/etc/atuin-ai/config.toml:ro" ];
-            extraOptions = [ "--network=host" ];
-          };
-        };
+        systemd.tmpfiles.rules = [ "d ${stateDir} 0755 root root -" ];
 
-        systemd.tmpfiles.rules = [ "d ${serverDir} 0755 root root -" ];
-
-        systemd.services.podman-atuin-ai-server = {
+        systemd.services.podman-atuin-ai-server = rec {
           after = [
             "litellm.service"
             "ollama.service"
-            "network-online.target"
           ];
-          wants = [
-            "litellm.service"
-            "ollama.service"
-            "network-online.target"
-          ];
+          wants = after;
           serviceConfig.ExecStartPre = lib.mkBefore [ (lib.getExe atuinModels) ];
         };
 
@@ -377,7 +348,6 @@
         environment.systemPackages = [
           aiRefresh
           aiModel
-          ollamaPackage
         ];
       };
     };

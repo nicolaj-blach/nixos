@@ -47,25 +47,19 @@
             -gtk-icon-style: symbolic;
           }
 
-          #osd #container {
-            margin: 0;
-          }
-
-          #osd progressbar {
+          #osd progressbar,
+          #osd progressbar trough,
+          #osd progressbar progress {
             min-height: 8px;
             border-radius: 0;
           }
 
           #osd progressbar trough {
             background-color: #3e4451;
-            border-radius: 0;
-            min-height: 8px;
           }
 
           #osd progressbar progress {
             background-color: #61afef;
-            border-radius: 0;
-            min-height: 8px;
           }
 
           #osd label {
@@ -78,16 +72,13 @@
             background-color: #3e4451;
           }
 
-          #osd .muted image {
+          #osd .muted image,
+          #osd .capslock-off image {
             color: #3e4451;
           }
 
           #osd .capslock-on image {
             color: #c678dd;
-          }
-
-          #osd .capslock-off image {
-            color: #3e4451;
           }
         '';
       };

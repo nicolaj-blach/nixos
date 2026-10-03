@@ -352,7 +352,7 @@
           package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.atuin;
           enableZshIntegration = true;
           daemon.enable = aiEnabled;
-          flags = [ "--disable-up-arrow" ] ++ lib.optional (!aiEnabled) "--disable-ai";
+          flags = [ "--disable-up-arrow" ];
           settings = {
             ai = {
               enabled = aiEnabled;
