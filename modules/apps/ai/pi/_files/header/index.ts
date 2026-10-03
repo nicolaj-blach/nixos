@@ -8,8 +8,9 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Image, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
 const LOGO = readFileSync(join(import.meta.dirname, "logo.png")).toString("base64");
-const LOGO_WIDTH = 8;
-const LOGO_HEIGHT = 4;
+const LOGO_WIDTH = 14;
+const LOGO_HEIGHT = 6;
+const MARGIN = 2;
 const home = homedir();
 const tilde = (p: string) => (p === home || p.startsWith(home + "/") ? "~" + p.slice(home.length) : p);
 
@@ -77,9 +78,13 @@ export default function (pi: ExtensionAPI) {
 			const logo = new Image(LOGO, "image/png", { fallbackColor: (s) => theme.fg("accent", s) }, { maxWidthCells: LOGO_WIDTH, maxHeightCells: LOGO_HEIGHT });
 			const label = (s: string) => theme.bold(theme.fg("accent", s.padEnd(17)));
 			const sep = theme.fg("dim", " · ");
-			const side = [
+			const text = [
 				theme.fg("accent", model),
 				theme.fg("muted", tilde(ctx.cwd)) + (branch ? theme.fg("dim", "  ") + theme.fg("success", branch) : ""),
+				"",
+				label("Tips") + ["/ commands", "! bash", "Shift+Tab plan mode", "Alt+T thinking"].join(sep),
+				label("Loaded") + loaded.join(sep),
+				label("Recent sessions") + (recent.length ? recent.join(sep) : theme.fg("dim", "none")),
 			];
 
 			return {
@@ -89,21 +94,19 @@ export default function (pi: ExtensionAPI) {
 				render(width: number): string[] {
 					const image = logo.render(LOGO_WIDTH + 2);
 					const fallback = image.length === 1 && visibleWidth(image[0]) > 0;
+					// The image is one escape sequence (cursor stays put) plus blank rows;
+					// text starts in the column to its right on every row
 					const rows = fallback ? [theme.fg("accent", "⬡")] : image;
-					const gap = " ".repeat(2);
-					// The image is one escape sequence plus blank rows; text goes in the cells to its right
-					const top = rows.map((row, i) => {
-						const text = side[i] ?? "";
-						if (!text) return row;
-						const pad = fallback ? gap : `\x1b[${LOGO_WIDTH + 2}C`;
-						return truncateToWidth(row + pad + text, width);
-					});
-					const info = [
-						label("Tips") + ["/ commands", "! bash", "Shift+Tab plan mode", "Alt+T thinking"].join(sep),
-						label("Loaded") + loaded.join(sep),
-						label("Recent sessions") + (recent.length ? recent.join(sep) : theme.fg("dim", "none")),
-					].map((l) => truncateToWidth("  " + l, width));
-					return [...top, "", ...info, ""];
+					const left = " ".repeat(MARGIN);
+					const textCol = MARGIN + (fallback ? 1 : LOGO_WIDTH) + 3;
+					const lines: string[] = [];
+					for (let i = 0; i < Math.max(rows.length, text.length); i++) {
+						const logoRow = rows[i] ?? "";
+						const offset = fallback ? textCol - MARGIN - visibleWidth(logoRow) : textCol - MARGIN;
+						const move = fallback || !logoRow ? " ".repeat(Math.max(0, offset)) : `\x1b[${offset}C`;
+						lines.push(truncateToWidth(left + logoRow + move + (text[i] ?? ""), width));
+					}
+					return ["", ...lines, ""];
 				},
 			};
 		});

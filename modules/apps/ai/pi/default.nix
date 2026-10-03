@@ -23,9 +23,8 @@
       header = pkgs.runCommand "pi-header" { nativeBuildInputs = [ pkgs.librsvg ]; } ''
         mkdir $out
         cp ${./_files/header/index.ts} $out/index.ts
-        sed -e 's/fill:#000000/fill:#282c34/' -e 's/stroke:#ffffff/stroke:#61afef/' \
-          ${../../../../assets/logo.svg} > logo.svg
-        rsvg-convert -w 160 -h 143 --background-color '#282c34' logo.svg -o $out/logo.png
+        rsvg-convert -w 320 -h 286 --background-color '#282c34' \
+          ${../../../../assets/logo.svg} -o $out/logo.png
       '';
 
       # Quiet the npm installs pi runs for its packages (warnings, funding, audit)
