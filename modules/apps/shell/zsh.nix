@@ -232,6 +232,14 @@
               autoload -Uz add-zsh-hook
               add-zsh-hook precmd _atuin_ai_model
               _atuin_ai_model
+
+              # Refresh every tool's model list after the local models change
+              ollama() {
+                command ollama "$@" || return
+                case $1 in
+                  pull|rm|cp|create) ai-refresh &! ;;
+                esac
+              }
             fi
           '';
 

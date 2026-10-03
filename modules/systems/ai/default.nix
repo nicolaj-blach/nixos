@@ -34,11 +34,12 @@
       # One entry per tool-capable model: local Ollama models first, then OpenRouter
       modelList = pkgs.writeText "ai-models.jq" ''
         def per1m: if . == null then 0 else tonumber * 1000000 end;
-        def local($m): ($ol[0].models // [] | map(select(.name == $m)) | first) as $l
-          | { alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", local: true,
-              context: ${toString localContext}, output: 8192, input: ["text"],
-              cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } };
-        ([ $declared[], ($ol[0].models // [] | .[].name) ] | unique | map(local(.)))
+        def local($m): { alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", local: true,
+          context: ${toString localContext}, output: 8192, input: ["text"],
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } };
+        # Pulled models without tool calling stay usable with `ollama run` but aren't listed
+        ([ $declared[], ($ol[0].models // [] | .[] | select(.capabilities | index("tools")) | .name) ]
+          | unique | map(local(.)))
         + [ $or[0].data // [] | .[] | select(.supported_parameters | index("tools"))
             | { alias: ("openrouter/" + .id), name, description: "OpenRouter", local: false,
                 context: (.context_length // 128000),
@@ -75,6 +76,21 @@
           fetch openrouter.json --max-time 20 https://openrouter.ai/api/v1/models
           fetch ollama.json --max-time 10 --retry 10 --retry-connrefused --retry-delay 2 \
             http://127.0.0.1:${toString ports.ollama}/api/tags
+
+          # Add each pulled model's capabilities (tools, vision, ...) from /api/show
+          jq -r '.models // [] | .[] | select(has("capabilities") | not) | .name' ollama.json \
+            | while read -r m; do
+                curl -fsS --max-time 10 http://127.0.0.1:${toString ports.ollama}/api/show \
+                  -d "$(jq -cn --arg m "$m" '{ model: $m }')" \
+                  | jq -c --arg m "$m" '{ ($m): (.capabilities // []) }' \
+                  || jq -cn --arg m "$m" '{ ($m): [] }'
+              done \
+            | jq -s 'add // {}' > caps.json
+          jq --slurpfile caps caps.json \
+            '.models |= ((. // []) | map(.capabilities = (.capabilities // $caps[0][.name] // [])))' ollama.json \
+            > ollama.json.new && mv ollama.json.new ollama.json
+          chmod 0644 ollama.json
+          rm -f caps.json
 
           # Declared local models are listed even while they're still downloading
           jq -n --argjson declared ${lib.escapeShellArg (builtins.toJSON cfg.models)} \
