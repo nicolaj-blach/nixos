@@ -58,6 +58,8 @@
           curl
           jq
           coreutils
+          diffutils
+          systemd
         ];
         text = ''
           cd ${stateDir}
@@ -111,7 +113,19 @@
             printf '\n[request.body]\nstream_options = { include_usage = true }\n'
             jq -r '.[] | "\n[[models]]",
               (({ alias, name, description, model: .alias } | to_entries[]) | "\(.key) = \(.value | tojson)")' models.json
-          } | publish atuin.toml
+          } > atuin.toml.next
+
+          # atuin-ai-server only reads its model list at start: restart it when the list changed.
+          # try-restart skips a stopped server (boot, ai-refresh); --no-block avoids waiting on
+          # a server that is itself ordered after this service.
+          if cmp -s atuin.toml.next atuin.toml; then
+            rm atuin.toml.next
+          else
+            publish atuin.toml < atuin.toml.next
+            rm atuin.toml.next
+            echo "Model list changed, restarting atuin-ai-server"
+            systemctl --no-block try-restart podman-atuin-ai-server.service
+          fi
 
           # opencode: merged into its own config via OPENCODE_CONFIG
           jq '{
@@ -399,7 +413,7 @@
 
         systemd.tmpfiles.rules = [ "d ${stateDir} 0755 root root -" ];
 
-        # Model configs for atuin-ai-server, opencode and pi; re-run by ai-refresh
+        # Model configs for atuin-ai-server, opencode and pi: at boot, hourly, and by ai-refresh
         systemd.services.ai-models = {
           description = "Generate AI gateway model configs";
           after = [
@@ -410,8 +424,15 @@
           wantedBy = [ "multi-user.target" ];
           serviceConfig = {
             Type = "oneshot";
-            RemainAfterExit = true;
             ExecStart = lib.getExe aiModels;
+          };
+        };
+
+        systemd.timers.ai-models = {
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnCalendar = "hourly";
+            RandomizedDelaySec = "5m";
           };
         };
 
