@@ -1,14 +1,17 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.homeManagerModules.zsh =
     {
       config,
       lib,
       pkgs,
+      osConfig,
       ...
     }:
     let
       cfg = config.programs.zsh;
+      # Atuin AI only where the local AI gateway runs (modules/systems/ai)
+      aiEnabled = osConfig.ai.enable or false;
     in
     {
       config = lib.mkIf cfg.enable {
@@ -69,10 +72,6 @@
             FZF_ALT_C_OPTS = ''
               --walker-skip .git,node_modules,target,.direnv
               --preview 'eza --tree --level=2 --icons --color=always {}' '';
-            FZF_CTRL_R_OPTS = ''
-              --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort'
-              --color header:italic
-              --header 'CTRL-Y to copy command to clipboard' '';
 
             # Carapace bridges
             CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
@@ -184,7 +183,7 @@
             zstyle ':fzf-tab:complete:*:*' fzf-preview '[[ -d $realpath ]] && eza -1 --color=always --icons=always $realpath || bat -n --color=always $realpath 2>/dev/null'
             zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
-            # fzf shell integration (CTRL-T, CTRL-R, ALT-C keybindings + fuzzy completion)
+            # fzf shell integration (CTRL-T, ALT-C keybindings + fuzzy completion; CTRL-R is atuin)
             source <(fzf --zsh)
 
             # fzf: completion with fd (faster than default walker)
@@ -205,6 +204,35 @@
 
             # Local overrides (API keys, secrets -- not tracked in git)
             [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+          '';
+
+          # Run last so atuin, not fzf, owns Ctrl+R in every keymap
+          initContent = lib.mkOrder 2000 ''
+            bindkey -M emacs '^r' atuin-search
+            bindkey -M viins '^r' atuin-search-viins
+            bindkey -M vicmd '^r' atuin-search-vicmd
+
+            # Atuin AI: ? on an empty prompt (atuin only binds it in the emacs keymap)
+            (( ''${+widgets[self-atuin-ai-question-mark]} )) && bindkey -M viins '?' self-atuin-ai-question-mark
+
+            # Token for the local AI gateway (atuin-ai-server)
+            [[ -r /run/secrets/ai-gateway-token ]] && export ATUIN_AI__API_TOKEN="$(< /run/secrets/ai-gateway-token)"
+
+            # Atuin AI model chosen with `aim` (ai-model); re-read before every prompt
+            if (( $+commands[ai-model] )); then
+              alias aim=ai-model
+              _atuin_ai_model() {
+                local f="''${XDG_STATE_HOME:-$HOME/.local/state}/atuin/ai-model"
+                if [[ -s $f ]]; then
+                  export ATUIN_AI__MODEL="$(< $f)"
+                else
+                  unset ATUIN_AI__MODEL
+                fi
+              }
+              autoload -Uz add-zsh-hook
+              add-zsh-hook precmd _atuin_ai_model
+              _atuin_ai_model
+            fi
           '';
 
           profileExtra = ''
@@ -316,6 +344,55 @@
 
         # fzf
         programs.fzf.enable = true;
+
+        # atuin: Ctrl+R history search (Up stays on history-substring-search)
+        programs.atuin = {
+          enable = true;
+          # 18.21 for Atuin AI (? on an empty prompt) and pty-proxy
+          package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.atuin;
+          enableZshIntegration = true;
+          daemon.enable = aiEnabled;
+          flags = [ "--disable-up-arrow" ] ++ lib.optional (!aiEnabled) "--disable-ai";
+          settings = {
+            ai = {
+              enabled = aiEnabled;
+              endpoint = "http://127.0.0.1:8080";
+              endpoint_protocol = "oss";
+              tips = false;
+            };
+            pty_proxy.enabled = aiEnabled;
+            auto_sync = false;
+            update_check = false;
+            style = "compact";
+            inline_height = 15;
+            show_preview = true;
+            enter_accept = false;
+            keymap_mode = "vim-insert";
+            filter_mode = "global";
+            search_mode = "fuzzy";
+            history_filter = [
+              "^ls$"
+              "^cd$"
+              "^clear$"
+              "^fe$"
+            ];
+            theme.name = "onedark";
+          };
+          themes.onedark = {
+            theme.name = "onedark";
+            colors = {
+              Base = "#abb2bf";
+              Title = "#61afef";
+              Important = "#61afef";
+              Guidance = "#c678dd";
+              Annotation = "#5c6370";
+              Muted = "#5c6370";
+              AlertInfo = "#98c379";
+              AlertWarn = "#e5c07b";
+              AlertError = "#e06c75";
+            };
+          };
+        };
 
         # bat
         programs.bat.enable = true;

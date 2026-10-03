@@ -38,6 +38,22 @@
             mode = "0400";
           };
 
+          secrets.ai-gateway-token = {
+            sopsFile = secretsRoot + "/aiModels.yaml";
+            owner = metaOwner.username;
+            mode = "0400";
+          };
+
+          secrets.openrouter-api-key = {
+            sopsFile = secretsRoot + "/aiModels.yaml";
+          };
+
+          # Shared by LiteLLM and atuin-ai-server
+          templates."ai-gateway.env".content = ''
+            OPENROUTER_API_KEY=${config.sops.placeholder.openrouter-api-key}
+            AUTH_TOKEN=${config.sops.placeholder.ai-gateway-token}
+          '';
+
           templates."nix-access-tokens" = {
             owner = metaOwner.username;
             mode = "0400";
@@ -46,6 +62,12 @@
             '';
           };
         };
+
+        environment.systemPackages = with pkgs; [
+          sops
+          age
+          ssh-to-age
+        ];
 
         nix.extraOptions = ''
           !include ${config.sops.templates."nix-access-tokens".path}

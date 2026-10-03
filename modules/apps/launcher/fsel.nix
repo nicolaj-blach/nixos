@@ -53,8 +53,11 @@
             | "\(.generation)\t\(.generation)  \(.date[0:16])  \(.kernelVersion)\(if .current then "  (current)" else "" end)"' \
             | fsel --dmenu --only-match --delimiter $'\t' --with-nth 2 --accept-nth 1
         }
-        choice=$(printf '%s\n' Lock Logout "Switch generation" Shutdown Reboot "Rebuild system" | fsel --dmenu --only-match)
+        entries=(Shutdown Lock Logout "Switch generation" Reboot "Rebuild system")
+        command -v ai-refresh >/dev/null && entries+=("Refresh AI models")
+        choice=$(printf '%s\n' "''${entries[@]}" | fsel --dmenu --only-match)
         case "$choice" in
+          Shutdown) confirm shutdown && systemctl poweroff ;;
           Lock) niri msg action spawn -- hyprlock-wrapper ;;
           Logout) confirm logout && niri msg action quit --skip-confirmation ;;
           "Switch generation")
@@ -64,11 +67,11 @@
             [ "$gen" = "$current" ] && exit 0
             confirm "switch to $gen" && niri msg action spawn -- kitty-popup-term sh -c \
               "nh os rollback --to $gen; echo; read -rp 'Press Enter to close'" ;;
-          Shutdown) confirm shutdown && systemctl poweroff ;;
           Reboot) confirm reboot && systemctl reboot ;;
           "Rebuild system")
             niri msg action spawn -- kitty-popup-term sh -c \
               'sudo nixos-rebuild switch --flake ~/nixos#$(hostname); echo; read -rp "Press Enter to close"' ;;
+          "Refresh AI models") niri msg action spawn -- ai-refresh ;;
         esac
       '';
 
