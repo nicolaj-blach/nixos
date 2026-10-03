@@ -23,6 +23,10 @@
         exec kitty --class popup-large -o window_padding_width=8 "$@"
       '';
 
+      kitty-popup-assistant = pkgs.writeShellScriptBin "kitty-popup-assistant" ''
+        exec kitty --class popup-assistant -o window_padding_width=8 "$@"
+      '';
+
       # OneDark color scheme (matching doom-one)
       # OneDark color scheme (matching quickshell bar)
       colorsConf = ''
@@ -156,6 +160,7 @@
           kitty-popup
           kitty-popup-term
           kitty-popup-large
+          kitty-popup-assistant
         ];
       };
     };

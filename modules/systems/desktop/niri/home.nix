@@ -137,6 +137,7 @@
 
           window-rule {
               match app-id="popup-large"
+              match app-id="popup-assistant"
               open-floating true
               default-column-width { fixed 1200; }
               default-window-height { fixed 750; }
@@ -163,8 +164,12 @@
               Mod+Shift+C { spawn "kitty-popup-term" "-e" "qalc"; }
               Mod+Shift+W { spawn "kitty-popup-large" "-e" "wlctl"; }
               Mod+Shift+B { spawn "kitty-popup-large" "-e" "bluetui"; }
-              Mod+Shift+A { spawn "kitty-popup-large" "-e" "wiremix"; }
+              Mod+Shift+S { spawn "kitty-popup-large" "-e" "wiremix"; }
               Mod+Shift+N { spawn "kitty-popup-large" "-e" "tv" "nix"; }
+
+              // Assistant (pi): continue the last chat, or start a new one
+              Mod+A { spawn "kitty-popup-assistant" "-e" "pi-assistant" "--continue"; }
+              Mod+Shift+A { spawn "kitty-popup-assistant" "-e" "pi-assistant"; }
 
               // Window management
               Mod+W { close-window; }

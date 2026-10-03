@@ -36,9 +36,11 @@
       '';
 
       # settings.json is read-only, so pi can't save the default model: start on the
-      # model the most recent session last switched to, unless one is given
+      # model the most recent session last switched to, unless one is given.
+      # PI_CODING_AGENT_SESSION_DIR keeps the assistant's sessions (and model) separate.
       lastModel = pkgs.writeShellScript "pi-last-model" ''
-        f=$(ls -t "$HOME"/.pi/agent/sessions/*/*.jsonl 2>/dev/null | head -n1)
+        dir=''${PI_CODING_AGENT_SESSION_DIR:-$HOME/.pi/agent/sessions}
+        f=$(ls -t "$dir"/*.jsonl "$dir"/*/*.jsonl 2>/dev/null | head -n1)
         [ -n "$f" ] || exit 0
         ${lib.getExe pkgs.jq} -r 'select(.type == "model_change") | "\(.provider)/\(.modelId)"' "$f" | tail -n1
       '';
@@ -52,6 +54,18 @@
         esac
         [ -n "''${INSIDE_EMACS:-}" ] || set -- -e npm:pi-vim@0.14.2 "$@"
         exec ${lib.getExe pi} "$@"
+      '';
+
+      # General-purpose assistant (Mod+A): own prompt and sessions, read-only file tools
+      piAssistant = pkgs.writeShellScriptBin "pi-assistant" ''
+        export PI_CODING_AGENT_SESSION_DIR="$HOME/.pi/agent/sessions-assistant"
+        cd "$HOME"
+        # The installed pi (Home Manager wraps it with nodejs on PATH)
+        exec pi \
+          --system-prompt "$(cat ${md}/assistant.md)" \
+          --no-context-files --no-skills \
+          --tools read,grep,find,ls \
+          "$@"
       '';
 
       # Ctrl+G: the current Emacs frame inside ghostel, a new frame elsewhere
@@ -164,7 +178,12 @@
               };
         };
 
-        programs.zsh.shellAliases.agent = "pi";
+        home.packages = [ piAssistant ];
+
+        programs.zsh.shellAliases = {
+          agent = "pi";
+          pic = "pi --continue";
+        };
       };
     };
 }
