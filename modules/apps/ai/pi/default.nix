@@ -18,8 +18,17 @@
       json = pkgs.formats.json { };
       pi = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
 
+      # Quiet the npm installs pi runs for its packages (warnings, funding, audit)
+      npmrc = pkgs.writeText "pi-npmrc" ''
+        loglevel=error
+        fund=false
+        audit=false
+        update-notifier=false
+      '';
+
       # pi-vim only outside Emacs: inside ghostel, evil owns Esc
       piVim = pkgs.writeShellScriptBin "pi" ''
+        export NPM_CONFIG_USERCONFIG=${npmrc}
         [ -n "''${INSIDE_EMACS:-}" ] || set -- -e npm:pi-vim@0.14.2 "$@"
         exec ${lib.getExe pi} "$@"
       '';
@@ -41,6 +50,7 @@
 
           settings = {
             theme = "onedark";
+            tuiMode = "regular";
             externalEditor = "${editor}";
             quietStartup = true;
             collapseChangelog = true;
@@ -61,8 +71,19 @@
             ];
           };
 
-          # Shift+Tab toggles plan mode
-          keybindings."app.thinking.cycle" = "ctrl+t";
+          keybindings = {
+            # Shift+Tab toggles plan mode
+            "app.thinking.cycle" = "alt+t";
+            # Vim-style movement in pickers (they filter as you type, so plain j/k can't work)
+            "tui.select.up" = [
+              "up"
+              "ctrl+k"
+            ];
+            "tui.select.down" = [
+              "down"
+              "ctrl+j"
+            ];
+          };
         };
 
         home.file = {
