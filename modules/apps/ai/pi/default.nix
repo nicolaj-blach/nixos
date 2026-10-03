@@ -26,9 +26,21 @@
         update-notifier=false
       '';
 
+      # settings.json is read-only, so pi can't save the default model: start on the
+      # model the most recent session last switched to, unless one is given
+      lastModel = pkgs.writeShellScript "pi-last-model" ''
+        f=$(ls -t "$HOME"/.pi/agent/sessions/*/*.jsonl 2>/dev/null | head -n1)
+        [ -n "$f" ] || exit 0
+        ${lib.getExe pkgs.jq} -r 'select(.type == "model_change") | "\(.provider)/\(.modelId)"' "$f" | tail -n1
+      '';
+
       # pi-vim only outside Emacs: inside ghostel, evil owns Esc
       piVim = pkgs.writeShellScriptBin "pi" ''
         export NPM_CONFIG_USERCONFIG=${npmrc}
+        case " $* " in
+          *" --model "* | *" --model="* | *" -c "* | *" --continue "* | *" -r "* | *" --resume "* | *" --session "*) ;;
+          *) m=$(${lastModel}); [ -n "$m" ] && set -- --model "$m" "$@" ;;
+        esac
         [ -n "''${INSIDE_EMACS:-}" ] || set -- -e npm:pi-vim@0.14.2 "$@"
         exec ${lib.getExe pi} "$@"
       '';
