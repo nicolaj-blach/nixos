@@ -56,7 +56,8 @@
         exec ${lib.getExe pi} "$@"
       '';
 
-      # General-purpose assistant (Mod+A): own prompt and sessions, read-only file tools
+      # General-purpose assistant (Mod+A): own prompt and sessions, read-only file
+      # tools plus web search and fetch (pi-web-access)
       piAssistant = pkgs.writeShellScriptBin "pi-assistant" ''
         export PI_CODING_AGENT_SESSION_DIR="$HOME/.pi/agent/sessions-assistant"
         cd "$HOME"
@@ -64,7 +65,7 @@
         exec pi \
           --system-prompt "$(cat ${md}/assistant.md)" \
           --no-context-files --no-skills \
-          --tools read,grep,find,ls \
+          --tools read,grep,find,ls,web_search,fetch_content,get_search_content \
           "$@"
       '';
 
