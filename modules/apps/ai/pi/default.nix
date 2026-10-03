@@ -18,6 +18,16 @@
       json = pkgs.formats.json { };
       pi = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
 
+      # Startup header extension with the logo rendered for kitty graphics.
+      # Solid background because ghostel drops alpha.
+      header = pkgs.runCommand "pi-header" { nativeBuildInputs = [ pkgs.librsvg ]; } ''
+        mkdir $out
+        cp ${./_files/header/index.ts} $out/index.ts
+        sed -e 's/fill:#000000/fill:#282c34/' -e 's/stroke:#ffffff/stroke:#61afef/' \
+          ${../../../../assets/logo.svg} > logo.svg
+        rsvg-convert -w 160 -h 143 --background-color '#282c34' logo.svg -o $out/logo.png
+      '';
+
       # Quiet the npm installs pi runs for its packages (warnings, funding, audit)
       npmrc = pkgs.writeText "pi-npmrc" ''
         loglevel=error
@@ -70,6 +80,9 @@
             doubleEscapeAction = "none";
             piVim.clipboardMirror = "all";
             skills = [ "${md}/skills" ];
+            extensions = [ "${header}" ];
+            # The header extension replaces powerline's welcome; its status bar stays
+            powerline.welcome = false;
             # Installed by pi into ~/.pi/agent/npm on first start
             packages = [
               "npm:pi-subagents@0.75.0"
