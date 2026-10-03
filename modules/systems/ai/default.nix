@@ -25,12 +25,34 @@
       };
 
       envFile = config.sops.templates."ai-gateway.env".path;
-      # atuin-ai-server config plus cached OpenRouter/Ollama model lists (read by ai-model)
-      stateDir = "/var/lib/atuin-ai-server";
+      tokenFile = config.sops.secrets.ai-gateway-token.path;
+      localContext = 16384;
 
-      # Refreshes the cached model lists and writes atuin-ai-server's config
-      atuinModels = pkgs.writeShellApplication {
-        name = "atuin-ai-models";
+      # Generated model configs for atuin-ai-server, opencode and pi, plus cached model lists
+      stateDir = "/var/lib/ai-gateway";
+
+      # One entry per tool-capable model: local Ollama models first, then OpenRouter
+      modelList = pkgs.writeText "ai-models.jq" ''
+        def per1m: if . == null then 0 else tonumber * 1000000 end;
+        def local($m): ($ol[0].models // [] | map(select(.name == $m)) | first) as $l
+          | { alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", local: true,
+              context: ${toString localContext}, output: 8192, input: ["text"],
+              cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } };
+        ([ $declared[], ($ol[0].models // [] | .[].name) ] | unique | map(local(.)))
+        + [ $or[0].data // [] | .[] | select(.supported_parameters | index("tools"))
+            | { alias: ("openrouter/" + .id), name, description: "OpenRouter", local: false,
+                context: (.context_length // 128000),
+                output: (.top_provider.max_completion_tokens // 16384),
+                input: [ .architecture.input_modalities // [] | .[] | select(. == "text" or . == "image") ],
+                reasoning: (.supported_parameters | index("reasoning") != null),
+                cost: { input: (.pricing.prompt | per1m), output: (.pricing.completion | per1m),
+                        cacheRead: (.pricing.input_cache_read | per1m),
+                        cacheWrite: (.pricing.input_cache_write | per1m) } } ]
+      '';
+
+      # Refreshes the cached model lists and writes every tool's model config
+      aiModels = pkgs.writeShellApplication {
+        name = "ai-models";
         runtimeInputs = with pkgs; [
           curl
           jq
@@ -54,17 +76,16 @@
           fetch ollama.json --max-time 10 --retry 10 --retry-connrefused --retry-delay 2 \
             http://127.0.0.1:${toString ports.ollama}/api/tags
 
-          # Local first (declared models may still be downloading), then tool-capable OpenRouter models
+          # Declared local models are listed even while they're still downloading
           jq -n --argjson declared ${lib.escapeShellArg (builtins.toJSON cfg.models)} \
-            --slurpfile ol ollama.json --slurpfile or openrouter.json '
-              def local($m): { alias: ("ollama/" + $m), name: $m, description: "Local (Ollama)", model: ("ollama/" + $m) };
-              ([ $declared[], ($ol[0].models // [] | .[].name) ] | unique | map(local(.)))
-              + [ $or[0].data // [] | .[] | select(.supported_parameters | index("tools"))
-                  | { alias: ("openrouter/" + .id), name, description: "OpenRouter", model: ("openrouter/" + .id) } ]
-            ' > models.json
+            --slurpfile ol ollama.json --slurpfile or openrouter.json \
+            --from-file ${modelList} > models.json
 
           default=$(jq -r --arg d ${lib.escapeShellArg cfg.defaultModel} \
             'if any(.[]; .alias == $d) then $d else .[0].alias end' models.json)
+
+          # Write to a temp file and rename, so readers never see a half-written file
+          publish() { cat > "$1.new" && chmod 0644 "$1.new" && mv "$1.new" "$1"; }
 
           {
             echo 'port = ${toString ports.atuin}'
@@ -72,11 +93,45 @@
             echo 'api_key = { env = "AUTH_TOKEN" }'
             jq -rn --arg d "$default" '"default_model = \($d | tojson)"'
             printf '\n[request.body]\nstream_options = { include_usage = true }\n'
-            jq -r '.[] | "\n[[models]]", (to_entries[] | "\(.key) = \(.value | tojson)")' models.json
-          } > config.toml.new
-          mv config.toml.new config.toml
-          chmod 0644 config.toml
-          echo "atuin-ai-server: $(jq length models.json) models, default $default"
+            jq -r '.[] | "\n[[models]]",
+              (({ alias, name, description, model: .alias } | to_entries[]) | "\(.key) = \(.value | tojson)")' models.json
+          } | publish atuin.toml
+
+          # opencode: merged into its own config via OPENCODE_CONFIG
+          jq '{
+            "$schema": "https://opencode.ai/config.json",
+            provider: { litellm: {
+              npm: "@ai-sdk/openai-compatible",
+              name: "LiteLLM (local gateway)",
+              options: { baseURL: "http://127.0.0.1:${toString ports.gateway}/v1",
+                         apiKey: "{file:${tokenFile}}" },
+              models: (map({ key: .alias, value: {
+                name: (if .local then "\(.name) (local)" else .name end),
+                tool_call: true,
+                reasoning: (.reasoning // false),
+                attachment: (.input | index("image") != null),
+                modalities: { input: .input, output: ["text"] },
+                limit: { context: .context, output: .output },
+                cost: { input: .cost.input, output: .cost.output,
+                        cache_read: .cost.cacheRead, cache_write: .cost.cacheWrite } } })
+                | from_entries) } } }' models.json | publish opencode.json
+
+          # pi: linked to ~/.pi/agent/models.json
+          jq '{ providers: { litellm: {
+            baseUrl: "http://127.0.0.1:${toString ports.gateway}/v1",
+            api: "openai-completions",
+            apiKey: "!cat ${tokenFile}",
+            compat: { supportsDeveloperRole: false },
+            models: map({
+              id: .alias,
+              name: (if .local then "\(.name) (local)" else .name end),
+              reasoning: (.reasoning // false),
+              input: .input,
+              contextWindow: .context,
+              maxTokens: .output,
+              cost: .cost }) } } }' models.json | publish pi-models.json
+
+          echo "ai-models: $(jq length models.json) models, default $default"
           rm -f models.json
         '';
       };
@@ -89,11 +144,11 @@
           gnugrep
         ];
         text = ''
-          if systemctl restart podman-atuin-ai-server.service; then
-            n=$(grep -c '^\[\[models\]\]' ${stateDir}/config.toml || true)
+          if systemctl restart ai-models.service podman-atuin-ai-server.service; then
+            n=$(grep -c '^\[\[models\]\]' ${stateDir}/atuin.toml || true)
             notify-send -a "AI" "AI models refreshed" "$n models available"
           else
-            notify-send -u critical -a "AI" "AI refresh failed" "journalctl -u podman-atuin-ai-server"
+            notify-send -u critical -a "AI" "AI refresh failed" "journalctl -u ai-models -u podman-atuin-ai-server"
             exit 1
           fi
         '';
@@ -281,7 +336,11 @@
           port = ports.ollama;
           loadModels = cfg.models;
           rocmOverrideGfx = lib.mkIf (cfg.gpu == "rocm") cfg.rocmOverrideGfx;
-          environmentVariables = lib.mkIf (cfg.gpu == "vulkan") { OLLAMA_VULKAN = "1"; };
+          # Coding agents send 8-20k tokens per request; 16k keeps qwen2.5:7b on the 8 GB GPU
+          environmentVariables = {
+            OLLAMA_CONTEXT_LENGTH = toString localContext;
+          }
+          // lib.optionalAttrs (cfg.gpu == "vulkan") { OLLAMA_VULKAN = "1"; };
         };
 
         services.litellm = {
@@ -318,32 +377,60 @@
         virtualisation.oci-containers.containers.atuin-ai-server = {
           image = "ghcr.io/atuinsh/atuin-ai-server@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92";
           environmentFiles = [ envFile ];
-          volumes = [ "${stateDir}/config.toml:/etc/atuin-ai/config.toml:ro" ];
+          volumes = [ "${stateDir}/atuin.toml:/etc/atuin-ai/config.toml:ro" ];
           extraOptions = [ "--network=host" ];
         };
 
         systemd.tmpfiles.rules = [ "d ${stateDir} 0755 root root -" ];
 
+        # Model configs for atuin-ai-server, opencode and pi; re-run by ai-refresh
+        systemd.services.ai-models = {
+          description = "Generate AI gateway model configs";
+          after = [
+            "ollama.service"
+            "network-online.target"
+          ];
+          wants = [ "network-online.target" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = lib.getExe aiModels;
+          };
+        };
+
         systemd.services.podman-atuin-ai-server = rec {
           after = [
+            "ai-models.service"
             "litellm.service"
             "ollama.service"
           ];
           wants = after;
-          serviceConfig.ExecStartPre = lib.mkBefore [ (lib.getExe atuinModels) ];
         };
 
-        # Let the user refresh the model list without a password
+        # Let the user refresh the model lists without a password
         security.polkit.extraConfig = ''
           polkit.addRule(function(action, subject) {
             if (action.id == "org.freedesktop.systemd1.manage-units" &&
-                action.lookup("unit") == "podman-atuin-ai-server.service" &&
+                ["ai-models.service", "podman-atuin-ai-server.service"].indexOf(action.lookup("unit")) >= 0 &&
                 action.lookup("verb") == "restart" &&
                 subject.user == "${metaOwner.username}") {
               return polkit.Result.YES;
             }
           });
         '';
+
+        # opencode and pi get a "litellm" provider next to their own ones
+        home-manager.sharedModules = [
+          (
+            { config, ... }:
+            {
+              home.sessionVariables.OPENCODE_CONFIG = "${stateDir}/opencode.json";
+              home.file.".pi/agent/models.json".source =
+                config.lib.file.mkOutOfStoreSymlink "${stateDir}/pi-models.json";
+            }
+          )
+        ];
 
         environment.systemPackages = [
           aiRefresh
