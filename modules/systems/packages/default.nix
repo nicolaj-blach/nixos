@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.nixosModules.packages =
     { pkgs, ... }:
@@ -11,7 +11,7 @@
             openssl
             curl
             icu
-            inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.system}.stdenv.cc.cc.lib
+            stdenv.cc.cc.lib
           ];
         };
 
@@ -40,20 +40,14 @@
           glib
 
           # File Management
-          yazi
           stow
-          eza
-          fd
           ripgrep
-          fzf
-          television
           zoxide
           tree
           unzip
           dua
 
           # Text & Viewing
-          bat
           glow
           tldr
           ansifilter
@@ -91,38 +85,23 @@
           statix
           nixfmt
           tinty
-          devenv
 
           # System Monitoring
-          btop
-          fastfetch
           speedtest-cli
 
           # TUI Apps
-          bluetui
           bluez
-          wiremix
           smassh
-          inputs.wlctl.packages.${pkgs.stdenv.hostPlatform.system}.default
           opencode
-          inputs.nix-search-tv.packages.${pkgs.stdenv.hostPlatform.system}.default
-          inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fsel
-          inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nirimon
-          inputs.otter-launcher.packages.${pkgs.stdenv.hostPlatform.system}.default
           wl-mirror
 
           # Desktop Utilities
           fuzzel
-          swww
-          swayosd
-          mako
           brightnessctl
-          playerctl
           udiskie
           wl-clipboard
           wtype
           bemoji
-          libqalculate
           gnuplot
 
           # Media & Images
@@ -144,15 +123,6 @@
 
           # Email
           aerc
-
-          # Communication
-          vesktop
-
-          # Terminals
-          ghostty
-
-          # Browsers
-          chromium
 
           # Applications
           inkscape

@@ -1,11 +1,11 @@
 { ... }:
 
 {
-  # Mako is started by niri (spawn-at-startup), so only the config is managed here
   flake.homeManagerModules.mako =
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -17,6 +17,14 @@
       };
 
       config = lib.mkIf cfg.enable {
+        home.packages = [ pkgs.mako ];
+        custom.niri.startup = [ [ "mako" ] ];
+        custom.niri.binds."Mod+BackSpace" = [
+          "makoctl"
+          "dismiss"
+          "--all"
+        ];
+
         xdg.configFile."mako/config".text = ''
           # OneDark colors
           background-color=#282c34ee

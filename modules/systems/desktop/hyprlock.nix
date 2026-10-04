@@ -217,6 +217,10 @@
       };
 
       config = lib.mkIf cfg.enable {
+        # Lock first: greetd auto-logs in at boot
+        custom.niri.startup = lib.mkBefore [ [ "hyprlock-wrapper" ] ];
+        custom.niri.binds."Mod+X" = [ "hyprlock-wrapper" ];
+
         home.packages = [ hyprlock-wrapper ];
 
         xdg.configFile."hypr/hyprlock.conf".text = hyprlockConf;

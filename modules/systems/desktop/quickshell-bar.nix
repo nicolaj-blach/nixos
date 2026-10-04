@@ -49,11 +49,7 @@
           audio_cmd = cfg.audioCommand;
         };
 
-        xdg.configFile."niri/config.kdl".text = lib.mkIf cfg.autostart (
-          lib.mkAfter ''
-            spawn-at-startup "quickshell-bar"
-          ''
-        );
+        custom.niri.startup = lib.mkIf cfg.autostart [ [ "quickshell-bar" ] ];
       };
     };
 }

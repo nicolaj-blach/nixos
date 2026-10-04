@@ -10,9 +10,8 @@
     system = "x86_64-linux";
 
     modules = [
-      inputs.home-manager.nixosModules.home-manager
       self.nixosModules.personal-computer
-      self.nixosModules.personal-labtop-hardware
+      ./_hw/hardware-configuration.nix
 
       ({ ... }: {
         networking.hostName = "personal-labtop";

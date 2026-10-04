@@ -10,8 +10,6 @@
         "networkmanager"
         "video"
         "audio"
-        "input"
-        "docker"
       ];
       shell = pkgs.zsh;
     };

@@ -1,4 +1,4 @@
-{ inputs, metaOwner, ... }:
+{ metaOwner, ... }:
 
 {
   # Local AI gateway:
@@ -9,14 +9,11 @@
       config,
       lib,
       pkgs,
+      unstablePkgs,
       ...
     }:
     let
       cfg = config.ai;
-      unstable = import inputs.nixpkgs-unstable {
-        inherit (pkgs.stdenv.hostPlatform) system;
-        config.allowUnfree = true;
-      };
 
       ports = {
         ollama = 11434;
@@ -356,10 +353,10 @@
           enable = true;
           package =
             {
-              cuda = unstable.ollama-cuda;
-              rocm = unstable.ollama-rocm;
-              vulkan = unstable.ollama-vulkan;
-              cpu = unstable.ollama;
+              cuda = unstablePkgs.ollama-cuda;
+              rocm = unstablePkgs.ollama-rocm;
+              vulkan = unstablePkgs.ollama-vulkan;
+              cpu = unstablePkgs.ollama;
             }
             .${cfg.gpu};
           host = "127.0.0.1";

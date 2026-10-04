@@ -39,6 +39,27 @@
           nvidiaSettings = true;
         };
         services.xserver.videoDrivers = [ "nvidia" ];
+
+        home-manager.users.${metaOwner.username}.custom.niri = {
+          environment = {
+            GBM_BACKEND = "nvidia-drm";
+            __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+            LIBVA_DRIVER_NAME = "nvidia";
+          };
+          # NVIDIA: the hardware cursor plane shows garbage until the cursor first
+          # changes, and closing windows leave a garbage snapshot on screen
+          extraConfig = ''
+            debug {
+                disable-cursor-plane
+            }
+
+            animations {
+                window-close {
+                    off
+                }
+            }
+          '';
+        };
       })
     ];
 

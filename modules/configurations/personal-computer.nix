@@ -6,14 +6,13 @@
 }:
 
 {
-  flake.nixosModules.personal-computer = { lib, ... }: {
+  flake.nixosModules.personal-computer = { unstablePkgs, ... }: {
     imports = [
       # External modules
       inputs.home-manager.nixosModules.home-manager
       inputs.nix-index-database.nixosModules.nix-index
 
       # Core system modules
-      self.nixosModules.cclip
       self.nixosModules.boot
       self.nixosModules.plymouth
       self.nixosModules.user
@@ -31,10 +30,13 @@
       # Hardware
       self.nixosModules.pipewire
       self.nixosModules.bluetooth
-      self.nixosModules.gaming
 
       # Services
       self.nixosModules.services
+
+      # Apps
+      self.nixosModules.steam
+      self.nixosModules.bit
 
       # Input
       self.nixosModules.kanata
@@ -44,7 +46,6 @@
 
       # Packages
       self.nixosModules.packages
-      self.nixosModules.bit
     ];
 
     services.openssh.enable = true;
@@ -59,6 +60,7 @@
       useGlobalPkgs = true;
       useUserPackages = true;
       extraSpecialArgs = { inherit inputs metaOwner; };
+      sharedModules = [ { _module.args = { inherit unstablePkgs; }; } ];
 
       users.${metaOwner.username} = { ... }: {
         imports = [
@@ -67,21 +69,33 @@
           self.homeManagerModules.hyprlock
           self.homeManagerModules.mako
 
+          self.homeManagerModules.quickshell-bar
+          self.homeManagerModules.xdg-dirs
+          self.homeManagerModules.desktop-services
+
           # Apps
-          self.homeManagerModules.zen-browser
-          self.homeManagerModules.emacs
-          self.homeManagerModules.kitty
           self.homeManagerModules.pi-coding-agent
+          self.homeManagerModules.zen-browser
+          self.homeManagerModules.chromium
+          self.homeManagerModules.google-chrome
           self.homeManagerModules.git
           self.homeManagerModules.devenv
+          self.homeManagerModules.emacs
+          self.homeManagerModules.superfile
+          self.homeManagerModules.yazi
+          self.homeManagerModules.prismlauncher
           self.homeManagerModules.otter-launcher
           self.homeManagerModules.fsel
-          self.homeManagerModules.quickshell-bar
-          self.homeManagerModules.file-managers
-          self.homeManagerModules.xdg-dirs
+          self.homeManagerModules.cclip
           self.homeManagerModules.qalculate
           self.homeManagerModules.system-info
-          self.homeManagerModules.desktop-services
+          self.homeManagerModules.television
+          self.homeManagerModules.wlctl
+          self.homeManagerModules.bluetui
+          self.homeManagerModules.wiremix
+          self.homeManagerModules.vesktop
+          self.homeManagerModules.kitty
+          self.homeManagerModules.ghostty
 
           # Shell
           self.homeManagerModules.zsh
@@ -90,13 +104,11 @@
           self.homeManagerModules.kanata
         ];
 
-        # Enable niri (Home Manager config)
         custom.niri.enable = true;
         custom.hyprlock.enable = true;
         custom.mako.enable = true;
         services.quickshell-bar = {
           enable = true;
-          autostart = false;
           systemMenuCommand = [
             "kitty-popup"
             "-e"
@@ -132,10 +144,6 @@
         programs.qalculate.enable = true;
 
         xdg.mimeApps.enable = true;
-        xdg.mimeApps.defaultApplications = {
-          "inode/directory" = "superfile.desktop";
-          "x-scheme-handler/discord" = "vesktop.desktop";
-        };
 
         home.stateVersion = "25.11";
       };

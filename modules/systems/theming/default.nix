@@ -35,17 +35,5 @@
       adwaita-icon-theme
       gnome-themes-extra
     ];
-
-    # Yazi as the file picker portal (used by browsers, etc.)
-    xdg.portal = {
-      enable = true;
-      extraPortals = [
-        pkgs.xdg-desktop-portal-gtk
-        pkgs.xdg-desktop-portal-termfilechooser
-      ];
-      config.hyprland = {
-        "org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
-      };
-    };
   };
 }

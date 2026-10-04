@@ -2,7 +2,7 @@
 
 {
   flake.homeManagerModules.desktop-services =
-    { lib, pkgs, ... }:
+    { pkgs, ... }:
     let
       session = "graphical-session.target";
 
@@ -91,14 +91,27 @@
         tray = "never";
       };
 
-      systemd.user.services = {
-        clipboard-notify = userService "Notify when something is copied" "${clipboard-notify}";
-        vesktop =
-          lib.recursiveUpdate
-            (userService "Vesktop (Discord), minimized" "${pkgs.vesktop}/bin/vesktop --start-minimized")
-            {
-              Service.Restart = "no";
-            };
-      };
+      systemd.user.services.clipboard-notify =
+        userService "Notify when something is copied" "${clipboard-notify}";
+
+      home.packages = [ pkgs.playerctl ];
+
+      custom.niri.binds =
+        let
+          locked = key: "${key} allow-when-locked=true";
+          osd = args: [ "swayosd-client" ] ++ args;
+        in
+        {
+          ${locked "XF86AudioRaiseVolume"} = osd [ "--output-volume" "raise" ];
+          ${locked "XF86AudioLowerVolume"} = osd [ "--output-volume" "lower" ];
+          ${locked "XF86AudioMute"} = osd [ "--output-volume" "mute-toggle" ];
+          ${locked "XF86AudioMicMute"} = osd [ "--input-volume" "mute-toggle" ];
+          ${locked "XF86MonBrightnessUp"} = osd [ "--brightness" "raise" ];
+          ${locked "XF86MonBrightnessDown"} = osd [ "--brightness" "lower" ];
+          ${locked "XF86AudioNext"} = [ "playerctl" "next" ];
+          ${locked "XF86AudioPrev"} = [ "playerctl" "previous" ];
+          ${locked "XF86AudioPlay"} = [ "playerctl" "play-pause" ];
+          ${locked "XF86AudioPause"} = [ "playerctl" "play-pause" ];
+        };
     };
 }

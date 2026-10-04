@@ -12,11 +12,11 @@
       config,
       lib,
       pkgs,
+      unstablePkgs,
       ...
     }:
     let
-      unstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-      sopsPkgs = unstable.callPackage inputs.sops-nix { };
+      sopsPkgs = unstablePkgs.callPackage inputs.sops-nix { };
     in
     {
       imports = [ inputs.sops-nix.nixosModules.sops ];

@@ -79,6 +79,21 @@
       imports = [ ./_hm-module.nix ];
 
       config = lib.mkIf cfg.enable {
+        # Assistant: continue the last chat, or start a new one
+        custom.niri.binds = {
+          "Mod+A" = [
+            "kitty-popup-assistant"
+            "-e"
+            "pi-assistant"
+            "--continue"
+          ];
+          "Mod+Shift+A" = [
+            "kitty-popup-assistant"
+            "-e"
+            "pi-assistant"
+          ];
+        };
+
         programs.pi-coding-agent = {
           package = piVim;
           extraPackages = [ pkgs.nodejs ];
