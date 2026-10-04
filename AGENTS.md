@@ -42,8 +42,9 @@ A host imports exactly one configuration, plus its hardware configuration (`_hw/
 
 ### Separate repos
 When a part grows into its own project or is useful outside this config, suggest moving it to its own repo and importing it as a flake input. Existing examples:
-- `quickshell-bar` (`~/quickshell-bar`): the top bar, configured here through `services.quickshell-bar`.
-- `agent-markdown-files` (`~/projects/personal/agent-markdown-files`): `AGENTS.md`, `assistant.md`, agents and skills for coding agents.
+- `quickshell-bar` (`~/projects/personal/setup/quickshell-bar`): the top bar, configured here through `services.quickshell-bar`.
+- `agent-markdown-files` (`~/projects/personal/setup/agent-markdown-files`): `AGENTS.md`, `assistant.md`, agents and skills for coding agents.
+- `pi-config` (`~/projects/personal/setup/pi-config`): pi's Home Manager module. It takes `agent-markdown-files` and `llm-agents` as its own inputs; update them with `nix flake update pi-config/agent-markdown-files` here.
 - `secrets`: a git submodule at `secrets/`, encrypted with sops.
 
 After changing one of these repos: commit, push, then `nix flake update <input>` here.
@@ -58,7 +59,7 @@ After changing one of these repos: commit, push, then `nix flake update <input>`
 
 ## Coding agents and AI
 - `modules/systems/ai`: ollama (Vulkan by default; CUDA/ROCm selectable), LiteLLM gateway on `127.0.0.1:4000` (`openrouter/*`, `ollama/*`), atuin-ai-server on `127.0.0.1:8080`. The `ai-models` service rebuilds the model lists for atuin, opencode and pi at boot and hourly.
-- `modules/apps/ai/pi`: pi from `llm-agents.nix`, configured through Home Manager's `programs.pi-coding-agent` (vendored in `_hm-module.nix` until the HM release has it). `~/.pi/agent` is read-only; extensions are pinned `npm:` packages in `settings.packages`.
+- `modules/apps/ai/pi`: imports the `pi-config` input and adds the desktop glue (niri binds, zsh aliases, logo). Everything else about pi (wrapper, settings, pinned `npm:` packages, theme, permissions) is in the `pi-config` repo. `~/.pi/agent` is read-only.
 
 ## Verify every change
 1. New files are invisible to the flake until `git add`-ed.

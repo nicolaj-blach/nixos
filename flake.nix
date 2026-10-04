@@ -20,13 +20,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    agent-markdown-files = {
-      url = "github:nicolaj-blach/agent-markdown-files";
-      flake = false;
-    };
-
-    # pi and other coding agents, updated daily; no follows so cache.numtide.com hits
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    pi-config.url = "github:nicolaj-blach/pi-config";
 
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     doom-emacs = {
