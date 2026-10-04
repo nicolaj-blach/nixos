@@ -3,7 +3,10 @@
 {
   flake.nixosModules.hyprlock = { ... }: {
     programs.hyprlock.enable = true;
-    security.pam.services.hyprlock.nodelay = true;
+    security.pam.services.hyprlock = {
+      nodelay = true;
+      enableGnomeKeyring = true;
+    };
   };
 
   flake.homeManagerModules.hyprlock =
