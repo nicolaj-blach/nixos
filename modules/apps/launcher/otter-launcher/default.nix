@@ -38,7 +38,7 @@
         delay_startup = 30
 
         [interface]
-        header_cmd = "printf '\\n'; chafa -s x10 --center on $HOME/nixos/assets/logo.svg 2>/dev/null"
+        header_cmd = "printf '\\n'; chafa -s x10 --center on $HOME/setup/nixos/assets/logo.svg 2>/dev/null"
         header_cmd_trimmed_lines = 1
         header = "\n\n  \u001B[90m>\u001B[0m "
         place_holder = ""

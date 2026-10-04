@@ -384,7 +384,7 @@
         pinnedFolders = [
           {
             name = "${dirIcons.nixos} nixos";
-            location = "${home}/nixos";
+            location = "${home}/setup/nixos";
           }
           {
             name = "${dirIcons.projects} projects";

@@ -66,7 +66,7 @@
         # Wallpaper background with blur
         background {
             monitor =
-            path = ${config.home.homeDirectory}/nixos/assets/background.png
+            path = ${config.home.homeDirectory}/setup/nixos/assets/background.png
             blur_passes = 3
             blur_size = 6
             noise = 0.01

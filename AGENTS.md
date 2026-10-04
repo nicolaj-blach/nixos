@@ -7,7 +7,7 @@ Nicolaj Blach Jensen's NixOS flake (`nicolaj-blach`, me@nicolaj-blach.dev). Ever
 - Everything managed in Nix. Keep comments minimal: only where the code can't explain itself.
 - Prefer `nixpkgs` (stable, `nixos-25.11`), fall back to `nixpkgs-unstable` through the `unstablePkgs` module argument (NixOS and Home Manager). Unfree packages are allowed in both.
 - Simple over clever: the smallest change that works, no speculative options or abstractions. If a solution grows large, stop and look for one that uses what a tool already provides.
-- Never run `sudo`, `nixos-rebuild` or `home-manager switch`. I rebuild myself with `sudo nixos-rebuild switch --flake ~/nixos#personal-desktop`.
+- Never run `sudo`, `nixos-rebuild` or `home-manager switch`. I rebuild myself with `sudo nixos-rebuild switch --flake ~/setup/nixos#personal-desktop`.
 - Never commit or push unless I ask. Commits are signed automatically.
 
 ## Layout
@@ -42,9 +42,9 @@ A host imports exactly one configuration, plus its hardware configuration (`_hw/
 
 ### Separate repos
 When a part grows into its own project or is useful outside this config, suggest moving it to its own repo and importing it as a flake input. Existing examples:
-- `quickshell-bar` (`~/projects/personal/setup/quickshell-bar`): the top bar, configured here through `services.quickshell-bar`.
-- `agent-markdown-files` (`~/projects/personal/setup/agent-markdown-files`): `AGENTS.md`, `assistant.md`, agents and skills for coding agents.
-- `pi-config` (`~/projects/personal/setup/pi-config`): pi's Home Manager module. It takes `agent-markdown-files` and `llm-agents` as its own inputs; update them with `nix flake update pi-config/agent-markdown-files` here.
+- `quickshell-bar` (`~/setup/quickshell-bar`): the top bar, configured here through `services.quickshell-bar`.
+- `agent-markdown-files` (`~/setup/agent-markdown-files`): `AGENTS.md`, `assistant.md`, agents and skills for coding agents.
+- `pi-config` (`~/setup/pi-config`): pi's Home Manager module. It takes `agent-markdown-files` and `llm-agents` as its own inputs; update them with `nix flake update pi-config/agent-markdown-files` here.
 - `secrets`: a git submodule at `secrets/`, encrypted with sops.
 
 After changing one of these repos: commit, push, then `nix flake update <input>` here.

@@ -71,7 +71,7 @@
           Reboot) confirm reboot && systemctl reboot ;;
           "Rebuild system")
             niri msg action spawn -- kitty-popup-term sh -c \
-              'sudo nixos-rebuild switch --flake ~/nixos#$(hostname); echo; read -rp "Press Enter to close"' ;;
+              'sudo nixos-rebuild switch --flake ~/setup/nixos#$(hostname); echo; read -rp "Press Enter to close"' ;;
           "Refresh AI models") niri msg action spawn -- ai-refresh ;;
         esac
       '';

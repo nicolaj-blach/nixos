@@ -79,7 +79,7 @@
             [
               "sh"
               "-c"
-              "nirimon -profile base; sleep 0.5; swww img --transition-type none ${config.home.homeDirectory}/nixos/assets/background.png"
+              "nirimon -profile base; sleep 0.5; swww img --transition-type none ${config.home.homeDirectory}/setup/nixos/assets/background.png"
             ]
           ];
 
