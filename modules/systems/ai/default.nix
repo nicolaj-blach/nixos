@@ -25,6 +25,38 @@
       tokenFile = config.sops.secrets.ai-gateway-token.path;
       localContext = 16384;
 
+      # Prisma (LiteLLM's DB layer) can't download its engines on NixOS: generate the
+      # Python client at build time and point it at nixpkgs' engines and CLI
+      python = pkgs.python3.override {
+        self = python;
+        packageOverrides = _: pysuper: {
+          prisma = pysuper.prisma.overridePythonAttrs (old: {
+            nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.prisma_6 ];
+            postInstall = (old.postInstall or "") + ''
+              # Skips the pinned-engine version check; the engines come from prisma_6
+              export HOME=$TMPDIR PRISMA_PY_DEBUG_GENERATOR=1
+              mkdir -p $TMPDIR/bin
+              printf '#!/bin/sh\nexec ${python.interpreter} -m prisma "$@"\n' > $TMPDIR/bin/prisma-client-py
+              chmod +x $TMPDIR/bin/prisma-client-py
+              PATH=$TMPDIR/bin:$PATH PYTHONPATH=$out/${python.sitePackages}:$PYTHONPATH \
+                prisma generate --schema ${pkgs.litellm.src}/litellm/proxy/schema.prisma
+            '';
+          });
+        };
+      };
+      litellm = (pkgs.litellm.override { python3Packages = python.pkgs; }).overridePythonAttrs (old: {
+        makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [
+          "--prefix PATH : ${
+            lib.makeBinPath [
+              pkgs.prisma_6
+              pkgs.openssl
+            ]
+          }"
+          "--set PRISMA_QUERY_ENGINE_BINARY ${pkgs.prisma-engines_6}/bin/query-engine"
+        ];
+      });
+      localDb = cfg.database.environmentFile == null;
+
       # Generated model configs for atuin-ai-server, opencode and pi, plus cached model lists
       stateDir = "/var/lib/ai-gateway";
 
@@ -290,6 +322,66 @@
           echo "AI model: $choice"
         '';
       };
+
+      # Usage per model from LiteLLM's spend tracking: `ai-usage [today|7d|30d|YYYY-MM]`
+      aiUsage = pkgs.writeShellApplication {
+        name = "ai-usage";
+        runtimeInputs = with pkgs; [
+          curl
+          jq
+          coreutils
+          util-linux
+        ];
+        text = ''
+          token=$(< ${tokenFile})
+
+          report() {
+            local title=$1 from=$2 to=$3
+            printf '\033[1m%s\033[0m  (%s – %s)\n' "$title" "$from" "$to"
+            curl -sf -H "Authorization: Bearer $token" \
+              "http://127.0.0.1:${toString ports.gateway}/user/daily/activity/aggregated?start_date=$from&end_date=$to" \
+              | jq -r '
+                  def tok: if . >= 1e6 then "\(. / 1e5 | floor / 10)M"
+                    elif . >= 1e3 then "\(. / 1e2 | floor / 10)k" else tostring end;
+                  def usd: "$" + (. * 1e4 | round / 1e4 | tostring);
+                  [ .results[].breakdown
+                    | (if (.model_groups | length) > 0 then .model_groups else .models end)
+                    | to_entries[] ]
+                  | group_by(.key)
+                  | map({ model: .[0].key,
+                          req: (map(.value.metrics.api_requests) | add),
+                          tok: (map(.value.metrics.total_tokens) | add),
+                          usd: (map(.value.metrics.spend) | add) })
+                  | sort_by(-.usd, -.tok)
+                  | (["MODEL", "REQUESTS", "TOKENS", "COST"] | join("\t")),
+                    (.[] | [.model, (.req | tostring), (.tok | tok), (.usd | usd)] | join("\t")),
+                    (["TOTAL", (map(.req) | add // 0 | tostring), (map(.tok) | add // 0 | tok),
+                      (map(.usd) | add // 0 | usd)] | join("\t"))
+                ' | column -t -s $'\t' -R 2,3,4 \
+              || { echo "ai-usage: LiteLLM not reachable or has no database" >&2; exit 1; }
+          }
+
+          today=$(date +%F)
+          case "''${1:-}" in
+            "")
+              report "Today" "$today" "$today"
+              echo
+              report "Last 7 days" "$(date -d '6 days ago' +%F)" "$today"
+              echo
+              report "This month" "$(date +%Y-%m-01)" "$today"
+              ;;
+            today) report "Today" "$today" "$today" ;;
+            *d) report "Last ''${1%d} days" "$(date -d "$(( ''${1%d} - 1 )) days ago" +%F)" "$today" ;;
+            ????-??)
+              report "$1" "$1-01" "$(date -d "$1-01 +1 month -1 day" +%F)"
+              ;;
+            *)
+              echo "usage: ai-usage [today|7d|30d|YYYY-MM]" >&2
+              exit 1
+              ;;
+          esac
+        '';
+      };
     in
     {
       options.ai = {
@@ -339,6 +431,15 @@
           type = lib.types.str;
           # llama3.2:3b emits malformed tool calls with atuin; qwen2.5:7b handles them
           default = "ollama/qwen2.5:7b";
+        };
+
+        database.environmentFile = lib.mkOption {
+          type = lib.types.nullOr lib.types.path;
+          default = null;
+          description = ''
+            File with DATABASE_URL=postgresql://... for LiteLLM's spend tracking, e.g. a sops
+            template. null runs a local PostgreSQL for LiteLLM only.
+          '';
         };
       };
 
@@ -397,6 +498,41 @@
             general_settings.master_key = "os.environ/AUTH_TOKEN";
             litellm_settings.drop_params = true;
           };
+          package = litellm;
+          environment = {
+            # The schema is pushed in preStart; LiteLLM only checks it
+            DISABLE_SCHEMA_UPDATE = "true";
+            CHECKPOINT_DISABLE = "1";
+            HOME = "/var/lib/litellm";
+          }
+          // lib.optionalAttrs localDb {
+            DATABASE_URL = "postgresql://litellm@localhost/litellm?host=/run/postgresql";
+          };
+        };
+
+        systemd.services.litellm = {
+          after = lib.optional localDb "postgresql-setup.service";
+          requires = lib.optional localDb "postgresql-setup.service";
+          serviceConfig = {
+            User = "litellm";
+            EnvironmentFile = lib.optional (!localDb) cfg.database.environmentFile;
+          };
+          preStart = ''
+            ${lib.getExe pkgs.prisma_6} db push --skip-generate --accept-data-loss \
+              --schema ${litellm}/${python.sitePackages}/litellm/proxy/schema.prisma
+          '';
+        };
+
+        services.postgresql = lib.mkIf localDb {
+          enable = true;
+          package = pkgs.postgresql_17;
+          ensureDatabases = [ "litellm" ];
+          ensureUsers = [
+            {
+              name = "litellm";
+              ensureDBOwnership = true;
+            }
+          ];
         };
 
         virtualisation.podman.enable = true;
@@ -469,6 +605,8 @@
         environment.systemPackages = [
           aiRefresh
           aiModel
+          aiUsage
+          litellm
         ];
       };
     };
