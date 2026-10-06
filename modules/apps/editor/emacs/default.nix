@@ -244,6 +244,18 @@
                 :localleader
                 :desc "Char mode" "k" #'ghostel-char-mode))
 
+        ;; Finishing an emacsclient edit (pi's Ctrl+G) must not kill the frame's
+        ;; workspace (and the ghostel buffer in it); frame deletion still does.
+        (after! persp-mode
+          (remove-hook 'server-done-hook #'+workspaces-delete-associated-workspace-h))
+
+        ;; :q / :wq / ZZ in emacsclient buffers finish the edit instead of closing the frame
+        (defadvice! +server-edit-instead-of-quit-a (fn &rest args)
+          :around #'evil-quit
+          (if (bound-and-true-p server-buffer-clients)
+              (server-edit)
+            (apply fn args)))
+
         (defun +ghostel/copy-last-output ()
           "Copy the output of the last finished command in this ghostel buffer."
           (interactive)

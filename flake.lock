@@ -3,11 +3,11 @@
     "agent-markdown-files": {
       "flake": false,
       "locked": {
-        "lastModified": 1791140921,
-        "narHash": "sha256-QAwtTz5BAdjFk85Mip6wgYVtUfIdq5SMlHbKgXzKdm0=",
+        "lastModified": 1791071100,
+        "narHash": "sha256-zFkaIVPphKazPlcRdE0LIyYZ3NXPikyk9EMVgHPqWLc=",
         "owner": "nicolaj-blach",
         "repo": "agent-markdown-files",
-        "rev": "574ee48f35dc2982011aeac0e61f67ccbf890e4f",
+        "rev": "c4c6bf787b1fa19b2200a478fe2776740a9cf88f",
         "type": "github"
       },
       "original": {
@@ -467,11 +467,11 @@
         "llm-agents": "llm-agents"
       },
       "locked": {
-        "lastModified": 1791140920,
-        "narHash": "sha256-6ZNnYYf3dMpcMaIJg41Epp2SgvlJYBM/YZDTgLmoFSw=",
+        "lastModified": 1791219680,
+        "narHash": "sha256-yrf0mwTRbPbhkvqHcx3TFtbnSjBLaWmgDLSzCbB62+I=",
         "owner": "nicolaj-blach",
         "repo": "pi-config",
-        "rev": "3f313e7ab93c900a466881dc379a3d2e734e6435",
+        "rev": "b82c3fb33270a640e019757000460a130ca07f36",
         "type": "github"
       },
       "original": {
