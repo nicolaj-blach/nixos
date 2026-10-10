@@ -99,6 +99,8 @@
 
           # Shell
           self.homeManagerModules.zsh
+          self.homeManagerModules.starship
+          self.homeManagerModules.atuin
 
           # System integration
           self.homeManagerModules.kanata
