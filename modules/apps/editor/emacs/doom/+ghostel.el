@@ -138,7 +138,32 @@ With prefix ARG, kill and recreate it."
   :init
   ;; ESC always goes to Evil (insert -> normal) in every new ghostel
   ;; buffer, even in vim/less/TUIs. Toggle per buffer with C-c C-r.
-  (setq evil-ghostel-escape 'evil))
+  (setq evil-ghostel-escape 'evil)
+  :config
+  ;; Double ESC: the first goes to normal state, a quick second one sends
+  ;; ESC to the terminal (e.g. to cancel in pi) and returns to insert state.
+  (defvar +ghostel-double-escape-timeout 0.3)
+  (defvar-local +ghostel--last-escape nil)
+  (defun +ghostel/escape-insert ()
+    (interactive)
+    (setq +ghostel--last-escape (float-time))
+    (call-interactively #'evil-ghostel--escape))
+  (defun +ghostel/escape-normal ()
+    (interactive)
+    (if (and +ghostel--last-escape
+             (< (- (float-time) +ghostel--last-escape)
+                +ghostel-double-escape-timeout))
+        (progn
+          (setq +ghostel--last-escape nil)
+          (evil-insert-state)
+          (ghostel--on-user-input)
+          (ghostel--send-encoded "escape" ""))
+      (setq +ghostel--last-escape nil)
+      (let ((cmd (lookup-key evil-normal-state-map [escape])))
+        (call-interactively (if (commandp cmd) cmd #'doom/escape)))))
+  (map! :map evil-ghostel-mode-map
+        :i "<escape>" #'+ghostel/escape-insert
+        :n "<escape>" #'+ghostel/escape-normal))
 
 ;; Relative line numbers in ghostel only while navigating (normal/visual),
 ;; hidden while typing (insert/emacs state). Applies to popup and full window.
