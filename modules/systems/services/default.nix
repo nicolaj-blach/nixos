@@ -17,6 +17,8 @@
       };
 
       services = {
+        # D-Bus policy that lets the backend own org.erikreider.swayosd
+        dbus.packages = [ pkgs.swayosd ];
         libinput.enable = true;
         udisks2.enable = true;
       };
