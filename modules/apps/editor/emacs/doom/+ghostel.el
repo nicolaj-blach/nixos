@@ -4,6 +4,8 @@
   :commands (ghostel ghostel-project)
   :init
   (setq ghostel-shell (or (getenv "SHELL") "/bin/bash"))
+  ;; Name buffers after the terminal title (running command, cwd or pi's state)
+  (setq ghostel-buffer-name-function #'identity)
   :config
   ;; Clear inherited DIRENV_* vars so direnv in the shell actually
   ;; re-runs instead of silently no-oping (taken from Doom's :term ghostel)

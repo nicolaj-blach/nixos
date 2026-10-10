@@ -65,5 +65,17 @@ if [[ -n "$INSIDE_EMACS" ]]; then
   export EDITOR="emacsclient" VISUAL="emacsclient"
 fi
 
+# oh-my-zsh sets no title inside Emacs; ghostel names its buffers after it:
+# the running command, or the directory at the prompt
+if [[ "$INSIDE_EMACS" == ghostel* ]]; then
+  autoload -Uz add-zsh-hook
+  _ghostel_title_precmd() { print -Pn '\e]2;%~\a' }
+  _ghostel_title_preexec() {
+    print -rn -- $'\e]2;'"${1[(wr)^(*=*|sudo|ssh|mosh|-*)]}"$'\a'
+  }
+  add-zsh-hook precmd _ghostel_title_precmd
+  add-zsh-hook preexec _ghostel_title_preexec
+fi
+
 # Local overrides (API keys, secrets -- not tracked in git)
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
