@@ -191,68 +191,10 @@
         };
 
         xdg.configFile."niri/config.kdl".text = ''
-          input {
-              keyboard {
-                  xkb {
-                      layout "us"
-                      options "compose:ralt"
-                  }
-              }
-
-              mouse {
-                  accel-speed 0.0
-              }
-
-              touchpad {
-                  tap
-                  natural-scroll
-                  accel-speed 0.2
-              }
-
-              focus-follows-mouse max-scroll-amount="10%"
-          }
-
-          layout {
-              gaps 16
-              center-focused-column "never"
-              background-color "#282c34"
-
-              preset-column-widths {
-                  proportion 0.33333
-                  proportion 0.5
-                  proportion 0.66667
-              }
-
-              default-column-width { proportion 0.5; }
-
-              focus-ring {
-                  width 2
-                  active-color "#61afef"
-                  inactive-color "#353b45"
-              }
-          }
-
-          cursor {
-              xcursor-theme "Adwaita"
-              xcursor-size 24
-          }
-
-          prefer-no-csd
-
-          screenshot-path "~/media/pictures/screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
-
-          hotkey-overlay {
-              skip-at-startup
-          }
-
-          // Overview is opened by clicking the bar instead
-          gestures {
-              hot-corners {
-                  off
-              }
-          }
-
-          ${lib.concatMapStrings (args: "spawn-at-startup ${lib.concatMapStringsSep " " quote args}\n") cfg.startup}
+          ${builtins.readFile ./base.kdl}
+          ${lib.concatMapStrings (
+            args: "spawn-at-startup ${lib.concatMapStringsSep " " quote args}\n"
+          ) cfg.startup}
           environment {
           ${lib.concatStrings (lib.mapAttrsToList (n: v: "    ${n} ${quote v}\n") cfg.environment)}}
 
