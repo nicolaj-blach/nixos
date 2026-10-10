@@ -71,6 +71,8 @@ if [[ "$INSIDE_EMACS" == ghostel* ]]; then
   autoload -Uz add-zsh-hook
   _ghostel_title_precmd() { print -Pn '\e]2;%~\a' }
   _ghostel_title_preexec() {
+    emulate -L zsh
+    setopt extended_glob
     print -rn -- $'\e]2;'"${1[(wr)^(*=*|sudo|ssh|mosh|-*)]}"$'\a'
   }
   add-zsh-hook precmd _ghostel_title_precmd
