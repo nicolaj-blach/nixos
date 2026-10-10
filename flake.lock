@@ -525,11 +525,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1790787395,
-        "narHash": "sha256-sqAAqfktpLRyxlja2PmvVRlRVkeLeh8xNi0gB6TCJL0=",
+        "lastModified": 1791649469,
+        "narHash": "sha256-Pw92dZSXQi2Y1k7mI+KYlV3S8Y3dYtsq61hOv2aBfro=",
         "owner": "nicolaj-blach",
         "repo": "quickshell-bar",
-        "rev": "f5660d3c749200fbc747867945ae7fa019d2ca1a",
+        "rev": "99164cbfc99a30cc2862dafb5a7ae2e0dc071dc1",
         "type": "github"
       },
       "original": {

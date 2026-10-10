@@ -54,6 +54,9 @@
             }
 
             animations {
+                window-open {
+                    off
+                }
                 window-close {
                     off
                 }

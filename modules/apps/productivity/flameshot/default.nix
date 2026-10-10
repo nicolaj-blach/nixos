@@ -15,11 +15,30 @@
 
       # Opens the editor on the focused monitor. Qt numbers screens in
       # wl_output order, not left to right, so look the index up there.
+      # The editor floats under the bar, so once the capture is taken (bar
+      # included) hide the bar and grow the editor to the full monitor height.
       flameshot-niri = pkgs.writeShellScriptBin "flameshot-niri" ''
-        output=$(niri msg -j focused-output | ${pkgs.jq}/bin/jq -r .name)
+        jq=${pkgs.jq}/bin/jq
+        focused=$(niri msg -j focused-output)
+        output=$($jq -r .name <<<"$focused")
+        height=$($jq -r .logical.height <<<"$focused")
         n=$(${pkgs.wayland-utils}/bin/wayland-info -i wl_output | ${pkgs.gawk}/bin/awk -v o="$output" \
           '/interface: .wl_output./ { i++ } $1 == "name:" && $2 == o { print i - 1; exit }')
-        exec ${flameshot}/bin/flameshot screen --edit --number "''${n:-0}"
+
+        ${flameshot}/bin/flameshot screen --edit --number "''${n:-0}" &
+        pid=$!
+        trap 'quickshell-bar ipc call bar unhide' EXIT
+
+        for _ in $(seq 100); do
+          id=$(niri msg -j windows | $jq '.[] | select(.title == "flameshot") | .id' | head -1)
+          [ -n "$id" ] && break
+          kill -0 "$pid" 2>/dev/null || exit
+          sleep 0.05
+        done
+
+        quickshell-bar ipc call bar hide
+        [ -n "$id" ] && niri msg action set-window-height --id "$id" "$height"
+        wait "$pid"
       '';
     in
     {
@@ -48,16 +67,20 @@
         startup = [ [ "flameshot" ] ];
         binds."Mod+P" = [ "flameshot-niri" ];
         extraConfig = ''
+          // The capture window has no app-id. Float instead of fullscreen so
+          // niri doesn't scroll to a new column.
           window-rule {
-              match app-id="flameshot"
+              match title="^flameshot$"
+              open-fullscreen false
+              open-floating true
+              default-floating-position x=0 y=0
               focus-ring { off; }
               border { off; }
               shadow { off; }
           }
 
           window-rule {
-              match app-id="flameshot" title="flameshot-pin"
-              open-fullscreen false
+              match title="^flameshot-pin$"
               open-floating true
           }
         '';
