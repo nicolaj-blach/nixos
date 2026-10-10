@@ -7,6 +7,12 @@
     nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
+    # Unreleased niri for multi-monitor portal screenshots (flameshot); see AGENTS.md
+    niri-src = {
+      url = "github:niri-wm/niri";
+      flake = false;
+    };
+
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 

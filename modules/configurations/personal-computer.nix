@@ -87,6 +87,7 @@
           self.homeManagerModules.otter-launcher
           self.homeManagerModules.fsel
           self.homeManagerModules.cclip
+          self.homeManagerModules.flameshot
           self.homeManagerModules.qalculate
           self.homeManagerModules.system-info
           self.homeManagerModules.television

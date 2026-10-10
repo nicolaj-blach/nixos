@@ -69,6 +69,10 @@ After changing one of these repos: commit, push, then `nix flake update <input>`
 5. Laptop: `nix eval --raw .#nixosConfigurations.personal-labtop.config.system.build.toplevel.drvPath`.
 6. Then tell me what to run and what to check after the rebuild.
 
+## Pending reminders
+When you finish a task in this repo, add one short line at the end of your reply for each item below that is still open. Don't bring it up otherwise and don't act on it unasked.
+- **niri runs unreleased main** (input `niri-src`, override in `modules/systems/desktop/niri/default.nix`) for multi-monitor portal screenshots, which flameshot needs (niri commit `ee8a04b`, 2026-09-18). Once a niri release after 26.04 is in `nixpkgs-unstable` (`nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixpkgs-unstable.legacyPackages.x86_64-linux.niri.version'`), remind me: switch to `package = unstablePkgs.niri;`, drop the `niri-src` input and remove this item.
+
 ## Gotchas
 - **"Would be clobbered":** Home Manager refuses to replace files it didn't create. Before I rebuild, check whether a real file already sits where a new link goes, and move it aside (`<file>.pre-hm`).
 - Apps that write their own config on first run (atuin, superfile) recreate those files if run before the rebuild.

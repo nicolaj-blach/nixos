@@ -278,6 +278,22 @@
         "type": "github"
       }
     },
+    "niri-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791619393,
+        "narHash": "sha256-vCQQ5EMG3QOkZsmy+wS9zLlrnT1P8LWSwQPAhVASKkg=",
+        "owner": "niri-wm",
+        "repo": "niri",
+        "rev": "d0cd58ec5ac6b2d41d42478fb4f3cc7c0c687db9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "niri-wm",
+        "repo": "niri",
+        "type": "github"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -530,6 +546,7 @@
         "ghostel": "ghostel",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
+        "niri-src": "niri-src",
         "nix-index-database": "nix-index-database",
         "nix-search-tv": "nix-search-tv",
         "nixpkgs": "nixpkgs_2",
