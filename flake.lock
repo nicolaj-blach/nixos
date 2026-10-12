@@ -483,11 +483,11 @@
         "llm-agents": "llm-agents"
       },
       "locked": {
-        "lastModified": 1791661615,
-        "narHash": "sha256-8C4mwP0aCclBTeZJOIyKROSYvb9KoiVfzNQ7NARQ2I0=",
+        "lastModified": 1791843975,
+        "narHash": "sha256-QNid3oIfdEwH+UbySlZl54tOSrCNDfIlWheFtYiJxag=",
         "owner": "nicolaj-blach",
         "repo": "pi-config",
-        "rev": "408ed0d230bd0e3fa3f49b254e1b95fc48146afa",
+        "rev": "97ff269060353244b7ee2a9ecf0bfd698bb4e69e",
         "type": "github"
       },
       "original": {
