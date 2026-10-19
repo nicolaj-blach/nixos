@@ -38,7 +38,7 @@ A configuration describes a kind of machine, like a personal computer or a serve
 ### `modules/hosts/` — one machine each
 A host imports exactly one configuration, plus its hardware configuration (`_hw/hardware-configuration.nix`) and anything specific to that machine. Example: the laptop uses `personal-computer` but also enables its fingerprint reader.
 - `personal-desktop`: this machine. Ryzen 5 7600X, NVIDIA GTX 1080 drives all three monitors (the AMD iGPU is unused). Monitors left to right: HDMI-A-2 AOC 1920x1080, DP-2 Lenovo 3440x1440, DP-3 Samsung 1680x1050 rotated. The NVIDIA niri workarounds live in this host.
-- `personal-labtop`: laptop with an AMD GPU.
+- `personal-laptop`: laptop with an AMD GPU.
 
 ### Separate repos
 When a part grows into its own project or is useful outside this config, suggest moving it to its own repo and importing it as a flake input. Existing examples:
@@ -66,7 +66,7 @@ After changing one of these repos: commit, push, then `nix flake update <input>`
 2. Build: `nix build --no-link --print-out-paths '.#nixosConfigurations.personal-desktop.config.system.build.toplevel'`
 3. Read the generated files you changed: find `home-manager-files` in `nix-store -qR <result>`.
 4. niri config: `niri validate -c <generated config.kdl>`.
-5. Laptop: `nix eval --raw .#nixosConfigurations.personal-labtop.config.system.build.toplevel.drvPath`.
+5. Laptop: `nix eval --raw .#nixosConfigurations.personal-laptop.config.system.build.toplevel.drvPath`.
 6. Then tell me what to run and what to check after the rebuild.
 
 ## Pending reminders

@@ -6,15 +6,17 @@
 }:
 
 {
-  flake.nixosConfigurations.personal-labtop = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.personal-laptop = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
 
     modules = [
       self.nixosModules.personal-computer
       ./_hw/hardware-configuration.nix
+      ./_luks.nix
 
       ({ ... }: {
-        networking.hostName = "personal-labtop";
+        networking.hostName = "personal-laptop";
+        boot.kernelParams = [ "amdgpu.sg_display=0" ];
         ai.rocm = true;
 
         services.fprintd.enable = true;
