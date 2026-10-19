@@ -15,6 +15,7 @@
 
       ({ ... }: {
         networking.hostName = "personal-labtop";
+        ai.rocm = true;
 
         services.fprintd.enable = true;
         services.thermald.enable = true;

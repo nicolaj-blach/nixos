@@ -11,13 +11,10 @@
 
     modules = [
       self.nixosModules.personal-computer
-      self.nixosModules.sops
-      self.nixosModules.ai
       ./_hw/hardware-configuration.nix
 
       ({ ... }: {
         networking.hostName = "personal-desktop";
-        ai.enable = true;
 
         fileSystems."/" = {
           device = "/dev/disk/by-label/nixos";

@@ -19,6 +19,10 @@
       self.nixosModules.nix-settings
       self.nixosModules.locale
       self.nixosModules.networking
+      self.nixosModules.sops
+
+      # AI gateway
+      self.nixosModules.ai
 
       # Desktop environment
       self.nixosModules.niri
@@ -49,6 +53,7 @@
     ];
 
     services.openssh.enable = true;
+    ai.enable = true;
 
     # Enable comma with prebuilt nix-index database
     programs.nix-index-database.comma.enable = true;

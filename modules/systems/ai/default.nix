@@ -15,6 +15,10 @@
     let
       cfg = config.ai;
 
+      # The open kernel modules only support Turing (RTX 20xx) and newer, which is also what
+      # the prebuilt ollama-cuda supports; older cards like the GTX 1080 stay on Vulkan
+      cuda = lib.elem "nvidia" config.services.xserver.videoDrivers && config.hardware.nvidia.open;
+
       ports = {
         ollama = 11434;
         gateway = 4000;
@@ -47,36 +51,7 @@
       options.ai = {
         enable = lib.mkEnableOption "local AI gateway (ollama, LiteLLM, atuin-ai-server)";
 
-        gpu = lib.mkOption {
-          type = lib.types.enum [
-            "vulkan"
-            "cuda"
-            "rocm"
-            "cpu"
-          ];
-          default =
-            let
-              usesNvidia = lib.elem "nvidia" config.services.xserver.videoDrivers;
-              usesAmdgpu =
-                lib.elem "amdgpu" config.services.xserver.videoDrivers
-                || config.hardware.amdgpu.initrd.enable
-                || lib.elem "amdgpu" config.boot.initrd.kernelModules
-                || lib.any (lib.hasPrefix "amdgpu.") config.boot.kernelParams;
-            in
-            if usesNvidia || usesAmdgpu then "vulkan" else "cpu";
-          description = ''
-            Ollama GPU backend. vulkan works on any NVIDIA or AMD GPU (default when one is found).
-            cuda is faster on NVIDIA Turing (RTX 20xx) and newer; the cached build skips older
-            cards like the GTX 1080. rocm targets supported AMD GPUs.
-          '';
-        };
-
-        rocmOverrideGfx = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          example = "10.3.0";
-          description = "HSA_OVERRIDE_GFX_VERSION for AMD GPUs ROCm doesn't detect.";
-        };
+        rocm = lib.mkEnableOption "ROCm for ollama on a supported AMD GPU instead of Vulkan";
 
         models = lib.mkOption {
           type = lib.types.listOf lib.types.str;
@@ -105,30 +80,29 @@
 
       config = lib.mkIf cfg.enable {
         # Prebuilt CUDA packages (ollama-cuda is unfree, so not on cache.nixos.org)
-        nix.settings = lib.mkIf (cfg.gpu == "cuda") {
+        nix.settings = lib.mkIf cuda {
           substituters = [ "https://cache.nixos-cuda.org" ];
           trusted-public-keys = [ "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" ];
         };
 
         services.ollama = {
           enable = true;
+          # Vulkan runs on any GPU vendor; ollama falls back to CPU without one
           package =
-            {
-              cuda = unstablePkgs.ollama-cuda;
-              rocm = unstablePkgs.ollama-rocm;
-              vulkan = unstablePkgs.ollama-vulkan;
-              cpu = unstablePkgs.ollama;
-            }
-            .${cfg.gpu};
+            if cuda then
+              unstablePkgs.ollama-cuda
+            else if cfg.rocm then
+              unstablePkgs.ollama-rocm
+            else
+              unstablePkgs.ollama-vulkan;
           host = "127.0.0.1";
           port = ports.ollama;
           loadModels = cfg.models;
-          rocmOverrideGfx = lib.mkIf (cfg.gpu == "rocm") cfg.rocmOverrideGfx;
           # Coding agents send 8-20k tokens per request; 16k keeps qwen2.5:7b on the 8 GB GPU
           environmentVariables = {
             OLLAMA_CONTEXT_LENGTH = toString localContext;
           }
-          // lib.optionalAttrs (cfg.gpu == "vulkan") { OLLAMA_VULKAN = "1"; };
+          // lib.optionalAttrs (!cuda && !cfg.rocm) { OLLAMA_VULKAN = "1"; };
         };
 
         services.litellm = {
