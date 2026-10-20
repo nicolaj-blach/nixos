@@ -34,6 +34,7 @@
       # Hardware
       self.nixosModules.pipewire
       self.nixosModules.bluetooth
+      self.nixosModules.fractal
 
       # Services
       self.nixosModules.services
