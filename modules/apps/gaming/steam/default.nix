@@ -9,10 +9,10 @@
       dedicatedServer.openFirewall = true;
       gamescopeSession.enable = true;
       extraPackages = with pkgs; [
-        xorg.libXcursor
-        xorg.libXi
-        xorg.libXinerama
-        xorg.libXScrnSaver
+        libxcursor
+        libxi
+        libxinerama
+        libxscrnsaver
       ];
     };
 

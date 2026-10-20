@@ -22,7 +22,7 @@
         buildInputs = with pkgs; [
           wayland
           sqlite
-          xxHash
+          xxhash
         ];
 
         mesonFlags = [ "-Dman=true" ];

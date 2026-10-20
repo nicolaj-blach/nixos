@@ -4,7 +4,7 @@
   inputs = {
     self.submodules = true;
 
-    nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     # Unreleased niri for multi-monitor portal screenshots (flameshot); see AGENTS.md
@@ -17,7 +17,7 @@
     import-tree.url = "github:vic/import-tree";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -89,7 +89,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             nil
-            nixfmt-rfc-style
+            nixfmt
             statix
             age
             sops

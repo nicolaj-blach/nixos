@@ -14,12 +14,13 @@
       ./_hw/hardware-configuration.nix
       ./_luks.nix
 
-      ({ ... }: {
+      ({ pkgs, ... }: {
         networking.hostName = "personal-laptop";
         boot.kernelParams = [ "amdgpu.sg_display=0" ];
         ai.rocm = true;
 
         services.fprintd.enable = true;
+        services.fwupd.enable = true;
         services.thermald.enable = true;
         powerManagement.powertop.enable = true;
 
@@ -33,7 +34,8 @@
           };
         };
 
-        programs.light.enable = true;
+        # Backlight write access for the video group
+        services.udev.packages = [ pkgs.brightnessctl ];
       })
     ];
 

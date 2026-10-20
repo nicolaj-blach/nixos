@@ -65,15 +65,15 @@
           # LSP Servers (global - always available)
           # Nix
           nil # Nix LSP
-          nixfmt-rfc-style # Nix formatting
+          nixfmt # Nix formatting
 
           # Shell
           shellcheck # Shell script linting
-          nodePackages.bash-language-server
+          bash-language-server
 
           # Web (HTML/CSS/JS/TS)
-          nodePackages.typescript-language-server # JS/TS LSP
-          nodePackages.vscode-langservers-extracted # HTML/CSS/JSON LSP
+          typescript-language-server # JS/TS LSP
+          vscode-langservers-extracted # HTML/CSS/JSON LSP
           tailwindcss-language-server # Tailwind CSS
           emmet-ls # Emmet for HTML/JSX
 
@@ -118,7 +118,7 @@
           marksman # Markdown LSP (wiki links, references)
 
           # Docker/Containers
-          dockerfile-language-server-nodejs # Dockerfile LSP
+          dockerfile-language-server # Dockerfile LSP
           hadolint # Dockerfile linter
           docker-compose-language-service # docker-compose LSP
 

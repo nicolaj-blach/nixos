@@ -68,18 +68,18 @@
       config = lib.mkIf cfg.enable {
         home.packages = [
           niri-monitor
-          pkgs.swww
+          pkgs.awww
           unstablePkgs.nirimon
         ];
 
         custom.niri = {
           startup = [
-            [ "swww-daemon" ]
+            [ "awww-daemon" ]
             [ "xwayland-satellite" ]
             [
               "sh"
               "-c"
-              "nirimon -profile base; sleep 0.5; swww img --transition-type none ${config.home.homeDirectory}/setup/nixos/assets/background.png"
+              "nirimon -profile base; sleep 0.5; awww img --transition-type none ${config.home.homeDirectory}/setup/nixos/assets/background.png"
             ]
           ];
 

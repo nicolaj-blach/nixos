@@ -2,12 +2,7 @@
 
 {
   flake.homeManagerModules.qalculate =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { config, lib, ... }:
     let
       cfg = config.programs.qalculate;
       qalcConfig = ''
@@ -103,12 +98,8 @@
       '';
     in
     {
-      options.programs.qalculate = {
-        enable = lib.mkEnableOption "Qalculate configuration";
-      };
-
+      # programs.qalculate (enable, package) is declared by Home Manager since 26.05
       config = lib.mkIf cfg.enable {
-        home.packages = [ pkgs.libqalculate ];
         custom.niri.binds."Mod+Shift+C" = [
           "kitty-popup-term"
           "-e"

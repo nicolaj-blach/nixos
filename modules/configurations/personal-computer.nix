@@ -64,6 +64,7 @@
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
+      backupFileExtension = "hm-bak";
       extraSpecialArgs = { inherit inputs metaOwner; };
       sharedModules = [ { _module.args = { inherit unstablePkgs; }; } ];
 

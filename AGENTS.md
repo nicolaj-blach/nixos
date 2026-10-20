@@ -5,7 +5,7 @@ Nicolaj Blach Jensen's NixOS flake (`nicolaj-blach`, me@nicolaj-blach.dev). Ever
 ## How I want you to work
 - Short, clear explanations. Ask when something is unclear instead of guessing.
 - Everything managed in Nix. Keep comments minimal: only where the code can't explain itself.
-- Prefer `nixpkgs` (stable, `nixos-25.11`), fall back to `nixpkgs-unstable` through the `unstablePkgs` module argument (NixOS and Home Manager). Unfree packages are allowed in both.
+- Prefer `nixpkgs` (stable, `nixos-26.05`), fall back to `nixpkgs-unstable` through the `unstablePkgs` module argument (NixOS and Home Manager). Unfree packages are allowed in both.
 - Simple over clever: the smallest change that works, no speculative options or abstractions. If a solution grows large, stop and look for one that uses what a tool already provides.
 - Never run `sudo`, `nixos-rebuild` or `home-manager switch`. I rebuild myself with `sudo nixos-rebuild switch --flake ~/setup/nixos#personal-desktop`.
 - Never commit or push unless I ask. Commits are signed automatically.
@@ -50,7 +50,7 @@ When a part grows into its own project or is useful outside this config, suggest
 After changing one of these repos: commit, push, then `nix flake update <input>` here.
 
 ## My desktop
-- **niri** (Wayland compositor), quickshell-bar, hyprlock, swayosd, mako, swww wallpaper.
+- **niri** (Wayland compositor), quickshell-bar, hyprlock, swayosd, mako, awww wallpaper.
 - **Terminal: ghostel inside Doom Emacs** (with evil). Ghostel is an Emacs terminal built on libghostty; it is *not* the Ghostty terminal emulator, even though it reports `TERM=xterm-ghostty`. Inside it `INSIDE_EMACS=ghostel` is set, and evil owns `Esc` (`evil-ghostel-escape 'evil`).
 - **kitty** is the secondary terminal, used mainly for popups: fsel, otter-launcher, wlctl, bluetui, wiremix, qalc, the pi assistant. Popup classes: `popup`, `popup-term` (700x500), `popup-large` and `popup-assistant` (1200x750).
 - zsh with oh-my-zsh, starship, atuin (Ctrl+R), fzf, zoxide, carapace.

@@ -42,6 +42,7 @@
 
       limineInstallConfig = pkgs.writeText "limine-install.json" (
         builtins.toJSON {
+          inherit (config.system.nixos) distroName;
           nixPath = config.nix.package;
           efiBootMgrPath = pkgs.efibootmgr;
           liminePath = cfg.package;
@@ -58,6 +59,7 @@
             force
             enrollConfig
             style
+            resolution
             enableEditor
             extraConfig
             extraEntries
@@ -90,7 +92,7 @@
 
             interface = {
               branding = "N-B";
-              brandingColor = 6;
+              brandingColor = "56b6c2";
               helpHidden = false;
             };
 

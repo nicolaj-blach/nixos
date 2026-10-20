@@ -36,10 +36,12 @@
         videos = "${home}/media/videos";
         music = "${home}/media/music";
         templates = templates;
+        projects = "${home}/projects";
         desktop = home;
         publicShare = home;
+        setSessionVariables = true;
         extraConfig = {
-          XDG_SCREENSHOTS_DIR = "${home}/media/pictures/screenshots";
+          SCREENSHOTS = "${home}/media/pictures/screenshots";
         };
       };
 
