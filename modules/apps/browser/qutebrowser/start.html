@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Start</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #282c34; color: #abb2bf;
+    font-family: "JetBrainsMono Nerd Font", monospace; }
+  body { display: flex; flex-direction: column; align-items: center; }
+  .logo { margin-top: 16vh; height: 18vh; }
+  .logo svg { height: 100%; width: auto; }
+  #greeting { margin-top: 4vh; font-size: 1.6rem; color: #61afef; }
+  #clock { font-size: 4.5rem; color: #abb2bf; margin-top: 1vh; }
+  #date { color: #5c6370; font-size: 1.1rem; }
+  .links { display: flex; gap: 1rem; margin-top: 5vh; }
+  .links a { color: #abb2bf; text-decoration: none; padding: .6rem 1.2rem;
+    border: 1px solid #3e4451; background: #21252b; }
+  .links a span { color: #e5c07b; margin-right: .5rem; }
+  .links a:hover { border-color: #61afef; color: #61afef; }
+  .stats { margin-top: 5vh; color: #5c6370; font-size: .95rem; text-align: center; line-height: 1.8; }
+  .stats b { color: #98c379; font-weight: normal; }
+  .bar { width: 22rem; height: 4px; background: #3e4451; margin: .4rem auto; }
+  .bar div { height: 100%; background: #c678dd; }
+</style>
+</head>
+<body>
+  <div class="logo">
+@LOGO@
+  </div>
+  <div id="greeting"></div>
+  <div id="clock"></div>
+  <div id="date"></div>
+  <div class="links">
+    <a href="https://www.youtube.com"><span>yt</span> YouTube</a>
+    <a href="https://www.google.com"><span>g</span> Google</a>
+    <a href="https://mail.proton.me"><span>pm</span> Proton Mail</a>
+    <a href="https://github.com"><span>gh</span> GitHub</a>
+  </div>
+  <div class="stats">
+    <div>week <b id="week"></b> · day <b id="day"></b> · <b>@HOST@</b> · NixOS <b>@VERSION@</b></div>
+    <div class="bar"><div id="progress"></div></div>
+    <div><b id="year"></b> of the year done</div>
+  </div>
+<script>
+  function tick() {
+    const now = new Date();
+    const h = now.getHours();
+    document.getElementById("greeting").textContent =
+      (h < 5 ? "Good night" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ", Nicolaj";
+    document.getElementById("clock").textContent =
+      now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("date").textContent =
+      now.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+    const start = new Date(now.getFullYear(), 0, 1);
+    const end = new Date(now.getFullYear() + 1, 0, 1);
+    const day = Math.floor((now - start) / 864e5) + 1;
+    const t = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+    const week = Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7);
+    const pct = ((now - start) / (end - start) * 100).toFixed(1);
+    document.getElementById("week").textContent = week;
+    document.getElementById("day").textContent = day;
+    document.getElementById("year").textContent = pct + "%";
+    document.getElementById("progress").style.width = pct + "%";
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

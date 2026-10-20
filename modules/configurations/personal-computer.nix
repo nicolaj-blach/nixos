@@ -82,6 +82,8 @@
           # Apps
           self.homeManagerModules.pi-coding-agent
           self.homeManagerModules.zen-browser
+          self.homeManagerModules.qutebrowser
+          self.homeManagerModules.proton-pass
           self.homeManagerModules.chromium
           self.homeManagerModules.google-chrome
           self.homeManagerModules.git
@@ -142,6 +144,8 @@
 
         # Enable apps
         programs.zen-browser.enable = true;
+        programs.qutebrowser.enable = true;
+        programs.proton-pass.enable = true;
         custom.emacs.enable = true;
         programs.kitty.enable = true;
         programs.pi-coding-agent.enable = true;

@@ -33,7 +33,7 @@
         };
         setAsDefault = lib.mkOption {
           type = lib.types.bool;
-          default = true;
+          default = false;
         };
       };
 
@@ -42,15 +42,11 @@
 
         programs.zsh.shellAliases = {
           zen = "zen-beta";
-          browser = "zen-beta";
-          b = "zen-beta";
         };
 
         home.sessionVariables = lib.mkIf cfg.setAsDefault {
           BROWSER = "zen-beta";
         };
-
-        custom.niri.binds."Mod+B" = [ "zen-beta" ];
 
         xdg.mimeApps.defaultApplications = lib.mkIf cfg.setAsDefault {
           "text/html" = "zen-beta.desktop";
