@@ -61,14 +61,9 @@
             # fzf configuration
             FZF_DEFAULT_COMMAND = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
             FZF_CTRL_T_COMMAND = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
-            FZF_CTRL_T_OPTS = ''
-              --walker-skip .git,node_modules,target,.direnv
-              --preview 'bat -n --color=always {}'
-              --bind 'ctrl-/:change-preview-window(down|hidden|)' '';
+            FZF_CTRL_T_OPTS = "--walker-skip .git,node_modules,target,.direnv --preview 'bat -n --color=always {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'";
             FZF_ALT_C_COMMAND = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
-            FZF_ALT_C_OPTS = ''
-              --walker-skip .git,node_modules,target,.direnv
-              --preview 'eza --tree --level=2 --icons --color=always {}' '';
+            FZF_ALT_C_OPTS = "--walker-skip .git,node_modules,target,.direnv --preview 'eza --tree --level=2 --icons --color=always {}'";
 
             # Carapace bridges
             CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
