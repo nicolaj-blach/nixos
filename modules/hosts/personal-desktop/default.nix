@@ -13,7 +13,7 @@
       self.nixosModules.personal-computer
       ./_hw/hardware-configuration.nix
 
-      ({ ... }: {
+      ({ config, ... }: {
         networking.hostName = "personal-desktop";
 
         fileSystems."/" = {
@@ -34,6 +34,8 @@
           powerManagement.enable = false;
           open = false;
           nvidiaSettings = true;
+          # GTX 1080 (Pascal) is only supported up to the 580 branch
+          package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
         };
         services.xserver.videoDrivers = [ "nvidia" ];
 
