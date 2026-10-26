@@ -30,6 +30,14 @@
           -e '/@LOGO@/{r logo.svg' -e 'd}' ${./start.html} > $out/index.html
       '';
 
+      # Context menu icons in the theme's foreground colour
+      menuIcons = pkgs.runCommand "qutebrowser-menu-icons" { } ''
+        mkdir $out
+        for i in go-previous go-next view-refresh process-stop; do
+          sed 's/#2e3436/${fg}/' ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/symbolic/actions/$i-symbolic.svg > $out/$i.svg
+        done
+      '';
+
       markScrollable = pkgs.writeText "mark-scrollable.js" ''
         document.querySelectorAll("*").forEach((e) => {
           const o = getComputedStyle(e).overflowY;
@@ -216,6 +224,8 @@
           fonts = {
             default_family = "JetBrainsMono Nerd Font";
             default_size = "11pt";
+            contextmenu = "default_size default_family";
+            tooltip = "default_size default_family";
           };
 
           colors = {
@@ -258,7 +268,7 @@
               warning = { fg = bg; bg = yellow; border = yellow; };
               error = { fg = bg; bg = red; border = red; };
             };
-            prompts = { fg = fg; bg = bgAlt; border = bgAlt; selected.bg = bgSel; };
+            prompts = { fg = fg; bg = bgAlt; border = "1px solid ${bgSel}"; selected.bg = bgSel; };
             downloads = {
               bar.bg = bg;
               start = { fg = bg; bg = blue; };
@@ -266,6 +276,12 @@
               error = { fg = bg; bg = red; };
             };
             keyhint = { fg = fg; bg = bgAlt; suffix.fg = yellow; };
+            contextmenu = {
+              menu = { fg = fg; bg = bgAlt; };
+              selected = { fg = fg; bg = bgSel; };
+              disabled = { fg = gray; bg = bgAlt; };
+            };
+            tooltip = { fg = fg; bg = bgAlt; };
           };
           hints.radius = 0;
           hints.border = "0px";
@@ -278,6 +294,46 @@
         c.tabs.padding = {"top": 4, "bottom": 4, "left": 6, "right": 6}
         config.set("content.register_protocol_handler", True, "https://mail.proton.me")
         c.hints.selectors["scrollable"] = ["[data-qb-scroll]"]
+
+        # Outlines like the GTK menus. These patch qutebrowser internals and may break on upgrades.
+        from qutebrowser.mainwindow import mainwindow
+        if not getattr(mainwindow, "_themed", False):
+            mainwindow._themed = True
+            from qutebrowser.mainwindow import mainwindow, prompt, messageview
+            from qutebrowser.misc import keyhintwidget
+            from qutebrowser.completion import completionwidget
+            mainwindow.MainWindow.STYLESHEET += """
+              QMenu { border: 1px solid ${bgSel}; padding: 4px 0; }
+              QMenu::item { padding: 4px 12px; }
+              QMenu::icon { padding-left: 8px; }
+              QMenu::separator { height: 1px; background: ${bgSel}; margin: 4px 0; }
+              QToolTip { border: 1px solid ${bgSel}; padding: 4px; }
+            """
+            prompt.PromptContainer.STYLESHEET += "QWidget#PromptContainer { border: 1px solid ${bgSel}; }"
+            keyhintwidget.KeyHintView.STYLESHEET += "QLabel { border: 1px solid ${bgSel}; }"
+            completionwidget.CompletionView.STYLESHEET += "QTreeView { border-top: 1px solid ${bgSel}; }"
+
+            _message_init = messageview.Message.__init__
+            def _outlined_message(self, *args, **kwargs):
+                _message_init(self, *args, **kwargs)
+                self.setStyleSheet(self.styleSheet() + "border: 1px solid ${bgSel}; padding: 2px 4px;")
+            messageview.Message.__init__ = _outlined_message
+
+            from qutebrowser.qt.gui import QIcon
+            from qutebrowser.qt.webenginecore import QWebEnginePage
+            from qutebrowser.browser.webengine import webview
+            _menu_icons = {
+                QWebEnginePage.WebAction.Back: "go-previous",
+                QWebEnginePage.WebAction.Forward: "go-next",
+                QWebEnginePage.WebAction.Reload: "view-refresh",
+                QWebEnginePage.WebAction.Stop: "process-stop",
+            }
+            _context_menu = webview.WebEngineView.contextMenuEvent
+            def _themed_context_menu(self, ev):
+                for action, name in _menu_icons.items():
+                    self.page().action(action).setIcon(QIcon("${menuIcons}/" + name + ".svg"))
+                _context_menu(self, ev)
+            webview.WebEngineView.contextMenuEvent = _themed_context_menu
 
         import os, shutil
         shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)

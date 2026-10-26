@@ -79,6 +79,7 @@
           self.homeManagerModules.quickshell-bar
           self.homeManagerModules.xdg-dirs
           self.homeManagerModules.desktop-services
+          self.homeManagerModules.theming
 
           # Apps
           self.homeManagerModules.pi-coding-agent
