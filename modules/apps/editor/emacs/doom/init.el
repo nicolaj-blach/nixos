@@ -71,5 +71,8 @@
        (yaml +lsp +tree-sitter)
        (zig +lsp +tree-sitter)             ; Zig with zls
 
+       :email
+       (mu4e +org +mbsync)
+
        :config
        (default +bindings +smartparens))

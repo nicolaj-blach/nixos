@@ -78,5 +78,5 @@ When you finish a task in this repo, add one short line at the end of your reply
 - Apps that write their own config on first run (atuin, superfile) recreate those files if run before the rebuild.
 - Sandboxed apps (Steam, Bazecor) die with their parent; launch them through `niri msg action spawn --`.
 - superfile only starts if `config.toml` and `hotkeys.toml` contain every field.
-- Secrets: `secrets/*.yaml` via sops-nix (`modules/systems/core/sops.nix`). Only the desktop is a sops recipient. Never print or decrypt secrets.
+- Secrets: `secrets/*.yaml` via sops-nix (`modules/systems/core/sops.nix`). Both the desktop and the laptop are sops recipients (`secrets/.sops.yaml`). Never print or decrypt secrets.
 - The edit tool can't match Nerd Font glyphs; use a script for edits that contain them. In Nix strings, `''${` escapes shell interpolation.

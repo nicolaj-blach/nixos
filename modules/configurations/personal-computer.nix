@@ -85,6 +85,7 @@
           self.homeManagerModules.zen-browser
           self.homeManagerModules.qutebrowser
           self.homeManagerModules.proton-pass
+          self.homeManagerModules.protonmail
           self.homeManagerModules.chromium
           self.homeManagerModules.google-chrome
           self.homeManagerModules.git
@@ -148,6 +149,7 @@
         programs.qutebrowser.enable = true;
         programs.proton-pass.enable = true;
         custom.emacs.enable = true;
+        custom.protonmail.enable = true;
         programs.kitty.enable = true;
         programs.pi-coding-agent.enable = true;
         programs.git.enable = true;
