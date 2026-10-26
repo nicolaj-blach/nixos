@@ -66,6 +66,23 @@
         '';
       };
 
+      # Add the selection (or just the page) to its literature note in ~/notes
+      qute-note = pkgs.writeShellApplication {
+        name = "qute-note";
+        text = ''
+          dir=$(mktemp -d)
+          trap 'rm -rf "$dir"' EXIT
+          printf %s "$QUTE_URL" > "$dir/url"
+          printf %s "$QUTE_TITLE" > "$dir/title"
+          printf %s "''${QUTE_SELECTED_TEXT:-}" > "$dir/text"
+          if what=$(emacsclient -e "(+notes-web-highlight \"$dir\")"); then
+            echo "message-info 'Saved ''${what//\"/}'" >> "$QUTE_FIFO"
+          else
+            echo "message-error 'qute-note: emacsclient failed'" >> "$QUTE_FIFO"
+          fi
+        '';
+      };
+
       qute-proton-pass = pkgs.writeShellApplication {
         name = "qute-proton-pass";
         runtimeInputs = [
@@ -166,6 +183,7 @@
           ";s" = "jseval -q -f ${markScrollable} ;; hint scrollable";
           "xt" = "spawn --userscript ${lib.getExe qute-bars} tabs";
           ",o" = "spawn --userscript ${lib.getExe qute-proton-pass} totp";
+          ",n" = "spawn --userscript ${lib.getExe qute-note}";
         };
 
         settings = {

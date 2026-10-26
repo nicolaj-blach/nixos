@@ -1,8 +1,8 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
 ;;; User Info
-(setq user-full-name ""
-      user-mail-address "")
+(setq user-full-name "Nicolaj Blach Jensen"
+      user-mail-address "me@nicolaj-blach.dev")
 
 ;;; Theme & UI
 ;; Use base16-onedark to match Kitty/Quickshell exactly
@@ -25,8 +25,41 @@
       scroll-margin 3
       scroll-preserve-screen-position t)
 
-;;; Org Mode
-(setq org-directory "~/notes/")
+;;; Org
+;; Nerd Font chevrons instead of triangles: folded, open
+(after! org-modern
+  (setq org-modern-fold-stars '(("\U000F0142" . "\U000F0140"))
+        org-modern-todo nil
+        org-modern-checkbox '((?\s . "\U000F0130") (?- . "\U000F0AA1") (?X . "\U000F05E0"))))
+
+;; Icon before each TODO keyword; coloured by `org-todo-keyword-faces'
+(defvar +org-todo-icons
+  '(("TODO" . "\U000F0130") ("STRT" . "\U000F0AA1") ("DONE" . "\U000F05E0")
+    ("PROJ" . "\U000F024B") ("WAIT" . "\U000F03E6") ("HOLD" . "\U000F03E6")
+    ("LOOP" . "\U000F0456") ("IDEA" . "\U000F0335") ("KILL" . "\U000F015A")
+    ("[ ]" . "\U000F0130") ("[-]" . "\U000F0AA1") ("[?]" . "\U000F03E6") ("[X]" . "\U000F05E0")))
+
+(add-hook! 'org-mode-hook
+  (defun +org-todo-icons-h ()
+    (font-lock-add-keywords
+     nil `((,(concat "^\\*+ " (regexp-opt (mapcar #'car +org-todo-icons) t) " ")
+            (1 (let ((kw (match-string 1)))
+                 `(face nil display ,(concat (cdr (assoc kw +org-todo-icons))
+                                             (unless (string-prefix-p "[" kw) (concat " " kw)))))
+               prepend)))
+     t)))
+
+;; RET cycles todo -> doing -> done, on headings and checkbox items; links still open
+(defadvice! +org-cycle-doing-a (fn &rest args)
+  :around #'+org/dwim-at-point
+  (let ((state (and (org-at-heading-p) (org-get-todo-state))))
+    (cond ((org-in-regexp org-link-any-re) (apply fn args))
+          ((member state '("TODO" "STRT" "DONE" "[ ]" "[-]" "[X]"))
+           (org-todo (pcase state ("TODO" "STRT") ("STRT" "DONE") ("DONE" "TODO")
+                            ("[ ]" "[-]") ("[-]" "[X]") (_ "[ ]"))))
+          ((org-at-item-checkbox-p)
+           (org-toggle-checkbox (and (equal (match-string 1) "[ ]") '(16))))
+          (t (apply fn args)))))
 
 ;;; Editor Settings
 ;; Indentation
@@ -38,6 +71,12 @@
 
 ;;; Ghostel terminal
 (load! "+ghostel" doom-user-dir)
+
+;;; Mail
+(load! "+mu4e" doom-user-dir)
+
+;;; Notes
+(load! "+notes" doom-user-dir)
 
 ;;; Additional Keybindings
 ;; Quick access to common commands

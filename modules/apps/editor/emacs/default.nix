@@ -42,6 +42,19 @@
 
       config = lib.mkIf cfg.enable {
         custom.niri.binds."Mod+Return" = [ "emacs-terminal" ];
+        custom.niri.binds."Mod+I" = [
+          "emacsclient"
+          "-e"
+          "(+notes/capture-frame)"
+        ];
+        custom.niri.extraConfig = ''
+          window-rule {
+              match app-id="emacs" title="^doom-capture$"
+              open-floating true
+              default-column-width { fixed 600; }
+              default-window-height { fixed 200; }
+          }
+        '';
 
         # Emacs package with native compilation
         programs.emacs = {
