@@ -26,6 +26,33 @@
         done
       '';
 
+      lookup-password = "${pkgs.libsecret}/bin/secret-tool lookup service protonmail-bridge";
+
+      # Bridge makes a password per machine; copy it from `--cli` `info` into the
+      # keyring if missing. Runs before Bridge starts, as the CLI needs its lock.
+      store-bridge-password = pkgs.writeShellScript "store-bridge-password" ''
+        ${lookup-password} >/dev/null 2>&1 && exit 0
+        # input sent before the shell is ready is dropped, so keep asking
+        password=$( (for _ in $(seq 20); do sleep 3; echo info; done) \
+          | timeout 60 ${config.services.protonmail-bridge.package}/bin/protonmail-bridge --cli 2>/dev/null \
+          | ${pkgs.gawk}/bin/awk '/^Password:/ { print $2; exit }') || true
+        if [ -z "$password" ]; then
+          echo "No Bridge password found; log in with protonmail-bridge --cli" >&2
+          exit 0
+        fi
+        printf %s "$password" | ${pkgs.libsecret}/bin/secret-tool store \
+          --label="Proton Bridge" service protonmail-bridge
+      '';
+
+      # Bridge already running without a stored password: restart it once per boot
+      ensure-bridge-password = pkgs.writeShellScript "ensure-bridge-password" ''
+        ${lookup-password} >/dev/null 2>&1 && exit 0
+        flag="$XDG_RUNTIME_DIR/bridge-password-attempted"
+        [ -e "$flag" ] && exit 0
+        touch "$flag"
+        ${systemctl} --user restart protonmail-bridge.service
+      '';
+
       # mu4e holds the mu database while running, so let it re-index instead (+mu4e.el)
       mail-index = pkgs.writeShellScript "mail-index" ''
         running=$(${config.programs.emacs.finalPackage}/bin/emacsclient -e \
@@ -39,7 +66,10 @@
       config = lib.mkIf cfg.enable {
         services.protonmail-bridge.enable = true;
         systemd.user.services.protonmail-bridge.Service = {
-          ExecStartPre = "${wait-for-keyring}";
+          ExecStartPre = [
+            "${wait-for-keyring}"
+            "${store-bridge-password}"
+          ];
           TimeoutStartSec = "infinity";
         };
 
@@ -62,9 +92,7 @@
               "nico188f2@gmail.com"
             ];
             userName = metaOwner.email;
-            # Bridge makes a password per machine; store it once with:
-            # secret-tool store --label="Proton Bridge" service protonmail-bridge
-            passwordCommand = "${pkgs.libsecret}/bin/secret-tool lookup service protonmail-bridge";
+            passwordCommand = lookup-password;
             maildir.path = "";
 
             imap = {
@@ -129,7 +157,10 @@
           frequency = "*:0/5";
           postExec = "${mail-index}";
         };
-        systemd.user.services.mbsync.Unit.After = [ "protonmail-bridge.service" ];
+        systemd.user.services.mbsync = {
+          Unit.After = [ "protonmail-bridge.service" ];
+          Service.ExecStartPre = [ "${ensure-bridge-password}" ];
+        };
 
         services.imapnotify = {
           enable = true;
