@@ -3,11 +3,11 @@
     "agent-markdown-files": {
       "flake": false,
       "locked": {
-        "lastModified": 1791071100,
-        "narHash": "sha256-zFkaIVPphKazPlcRdE0LIyYZ3NXPikyk9EMVgHPqWLc=",
+        "lastModified": 1793217545,
+        "narHash": "sha256-NBFoOwDpyPjtfXThBPO3n7TIYKE1+TVn4Lusnte0O9c=",
         "owner": "nicolaj-blach",
         "repo": "agent-markdown-files",
-        "rev": "c4c6bf787b1fa19b2200a478fe2776740a9cf88f",
+        "rev": "706b142333beeee2860efe95a03a544595de917e",
         "type": "github"
       },
       "original": {
