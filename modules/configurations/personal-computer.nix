@@ -100,6 +100,7 @@
           self.homeManagerModules.cclip
           self.homeManagerModules.flameshot
           self.homeManagerModules.qalculate
+          self.homeManagerModules.speech
           self.homeManagerModules.system-info
           self.homeManagerModules.television
           self.homeManagerModules.wlctl

@@ -188,3 +188,8 @@
 
 ;;; GraphQL Configuration
 ;; graphql-language-service-cli is auto-detected from PATH
+
+;;; Primary selection
+;; Doom disables this; the speak script (Mod+Shift+R) reads the primary selection
+(after! evil
+  (setq evil-visual-update-x-selection-p t))

@@ -201,6 +201,7 @@
           auto_save.session = true;
           downloads.location.prompt = true;
           content.blocking.method = "both";
+          content.pdfjs = true;
           colors.webpage.preferred_color_scheme = "dark";
           colors.webpage.bg = bg;
           # Dark devtools and other Chromium UI

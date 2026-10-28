@@ -43,6 +43,8 @@
           TimeoutStartSec = "infinity";
         };
 
+        home.packages = [ pkgs.libsecret ];
+
         programs.mbsync.enable = true;
         programs.msmtp.enable = true;
         programs.mu.enable = true;
@@ -60,7 +62,9 @@
               "nico188f2@gmail.com"
             ];
             userName = metaOwner.email;
-            passwordCommand = "${pkgs.coreutils}/bin/cat /run/secrets/protonmail-bridge";
+            # Bridge makes a password per machine; store it once with:
+            # secret-tool store --label="Proton Bridge" service protonmail-bridge
+            passwordCommand = "${pkgs.libsecret}/bin/secret-tool lookup service protonmail-bridge";
             maildir.path = "";
 
             imap = {

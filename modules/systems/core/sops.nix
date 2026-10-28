@@ -48,14 +48,6 @@
             sopsFile = secretsRoot + "/aiModels.yaml";
           };
 
-          # Each machine's Proton Bridge generates its own IMAP/SMTP password
-          secrets.protonmail-bridge = lib.mkIf (builtins.pathExists (secretsRoot + "/mail.yaml")) {
-            sopsFile = secretsRoot + "/mail.yaml";
-            key = "bridge-${config.networking.hostName}";
-            owner = metaOwner.username;
-            mode = "0400";
-          };
-
           # Shared by LiteLLM and atuin-ai-server
           templates."ai-gateway.env".content = ''
             OPENROUTER_API_KEY=${config.sops.placeholder.openrouter-api-key}

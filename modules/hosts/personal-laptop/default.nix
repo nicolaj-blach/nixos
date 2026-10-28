@@ -34,6 +34,19 @@
           };
         };
 
+        home-manager.users.${metaOwner.username} = {
+          # Render on the iGPU so the dGPU can sleep; otherwise every frame wakes it and it whines
+          custom.niri.extraConfig = ''
+            debug {
+                render-drm-device "/dev/dri/by-path/pci-0000:c4:00.0-render"
+            }
+          '';
+          # QtWebEngine otherwise picks the dGPU node and crashes on the mismatch
+          programs.qutebrowser.extraConfig = ''
+            c.qt.args.append("render-node-override=/dev/dri/by-path/pci-0000:c4:00.0-render")
+          '';
+        };
+
         # Backlight write access for the video group
         services.udev.packages = [ pkgs.brightnessctl ];
 
