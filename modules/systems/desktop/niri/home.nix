@@ -96,6 +96,7 @@
             "Mod+F" = "maximize-column;";
             "Mod+Shift+F" = "fullscreen-window;";
             "Mod+T" = "toggle-window-floating;";
+            "Mod+G" = "switch-focus-between-floating-and-tiling;";
             "Mod+O" = "toggle-overview;";
 
             # Focus (crosses monitors at edges)
