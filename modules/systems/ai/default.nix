@@ -16,7 +16,7 @@
       cfg = config.ai;
 
       # The open kernel modules only support Turing (RTX 20xx) and newer, which is also what
-      # the prebuilt ollama-cuda supports; older cards like the GTX 1080 stay on Vulkan
+      # the prebuilt ollama-cuda supports; older cards stay on Vulkan
       cuda = lib.elem "nvidia" config.services.xserver.videoDrivers && config.hardware.nvidia.open;
 
       ports = {
@@ -98,7 +98,7 @@
           host = "127.0.0.1";
           port = ports.ollama;
           loadModels = cfg.models;
-          # Coding agents send 8-20k tokens per request; 16k keeps qwen2.5:7b on the 8 GB GPU
+          # Coding agents send 8-20k tokens per request; 16k covers that
           environmentVariables = {
             OLLAMA_CONTEXT_LENGTH = toString localContext;
           }

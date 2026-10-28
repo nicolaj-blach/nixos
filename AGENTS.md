@@ -37,7 +37,7 @@ A configuration describes a kind of machine, like a personal computer or a serve
 
 ### `modules/hosts/` — one machine each
 A host imports exactly one configuration, plus its hardware configuration (`_hw/hardware-configuration.nix`) and anything specific to that machine. Example: the laptop uses `personal-computer` but also enables its fingerprint reader.
-- `personal-desktop`: this machine. Ryzen 5 7600X, NVIDIA GTX 1080 drives all three monitors (the AMD iGPU is unused). Monitors left to right: HDMI-A-2 AOC 1920x1080, DP-2 Lenovo 3440x1440, DP-3 Samsung 1680x1050 rotated. The NVIDIA niri workarounds live in this host.
+- `personal-desktop`: this machine. Ryzen 5 7600X, NVIDIA RTX 5070 Ti drives all three monitors (the AMD iGPU is unused). Monitors left to right: HDMI-A-2 AOC 1920x1080, DP-2 Lenovo 3440x1440, DP-3 Samsung 1680x1050 rotated. The NVIDIA niri workarounds live in this host.
 - `personal-laptop`: laptop with an AMD GPU.
 
 ### Separate repos

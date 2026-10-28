@@ -32,10 +32,10 @@
         hardware.nvidia = {
           modesetting.enable = true;
           powerManagement.enable = false;
-          open = false;
+          # RTX 5070 Ti (Blackwell) requires the open kernel module
+          open = true;
           nvidiaSettings = true;
-          # GTX 1080 (Pascal) is only supported up to the 580 branch
-          package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+          package = config.boot.kernelPackages.nvidiaPackages.stable;
         };
         services.xserver.videoDrivers = [ "nvidia" ];
 
