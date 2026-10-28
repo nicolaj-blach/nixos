@@ -35,6 +35,7 @@
       self.nixosModules.pipewire
       self.nixosModules.bluetooth
       self.nixosModules.fractal
+      self.nixosModules.rgb
 
       # Services
       self.nixosModules.services
@@ -98,7 +99,7 @@
           self.homeManagerModules.otter-launcher
           self.homeManagerModules.fsel
           self.homeManagerModules.cclip
-          self.homeManagerModules.flameshot
+          self.homeManagerModules.lumine-capture
           self.homeManagerModules.qalculate
           self.homeManagerModules.speech
           self.homeManagerModules.system-info

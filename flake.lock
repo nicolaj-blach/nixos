@@ -278,19 +278,23 @@
         "type": "github"
       }
     },
-    "niri-src": {
-      "flake": false,
+    "lumine-capture": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
       "locked": {
-        "lastModified": 1791619393,
-        "narHash": "sha256-vCQQ5EMG3QOkZsmy+wS9zLlrnT1P8LWSwQPAhVASKkg=",
-        "owner": "niri-wm",
-        "repo": "niri",
-        "rev": "d0cd58ec5ac6b2d41d42478fb4f3cc7c0c687db9",
+        "lastModified": 1793153642,
+        "narHash": "sha256-chNpzooeTvnah22ZwQnRWKxkejpnPJcnXDxxB2swJdE=",
+        "owner": "Netflate",
+        "repo": "LumineCapture",
+        "rev": "0b47dd5cec576ca1ca7bd77cc602c6bdfc09aa1b",
         "type": "github"
       },
       "original": {
-        "owner": "niri-wm",
-        "repo": "niri",
+        "owner": "Netflate",
+        "repo": "LumineCapture",
         "type": "github"
       }
     },
@@ -545,7 +549,7 @@
         "ghostel": "ghostel",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
-        "niri-src": "niri-src",
+        "lumine-capture": "lumine-capture",
         "nix-index-database": "nix-index-database",
         "nix-search-tv": "nix-search-tv",
         "nixpkgs": "nixpkgs_2",
