@@ -60,6 +60,35 @@
         programs.emacs = {
           enable = true;
           package = pkgs.emacs-pgtk;
+          extraPackages = epkgs: [
+            (epkgs.treesit-grammars.with-grammars (
+              g: with g; [
+                tree-sitter-bash
+                tree-sitter-c
+                tree-sitter-c-sharp
+                tree-sitter-cmake
+                tree-sitter-cpp
+                tree-sitter-css
+                tree-sitter-go
+                tree-sitter-gomod
+                tree-sitter-gowork
+                tree-sitter-haskell
+                tree-sitter-html
+                tree-sitter-javascript
+                tree-sitter-jsdoc
+                tree-sitter-json
+                tree-sitter-lua
+                tree-sitter-nix
+                tree-sitter-python
+                tree-sitter-rust
+                tree-sitter-tsx
+                tree-sitter-typescript
+                tree-sitter-typst
+                tree-sitter-yaml
+                tree-sitter-zig
+              ]
+            ))
+          ];
         };
 
         # System dependencies for Doom Emacs

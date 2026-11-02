@@ -45,6 +45,7 @@
        lookup
        lsp
        magit
+       tree-sitter
 
        :os
        (:if (featurep :system 'macos) macos)

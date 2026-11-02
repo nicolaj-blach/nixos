@@ -90,7 +90,8 @@
 ;; LSP performance settings
 (after! lsp-mode
   (setq lsp-idle-delay 0.5
-        lsp-log-io nil))
+        lsp-log-io nil
+        lsp-semantic-tokens-enable t))
 
 ;;; Direnv Integration (envrc)
 ;; Enables per-buffer direnv environments for project-local LSPs
@@ -162,6 +163,10 @@
 (after! lua-mode
   ;; lua-language-server is auto-detected from PATH
   )
+
+;;; YAML Configuration
+;; Doom points yaml-ts-mode at `yaml-indent-line' without loading yaml-mode
+(add-hook 'yaml-ts-mode-hook (lambda () (require 'yaml-mode)))
 
 ;;; Typst Configuration
 (use-package! typst-ts-mode
