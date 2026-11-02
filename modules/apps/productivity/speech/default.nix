@@ -229,7 +229,10 @@
         Unit = {
           Description = "swayosd popup for voxtype";
           PartOf = [ "graphical-session.target" ];
-          After = [ "voxtype.service" ];
+          After = [
+            "graphical-session.target"
+            "voxtype.service"
+          ];
         };
         Service = {
           ExecStart = "${voxtype-osd}/bin/voxtype-osd";
