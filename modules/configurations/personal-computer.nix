@@ -47,6 +47,7 @@
 
       # Input
       self.nixosModules.kanata
+      self.nixosModules.logiops
 
       # Shell
       self.nixosModules.zsh
