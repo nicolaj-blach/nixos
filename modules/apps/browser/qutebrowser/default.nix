@@ -338,6 +338,23 @@
 
         import os, shutil
         shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)
+
+        # Dark devtools: "Match Chrome color theme" loads devtools://theme/colors.css,
+        # which QtWebEngine doesn't serve, so the theme never applies. Runs before the profile loads.
+        import json
+        from qutebrowser.utils import standarddir
+        _prefs_path = os.path.join(standarddir.data(), "webengine", "user_prefs.json")
+        try:
+            with open(_prefs_path) as f:
+                _prefs = json.load(f)
+        except (OSError, ValueError):
+            _prefs = {}
+        _devtools = _prefs.setdefault("devtools", {}).setdefault("preferences", {})
+        if _devtools.get("chrome-theme-colors") != "false":
+            _devtools["chrome-theme-colors"] = "false"
+            os.makedirs(os.path.dirname(_prefs_path), exist_ok=True)
+            with open(_prefs_path, "w") as f:
+                json.dump(_prefs, f)
       '';
 
       programs.zsh.shellAliases.qb = "qutebrowser";
