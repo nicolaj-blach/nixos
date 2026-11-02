@@ -39,6 +39,7 @@
 
       # Services
       self.nixosModules.services
+      self.nixosModules.podman
 
       # Apps
       self.nixosModules.steam
@@ -118,6 +119,7 @@
 
           # System integration
           self.homeManagerModules.kanata
+          self.homeManagerModules.podman
         ];
 
         custom.niri.enable = true;
