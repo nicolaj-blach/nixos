@@ -322,19 +322,21 @@
 
             from qutebrowser.qt.gui import QIcon
             from qutebrowser.qt.webenginecore import QWebEnginePage
-            from qutebrowser.browser.webengine import webview
+            from qutebrowser.qt.webenginewidgets import QWebEngineView
             _menu_icons = {
                 QWebEnginePage.WebAction.Back: "go-previous",
                 QWebEnginePage.WebAction.Forward: "go-next",
                 QWebEnginePage.WebAction.Reload: "view-refresh",
                 QWebEnginePage.WebAction.Stop: "process-stop",
             }
-            _context_menu = webview.WebEngineView.contextMenuEvent
+            # Patch the Qt base class: qutebrowser modules imported here are dropped after
+            # config.py loads, so patching webview.WebEngineView would hit a discarded copy
+            _context_menu = QWebEngineView.contextMenuEvent
             def _themed_context_menu(self, ev):
                 for action, name in _menu_icons.items():
                     self.page().action(action).setIcon(QIcon("${menuIcons}/" + name + ".svg"))
                 _context_menu(self, ev)
-            webview.WebEngineView.contextMenuEvent = _themed_context_menu
+            QWebEngineView.contextMenuEvent = _themed_context_menu
 
         import os, shutil
         shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)
