@@ -71,6 +71,7 @@ After changing one of these repos: commit, push, then `nix flake update <input>`
 
 ## Pending reminders
 When you finish a task in this repo, add one short line at the end of your reply for each item below that is still open. Don't bring it up otherwise and don't act on it unasked.
+- Remove the qutebrowser hint workaround (`quteInit` and the `runJavaScript` patch in `modules/apps/browser/qutebrowser/default.nix`) once [qutebrowser#8925](https://github.com/qutebrowser/qutebrowser/issues/8925) is fixed (planned for v3.7.1) and the fix is in nixpkgs.
 
 ## Gotchas
 - **"Would be clobbered":** Home Manager refuses to replace files it didn't create. Before I rebuild, check whether a real file already sits where a new link goes, and move it aside (`<file>.pre-hm`).

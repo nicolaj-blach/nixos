@@ -38,6 +38,18 @@
         done
       '';
 
+      # qutebrowser's page scripts, wrapped like its global_wrapper.js (guarded, so a no-op once loaded)
+      quteInit = pkgs.runCommand "qute-init.js" { } ''
+        js=$(dirname $(find ${config.programs.qutebrowser.package}/lib -path '*/qutebrowser/javascript/webelem.js'))
+        wrap() {
+          name=$1; shift
+          echo "(function(){\"use strict\";if(!window.hasOwnProperty(\"_qutebrowser\")){window._qutebrowser={\"initialized\":{}};}if(window._qutebrowser.initialized[\"$name\"]){return;}"
+          for f; do cat "$js/$f"; echo; done
+          echo "window._qutebrowser.initialized[\"$name\"]=true;})();"
+        }
+        { wrap scripts scroll.js webelem.js caret.js; wrap stylesheet stylesheet.js; } > $out
+      '';
+
       markScrollable = pkgs.writeText "mark-scrollable.js" ''
         document.querySelectorAll("*").forEach((e) => {
           const o = getComputedStyle(e).overflowY;
@@ -337,6 +349,19 @@
                     self.page().action(action).setIcon(QIcon("${menuIcons}/" + name + ".svg"))
                 _context_menu(self, ev)
             QWebEngineView.contextMenuEvent = _themed_context_menu
+
+            # Qt 6.11 sometimes skips qutebrowser's injected scripts after a navigation, so
+            # hints fail with "Unknown error while getting elements" until a reload
+            # (qutebrowser#8925). Re-run them before any call that needs them.
+            with open("${quteInit}") as f:
+                _qute_init = f.read() + "\n"
+            _run_js = QWebEnginePage.runJavaScript
+            def _self_healing_run_js(self, code, *args):
+                world = getattr(args[0], "value", args[0]) if args else 0
+                if world == 1 and "window._qutebrowser." in code:
+                    code = _qute_init + code
+                return _run_js(self, code, *args)
+            QWebEnginePage.runJavaScript = _self_healing_run_js
 
         import os, shutil
         shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)
