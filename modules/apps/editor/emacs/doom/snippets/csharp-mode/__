@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: C# File Template
+# key: __
+# --
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ${1:MyNamespace};
+
+public sealed class ${2:`(file-name-base (or buffer-file-name ""))`}
+{
+    $0
+}

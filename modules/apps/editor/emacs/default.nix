@@ -180,6 +180,21 @@
           source = ./doom;
           recursive = true;
         };
+        xdg.configFile."doom/+roslyn.el".text = ''
+          (after! lsp-mode
+            (setq lsp-disabled-clients
+                  (append '(csharp-roslyn omnisharp csharp-ls) lsp-disabled-clients))
+            (lsp-register-client
+             (make-lsp-client
+              :new-connection (lsp-stdio-connection
+                               '("${pkgs.roslyn-ls}/bin/Microsoft.CodeAnalysis.LanguageServer"
+                                 "--stdio" "--autoLoadProjects" "--logLevel=Information"
+                                 "--extensionLogDirectory=/tmp/lsp-roslyn"))
+              :activation-fn (lsp-activate-on "csharp")
+              :priority 1
+              :notification-handlers (ht ("workspace/projectInitializationComplete" #'ignore))
+              :server-id 'roslyn-ls)))
+        '';
 
         # Symlink ghostel source for Doom to find
         xdg.dataFile."ghostel".source = ghostelSource;

@@ -111,11 +111,9 @@
         :desc "Show env" "s" #'envrc-show))
 
 ;;; C# LSP Configuration
-;; csharp-ls will be auto-detected from $PATH when provided by devenv
-;; No need to set lsp-csharp-server-path - it uses PATH automatically
-(after! lsp-csharp
-  ;; Prefer csharp-ls from PATH over downloading omnisharp
-  (setq lsp-csharp-server-path nil))
+(load! "+roslyn" doom-user-dir)
+
+(set-file-template! "\\.cs\\'" :trigger "__" :mode 'csharp-mode)
 
 ;;; JavaScript/TypeScript Configuration
 (after! lsp-javascript
