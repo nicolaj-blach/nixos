@@ -162,6 +162,7 @@
         services.postgresql = lib.mkIf localDb {
           enable = true;
           package = pkgs.postgresql_17;
+          settings.listen_addresses = lib.mkForce "";
           ensureDatabases = [ "litellm" ];
           ensureUsers = [
             {
