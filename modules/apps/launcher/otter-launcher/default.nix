@@ -14,7 +14,7 @@
 
       web-open = pkgs.writeShellScript "otter-web-open" ''
         if [ -n "$3" ]; then url="$2$3"; else url="$1"; fi
-        exec niri msg action spawn -- zen-beta "$url"
+        exec niri msg action spawn -- qutebrowser "$url"
       '';
 
       webModule = description: prefix: home: search: ''
@@ -108,7 +108,7 @@
         [[modules]]
         description = "browser"
         prefix = "b"
-        cmd = "niri msg action spawn -- zen-beta"
+        cmd = "niri msg action spawn -- qutebrowser"
 
         ${webModule "nix packages" "nix" "https://search.nixos.org/packages"
           "https://search.nixos.org/packages?query="
