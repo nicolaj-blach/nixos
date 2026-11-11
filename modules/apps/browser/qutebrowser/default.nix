@@ -363,6 +363,108 @@
                 return _run_js(self, code, *args)
             QWebEnginePage.runJavaScript = _self_healing_run_js
 
+            # Tab sidebar: highlight the hovered tab, and accept dropped text/links
+            # (onto a tab loads it there, elsewhere opens a new tab). Patched on the live
+            # TabBar class from setTabBar, since config.py's imports are discarded copies.
+            from qutebrowser.qt.gui import QColor, QPalette
+            from qutebrowser.qt.widgets import QTabWidget, QStyle, QStyleOptionTab, QStylePainter
+
+            def _drop_text(ev):
+                mime = ev.mimeData()
+                if mime.hasUrls():
+                    return mime.urls()[0].toString()
+                return mime.text().strip() if mime.hasText() else ""
+
+            def _set_hover(bar, idx):
+                if getattr(bar, "_qb_hover", -1) != idx:
+                    bar._qb_hover = idx
+                    bar.update()
+
+            def _drag_enter(self, ev):
+                if getattr(self, "_qb_win_id", None) is None or not _drop_text(ev):
+                    return
+                ev.acceptProposedAction()
+                if isinstance(self, QTabWidget):
+                    _set_hover(self.tabBar(), -1)
+                else:
+                    _set_hover(self, self.tabAt(ev.position().toPoint()))
+
+            def _drag_leave(self, ev):
+                if not isinstance(self, QTabWidget):
+                    _set_hover(self, -1)
+
+            def _drop(self, ev):
+                from qutebrowser.utils import objreg, urlutils, message
+                text = _drop_text(ev)
+                win_id = getattr(self, "_qb_win_id", None)
+                if win_id is None or not text:
+                    return
+                ev.acceptProposedAction()
+                idx = -1 if isinstance(self, QTabWidget) else self.tabAt(ev.position().toPoint())
+                if not isinstance(self, QTabWidget):
+                    _set_hover(self, -1)
+                try:
+                    url = urlutils.fuzzy_url(text)
+                except urlutils.InvalidUrlError as e:
+                    message.error(str(e))
+                    return
+                browser = objreg.get("tabbed-browser", scope="window", window=win_id)
+                if idx == -1:
+                    browser.tabopen(url, background=False)
+                else:
+                    browser.widget.widget(idx).load_url(url)
+                    browser.widget.setCurrentIndex(idx)
+
+            def _patch_tab_bar(cls):
+                _paint = cls.paintEvent
+                def _paint_hover(self, ev):
+                    _paint(self, ev)
+                    idx = getattr(self, "_qb_hover", -1)
+                    if idx < 0 or idx >= self.count() or idx == self.currentIndex():
+                        return
+                    p = QStylePainter(self)
+                    tab = QStyleOptionTab()
+                    self.initStyleOption(tab, idx)
+                    tab.palette.setColor(QPalette.ColorRole.Window, QColor("${bgSel}"))
+                    tab.palette.setColor(QPalette.ColorRole.WindowText, QColor("${fg}"))
+                    tab.palette.setColor(QPalette.ColorRole.Base, self.tab_indicator_color(idx))
+                    p.drawControl(QStyle.ControlElement.CE_TabBarTab, tab)
+                cls.paintEvent = _paint_hover
+
+                _move = cls.mouseMoveEvent
+                def _move_hover(self, ev):
+                    _move(self, ev)
+                    _set_hover(self, self.tabAt(ev.position().toPoint()))
+                cls.mouseMoveEvent = _move_hover
+
+                _leave = cls.leaveEvent
+                def _leave_hover(self, ev):
+                    _leave(self, ev)
+                    _set_hover(self, -1)
+                cls.leaveEvent = _leave_hover
+
+                cls.dragEnterEvent = _drag_enter
+                cls.dragMoveEvent = _drag_enter
+                cls.dragLeaveEvent = _drag_leave
+                cls.dropEvent = _drop
+                cls._qb_patched = True
+
+            QTabWidget.dragEnterEvent = _drag_enter
+            QTabWidget.dragMoveEvent = _drag_enter
+            QTabWidget.dropEvent = _drop
+            _set_tab_bar = QTabWidget.setTabBar
+            def _patched_set_tab_bar(self, bar):
+                _set_tab_bar(self, bar)
+                if not hasattr(bar, "_win_id"):
+                    return
+                if not type(bar).__dict__.get("_qb_patched"):
+                    _patch_tab_bar(type(bar))
+                self._qb_win_id = bar._qb_win_id = bar._win_id
+                self.setAcceptDrops(True)
+                bar.setAcceptDrops(True)
+                bar.setMouseTracking(True)
+            QTabWidget.setTabBar = _patched_set_tab_bar
+
         import os, shutil
         shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)
 
