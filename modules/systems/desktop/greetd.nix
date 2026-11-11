@@ -28,7 +28,7 @@
       services.greetd = {
         enable = true;
         settings.default_session = {
-          command = "niri-session";
+          command = "niri-session >/dev/null 2>&1";
           user = metaOwner.username;
         };
       };
