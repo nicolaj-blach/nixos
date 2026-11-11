@@ -58,6 +58,42 @@
         });
       '';
 
+      # Page style: square corners and my font. Icon/math fonts are skipped unless forced.
+      font = ''font-family: "JetBrainsMono Nerd Font" !important;'';
+      keepFonts = lib.concatStringsSep ", " [
+        "[class*=icon]" "[class*=Icon]" "[class*=glyph]" ".fa" "[class*=fa-]" ".fas" ".far" ".fab"
+        ".material-icons" "[class*=material-symbols]" ".octicon" ".codicon"
+        ".katex" ".katex *" ".MathJax" ".MathJax *" "mjx-container" "mjx-container *"
+      ];
+      pageStyle = pkgs.linkFarm "qute-page-style" {
+        "radius.css" = pkgs.writeText "radius.css" "*, *::before, *::after { border-radius: 0 !important; }";
+        "font.css" = pkgs.writeText "font.css" "*:not(${keepFonts}) { ${font} }";
+        "font-all.css" = pkgs.writeText "font-all.css" "*, *::before, *::after { ${font} }";
+      };
+
+      # Toggle the page style or icon fonts. Usage: qute-style style|icons. State is reset in config.py.
+      qute-style = pkgs.writeShellApplication {
+        name = "qute-style";
+        text = ''
+          dir="$XDG_RUNTIME_DIR/qute-style"
+          mkdir -p "$dir"
+          case $1 in
+            style) f=off ;;
+            *) f=force ;;
+          esac
+          if [ -e "$dir/$f" ]; then rm "$dir/$f"; else touch "$dir/$f"; fi
+          if [ -e "$dir/force" ]; then fonts=font-all; icons="Icon fonts forced"; else fonts=font; icons="Icon fonts kept"; fi
+          if [ -e "$dir/off" ]; then
+            sheets="[]"; msg="Page style off"
+          else
+            sheets="[\"${pageStyle}/radius.css\",\"${pageStyle}/$fonts.css\"]"; msg="Page style on"
+          fi
+          [ "$1" = icons ] && msg="$icons"
+          echo "set content.user_stylesheets '$sheets'" >> "$QUTE_FIFO"
+          echo "message-info '$msg'" >> "$QUTE_FIFO"
+        '';
+      };
+
       # Toggle the tab sidebar/status bar. Usage: qute-bars tabs|bar|both
       # "both" hides both unless both are already hidden. State is reset in config.py.
       qute-bars = pkgs.writeShellApplication {
@@ -202,6 +238,8 @@
           # Hint a scrollable area and click it, so j/k scroll it
           ";s" = "jseval -q -f ${markScrollable} ;; hint scrollable";
           "xt" = "spawn --userscript ${lib.getExe qute-bars} tabs";
+          "xs" = "spawn --userscript ${lib.getExe qute-style} style";
+          "xi" = "spawn --userscript ${lib.getExe qute-style} icons";
           ",o" = "spawn --userscript ${lib.getExe qute-proton-pass} totp";
           ",n" = "spawn --userscript ${lib.getExe qute-note}";
         };
@@ -214,6 +252,7 @@
           downloads.location.prompt = true;
           content.blocking.method = "both";
           content.pdfjs = true;
+          content.user_stylesheets = [ "${pageStyle}/radius.css" "${pageStyle}/font.css" ];
           colors.webpage.preferred_color_scheme = "dark";
           colors.webpage.bg = bg;
           # Dark devtools and other Chromium UI
@@ -466,7 +505,8 @@
             QTabWidget.setTabBar = _patched_set_tab_bar
 
         import os, shutil
-        shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "qute-bars"), ignore_errors=True)
+        for _d in ("qute-bars", "qute-style"):
+            shutil.rmtree(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), _d), ignore_errors=True)
 
         # Dark devtools: "Match Chrome color theme" loads devtools://theme/colors.css,
         # which QtWebEngine doesn't serve, so the theme never applies. Runs before the profile loads.
