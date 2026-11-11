@@ -71,6 +71,21 @@
         "font-all.css" = pkgs.writeText "font-all.css" "*, *::before, *::after { ${font} }";
       };
 
+      # Dislike counts on YouTube (v3.2.2). Voting is off: qutebrowser's GM storage can't hold the vote credentials.
+      # qutebrowser's window proxy breaks YouTube's getComputedStyle polyfill ("Illegal invocation"),
+      # so the script calls the real one.
+      returnYoutubeDislike = pkgs.runCommand "return-youtube-dislike.user.js" {
+        src = pkgs.fetchurl {
+          name = "return-youtube-dislike.user.js";
+          url = "https://raw.githubusercontent.com/Anarios/return-youtube-dislike/d7ec17b1decc922fa5bb952f5788e8f6b4f08ae8/Extensions/UserScript/Return%20Youtube%20Dislike.user.js";
+          hash = "sha256-RGYGn8/Lm0eXTRkeO5DRkK24a9S0HzwiOWNG1dqX6bE=";
+        };
+      } ''
+        substitute $src $out --replace-fail "disableVoteSubmission: false," "disableVoteSubmission: true," \
+          --replace-fail "// ==/UserScript==" "// ==/UserScript==
+const getComputedStyle = (...args) => unsafeWindow.getComputedStyle(...args);"
+      '';
+
       # Toggle the page style or icon fonts. Usage: qute-style style|icons. State is reset in config.py.
       qute-style = pkgs.writeShellApplication {
         name = "qute-style";
@@ -218,6 +233,8 @@
       programs.qutebrowser = {
         # Keep "Always/Never" answers to permission prompts (stored in autoconfig.yml)
         loadAutoconfig = true;
+
+        greasemonkey = [ returnYoutubeDislike ];
 
         searchEngines = {
           DEFAULT = "https://duckduckgo.com/?q={}";
