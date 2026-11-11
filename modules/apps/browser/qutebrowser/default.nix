@@ -238,6 +238,8 @@
           # Hint a scrollable area and click it, so j/k scroll it
           ";s" = "jseval -q -f ${markScrollable} ;; hint scrollable";
           "xt" = "spawn --userscript ${lib.getExe qute-bars} tabs";
+          "<Ctrl-Shift-k>" = "tab-move -";
+          "<Ctrl-Shift-j>" = "tab-move +";
           "xs" = "spawn --userscript ${lib.getExe qute-style} style";
           "xi" = "spawn --userscript ${lib.getExe qute-style} icons";
           ",o" = "spawn --userscript ${lib.getExe qute-proton-pass} totp";
