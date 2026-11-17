@@ -42,6 +42,7 @@
        :tools
        docker            ; Docker/Podman management + Dockerfile editing
        (eval +overlay)
+       llm
        lookup
        lsp
        magit

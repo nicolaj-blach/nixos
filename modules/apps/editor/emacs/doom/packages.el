@@ -17,5 +17,8 @@
 ;; Direnv integration (per-buffer environments for project-local LSPs)
 (package! envrc)
 
+;; Emacs frontend for pi
+(package! pilish)
+
 ;; Typst support (not built into Doom yet)
 (package! typst-ts-mode :recipe (:host github :repo "Ziqi-Yang/typst-ts-mode"))

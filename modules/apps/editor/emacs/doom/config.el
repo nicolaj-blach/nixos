@@ -78,6 +78,9 @@
 ;;; Notes
 (load! "+notes" doom-user-dir)
 
+;;; LLM: gptel + pi
+(load! "+llm" doom-user-dir)
+
 ;;; Additional Keybindings
 ;; Quick access to common commands
 (map! :leader
