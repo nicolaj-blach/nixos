@@ -3,7 +3,7 @@
 {
   # Local AI gateway:
   #   ollama (local models, GPU) + OpenRouter -> LiteLLM (127.0.0.1:4000)
-  #   atuin-ai-server (127.0.0.1:8080) -> LiteLLM
+  #   atuin-ai-server (127.0.0.1:18080) -> LiteLLM
   flake.nixosModules.ai =
     {
       config,
@@ -22,7 +22,7 @@
       ports = {
         ollama = 11434;
         gateway = 4000;
-        atuin = 8080;
+        atuin = 18080;
       };
 
       envFile = config.sops.templates."ai-gateway.env".path;

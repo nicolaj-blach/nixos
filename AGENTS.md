@@ -58,7 +58,7 @@ After changing one of these repos: commit, push, then `nix flake update <input>`
 - Look: OneDark Pro everywhere (`#282c34` background, `#abb2bf` text, `#61afef` blue, `#98c379` green, `#e06c75` red, `#e5c07b` yellow, `#c678dd` purple), sharp corners, JetBrainsMono Nerd Font. Everything US: language and keyboard layout.
 
 ## Coding agents and AI
-- `modules/systems/ai`: ollama (Vulkan by default; CUDA/ROCm selectable), LiteLLM gateway on `127.0.0.1:4000` (`openrouter/*`, `ollama/*`), atuin-ai-server on `127.0.0.1:8080`. The `ai-models` service rebuilds the model lists for atuin, opencode and pi at boot and hourly.
+- `modules/systems/ai`: ollama (Vulkan by default; CUDA/ROCm selectable), LiteLLM gateway on `127.0.0.1:4000` (`openrouter/*`, `ollama/*`), atuin-ai-server on `127.0.0.1:18080`. The `ai-models` service rebuilds the model lists for atuin, opencode and pi at boot and hourly.
 - `modules/apps/ai/pi`: imports the `pi-config` input and adds the desktop glue (niri binds, zsh aliases, logo). Everything else about pi (wrapper, settings, pinned `npm:` packages, theme, permissions) is in the `pi-config` repo. `~/.pi/agent` is read-only.
 
 ## Verify every change
